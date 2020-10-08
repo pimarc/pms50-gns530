@@ -1,0 +1,44 @@
+{
+  "content": [
+    {
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.html",
+      "size": 123,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.html",
+      "size": 57928,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.css",
+      "size": 64923,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.js",
+      "size": 4660,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/mapConfig.json",
+      "size": 2336,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/BaseGPS.js",
+      "size": 131813,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js",
+      "size": 121745,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/CustomValue.js",
+      "size": 5796,
+      "date": 132453631615266150
+    }
+  ]
+}
