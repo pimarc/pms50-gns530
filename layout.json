@@ -39,6 +39,121 @@
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/CustomValue.js",
       "size": 5796,
       "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Hard_EW.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Hard_NE_SW.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Hard_NW_SE.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Soft.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Anchor.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/arc_left.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/arc_right.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Dme.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Helipad.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Intersection.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/left_hand.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/left_turn.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Localizer.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Marker.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Ndb.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Private_Airfield.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/right_hand.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/right_turn.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Tacan.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/vectors_to_final.png",
+      "size": 5796,
+      "date": 132453631615266150
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Vor.png",
+      "size": 5796,
+      "date": 132453631615266150
     }
   ]
 }
