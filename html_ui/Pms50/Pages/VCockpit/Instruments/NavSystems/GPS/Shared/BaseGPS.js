@@ -383,14 +383,14 @@ class GPS_ComNav extends NavSystemElement {
         }
     }
     onEnter() {
-        this.gps.currFlightPlan.FillWithCurrentFP(function () {
-            this.airportListOnPlan = this.gps.currFlightPlan.GetAirportList();
-            this.airportSelectionMenu.elements = [];
-            for (var i = 0; i < this.airportListOnPlan.length; i++) {
-                this.airportSelectionMenu.elements.push(new ContextualMenuElement(this.airportListOnPlan[i].GetInfos().ident, this.setComAirtportListIndex_CB.bind(this, i)));
-            }
-            this.UpdateComDisplay();
-        }.bind(this));
+//PM Modif: The Nav/Com page was not working
+        this.gps.currFlightPlan.wayPoints =  this.gps.currFlightPlanManager.getWaypoints();
+        this.airportListOnPlan = this.gps.currFlightPlan.GetAirportList();
+        this.airportSelectionMenu.elements = [];
+        for (var i = 0; i < this.airportListOnPlan.length; i++) {
+            this.airportSelectionMenu.elements.push(new ContextualMenuElement(this.airportListOnPlan[i].GetInfos().ident, this.setComAirtportListIndex_CB.bind(this, i)));
+        }
+//PM Modif: End The Nav/Com page was not working
     }
     onUpdate(_deltaTime) {
         if (this.airportListOnPlan.length > 0) {
@@ -412,14 +412,15 @@ class GPS_ComNav extends NavSystemElement {
             }
             this.terrainCode.textContent = this.airportListOnPlan[this.airportListIndex].GetInfos().ident;
             this.terrainType.textContent = this.gps.airportPrivateTypeStrFromEnum(this.airportListOnPlan[this.airportListIndex].GetInfos().privateType);
-            var logo = this.airportListOnPlan[this.airportListIndex].GetInfos().GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = this.airportListOnPlan[this.airportListIndex].GetInfos().imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.terrainTypeLogo.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.terrainTypeLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else {
                 this.terrainTypeLogo.innerHTML = "";
             }
+ //PM Modif: End Directly get image file name instead of get symbol
         }
         else {
             this.terrainStatus.textContent = "";
@@ -672,14 +673,15 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao) {
-            var logo = infos.GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = infos.imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.privateLogo.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.privateLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else {
                 this.privateLogo.innerHTML = '';
             }
+//PM Modif: End Directly get image file name instead of get symbol
             switch (infos.privateType) {
                 case 0:
                     this.private.textContent = "Unknown";
@@ -788,15 +790,16 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             var nmPixelSize = Math.min(130 / size.x, 110 / size.y);
             var context = this.mapElement.getContext("2d");
             context.clearRect(0, 0, 200, 200);
-            var logo = infos.GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = infos.imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.privateLogoElement.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.privateLogoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else {
                 this.privateLogoElement.innerHTML = '';
             }
-            switch (infos.privateType) {
+ //PM Modif: End Directly get image file name instead of get symbol
+             switch (infos.privateType) {
                 case 0:
                     this.privateElement.textContent = "Unknown";
                     break;
@@ -973,14 +976,15 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao) {
-            var logo = infos.GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = infos.imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.logoElement.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.logoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else {
                 this.logoElement.innerHTML = '';
             }
+//PM Modif: End Directly get image file name instead of get symbol
             switch (infos.privateType) {
                 case 0:
                     this.privateElement.textContent = "Unknown";
@@ -1073,14 +1077,15 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao) {
-            var logo = infos.GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = infos.imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.privateLogoElement.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.privateLogoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else {
                 this.privateLogoElement.innerHTML = '';
             }
+//PM Modif: End Directly get image file name instead of get symbol
             switch (infos.privateType) {
                 case 0:
                     this.privateElement.textContent = "Unknown";
@@ -1256,14 +1261,15 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao) {
-            var logo = infos.GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = infos.imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.symbolElement.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.symbolElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else {
                 this.symbolElement.innerHTML = '';
             }
+//PM Modif: End Directly get image file name instead of get symbol
             this.regionElement.textContent = infos.region;
             this.posNSElement.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
             this.posEWElement.textContent = this.gps.longitudeFormat(infos.coordinates.long);
@@ -1322,14 +1328,15 @@ class GPS_NDBWaypoint extends NavSystemElement {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao) {
-            var logo = infos.GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = infos.imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.symbolElement.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.symbolElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else {
                 this.symbolElement.innerHTML = '';
             }
+//PM Modif: End Directly get image file name instead of get symbol
             this.facilityElement.textContent = infos.name;
             this.cityElement.textContent = infos.city;
             this.regionElement.textContent = infos.region;
@@ -1399,14 +1406,15 @@ class GPS_VORWaypoint extends NavSystemElement {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao) {
-            var logo = infos.GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = infos.imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.symbolElement.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.symbolElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else {
                 this.symbolElement.innerHTML = '';
             }
+//PM Modif: End Directly get image file name instead of get symbol
             this.facilityElement.textContent = infos.name;
             this.cityElement.textContent = infos.city;
             this.regionElement.textContent = infos.region;
@@ -1509,7 +1517,7 @@ class GPS_NearestAirports extends NavSystemElement {
             firstLine += '<td class="SelectableElement">' + this.nearestAirportList.airports[i].ident + '</td>';
 //PM Modif: Flicking sceen for nearest airports
 // The reason is the missing of airport logo files so we created them
-            firstLine += '<td><img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/' + logo + '" class="imgSizeS"/> </td>';
+            firstLine += '<td><img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/' + logo + '" class="imgSizeM"/> </td>';
 //PM Modif: End Flicking sceen for nearest airports
             firstLine += '<td>' + fastToFixed(this.nearestAirportList.airports[i].bearing, 0) + '<div class="Align unit">o<br />M</div></td>';
             firstLine += '<td>' + fastToFixed(this.nearestAirportList.airports[i].distance, 1) + '<div class="Align unit">n<br />m</div></td>';
@@ -1815,15 +1823,15 @@ class GPS_DirectTo extends NavSystemElement {
         var infos = this.icaoSearchField.getWaypoint() ? this.icaoSearchField.getWaypoint().infos : new WayPointInfo(this.gps);
         if (infos && infos.icao != '') {
             this.icao.textContent = infos.icao;
-            var logo = infos.GetSymbol();
+//PM Modif: Directly get image file name instead of get symbol
+            var logo = infos.imageFileName();
             if (logo != "") {
-                logo = logo.replace(".bmp", ".png");
-                this.airportPrivateLogo.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/' + logo + '"/>';
+                this.airportPrivateLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
             }
             else{
                 this.airportPrivateLogo.innerHTML = '';
-
             }
+//PM Modif: End Directly get image file name instead of get symbol
             this.region.textContent = infos.region;
             this.facilityName.textContent = infos.name;
             this.city.textContent = infos.city;

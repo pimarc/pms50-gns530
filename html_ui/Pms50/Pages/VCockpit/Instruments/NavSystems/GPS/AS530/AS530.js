@@ -43,6 +43,9 @@ class AS530_VorInfos extends NavSystemElement {
         this.vor = this.gps.getChildById("vorValue");
         this.rad = this.gps.getChildById("radValue");
         this.dis = this.gps.getChildById("disValue");
+//PM Modif: check for LOC or VOR
+        this.typ = this.gps.getChildById("vorTitle");
+//PM Modif: End check for LOC or VOR
     }
     onEnter() {
     }
@@ -51,21 +54,28 @@ class AS530_VorInfos extends NavSystemElement {
     onEvent(_event) {
     }
     onUpdate(_deltaTime) {
-        let ident = SimVar.GetSimVarValue("NAV IDENT:1", "string");
-        Avionics.Utils.diffAndSet(this.vor, ident != "" ? ident : "___");
-//PM Modif: World4Fly Mod integration (Wrong radial and Rounded DME)
-//        Avionics.Utils.diffAndSet(this.rad, (SimVar.GetSimVarValue("NAV HAS NAV:1", "bool") ? Math.round(SimVar.GetSimVarValue("NAV RELATIVE BEARING TO STATION:1", "degrees")).toFixed(0) : "___") + "°");
-//        Avionics.Utils.diffAndSet(this.dis, (SimVar.GetSimVarValue("NAV HAS DME:1", "bool") ? Math.round(SimVar.GetSimVarValue("NAV DME:1", "Nautical Miles")).toFixed(1) : "__._"));
+//PM Modif: World4Fly Mod integration (Wrong radial and Rounded DME) and check for LOC or VOR
         let radial = "___";
+        let ident = "____";
+        let distance = "__._";
+        // VOR by default
+        let type = "VOR";
         if (SimVar.GetSimVarValue("NAV HAS NAV:1", "bool")) {
             let radnum = Math.round(SimVar.GetSimVarValue("NAV RADIAL:1", "degrees"));
             // radnum is from -179 to 180 degrees ...
             radnum = radnum < 0 ? 360 + radnum : radnum;
             radial = radnum.toString();
+            ident = SimVar.GetSimVarValue("NAV IDENT:1", "string") != "" ? SimVar.GetSimVarValue("NAV IDENT:1", "string"):"____";
+            distance = (SimVar.GetSimVarValue("NAV HAS DME:1", "bool") ? SimVar.GetSimVarValue("NAV DME:1", "Nautical Miles").toFixed(1) : "__._");
+            // LOC frequency is < 112Mhz and first decimal digit is odd
+            let frequency = SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz");
+            type = frequency && frequency < 112 && Math.trunc(frequency*10)%2 ? "LOC" : "VOR";
         }
+        Avionics.Utils.diffAndSet(this.vor, ident);
+        Avionics.Utils.diffAndSet(this.typ, type);
         Avionics.Utils.diffAndSet(this.rad, radial + "°");
-        Avionics.Utils.diffAndSet(this.dis, (SimVar.GetSimVarValue("NAV HAS DME:1", "bool") ? SimVar.GetSimVarValue("NAV DME:1", "Nautical Miles").toFixed(1) : "__._"));
-//PM Modif: End World4Fly Mod integration (Wrong radial and Rounded DME)
+        Avionics.Utils.diffAndSet(this.dis, distance);
+//PM Modif: End World4Fly Mod integration (Wrong radial and Rounded DME) and check for LOC or VOR
     }
 }
 registerInstrument("as530-element", AS530);
