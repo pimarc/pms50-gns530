@@ -17,6 +17,13 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.2
+- LOC/VOR correctly displayed on the VOR field following the captured frequency
+- Setting 4 levels of declutter as the original GNS530
+- Adding the range and declutter level in the NAV map (left bottom corner)
+- Adding missing symbols files associated to waypoint, airports, etc...
+- No more flicking pages (I hope)
+- The NAV/COM page now works
 ## V 1.0.1
 - World4Fly Mod integration (Wrong radial and Rounded DME)
 - NAV page now displays ETE to next waypoint instead of ETE to destination

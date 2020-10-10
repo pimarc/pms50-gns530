@@ -1,6 +1,6 @@
 //PM Modif: Global modif
 //  - replace all log file in bmp by a png (search for .png)
-//PM Modif: End Global modif: replace all log file in bmp by a png
+//PM Modif: End Global modif: replace all symbols files in bmp by a png
 
 class BaseGPS extends NavSystem {
     constructor() {
@@ -93,10 +93,10 @@ class BaseGPS extends NavSystem {
         if (_event == "CLR_Push") {
             let map = this.getChildById("MapInstrument");
             if (map) {
-                map.declutterLevel++;
-//PM Modif: Try using a third level of declutter
-                if (map.declutterLevel > 2) {
-//PM Modif: End Try using a third level of declutter
+                map.declutterLevel+=2;
+//PM Modif: Using four levels of declutter as in the original GNS530
+                if (map.declutterLevel > 6) {
+//PM Modif: Using four levels of declutter as in the original GNS530
                     map.declutterLevel = 0;
                 }
             }
@@ -1899,7 +1899,7 @@ class GPS_DirectTo extends NavSystemElement {
                 this.gps.ShowContextualMenu(new ContextualMenu("FPL", elements));
             }
         }
-//PM Modif: End Tried to add approach points , works but would require to unactivate approach after a directto
+//PM Modif: End Adding approach points for directTo
     }
     activateButton_SelectionCallback(_event) {
 

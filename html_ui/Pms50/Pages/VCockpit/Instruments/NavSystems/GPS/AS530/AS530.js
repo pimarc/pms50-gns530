@@ -36,8 +36,10 @@ class AS530 extends BaseGPS {
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", new GPS_Messages())]));
         this.addIndependentElementContainer(new NavSystemElementContainer("VorInfos", "RadioPart", new AS530_VorInfos()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("RangeInfos", "MapPart", new AS530_RangeInfos()));
     }
 }
+
 class AS530_VorInfos extends NavSystemElement {
     init(root) {
         this.vor = this.gps.getChildById("vorValue");
@@ -78,5 +80,26 @@ class AS530_VorInfos extends NavSystemElement {
 //PM Modif: End World4Fly Mod integration (Wrong radial and Rounded DME) and check for LOC or VOR
     }
 }
+
+class AS530_RangeInfos extends NavSystemElement {
+    init(root) {
+        this.mrange = this.gps.getChildById("MapRangeValue");
+        this.dlevel = this.gps.getChildById("MapDeclutterLevel");
+    }
+    onEnter() {
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+    onUpdate(_deltaTime) {
+        let map = this.gps.getChildById("MapInstrument");
+        if (map) {
+            Avionics.Utils.diffAndSet(this.mrange, map.getDisplayRange());
+            Avionics.Utils.diffAndSet(this.dlevel, map.declutterLevel ? "-" + map.declutterLevel/2 : "");
+        }
+    }
+}
+
 registerInstrument("as530-element", AS530);
 //# sourceMappingURL=AS530.js.map

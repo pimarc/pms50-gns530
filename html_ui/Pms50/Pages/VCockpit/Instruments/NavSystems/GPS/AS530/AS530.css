@@ -187,12 +187,6 @@ as530-element {
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapInstrument #MapSVG {
               transform: rotateX(0);
               position: absolute; }
-            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapInstrument #MapRange {
-              position: absolute;
-              left: 2%;
-              bottom: 2%;
-              color: white;
-              background-color: black; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI {
             position: absolute;
             bottom: 5%;
@@ -292,9 +286,26 @@ as530-element {
             left: 25%;
             vertical-align: top;
             height: 10%; }
-          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParams {
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range {
+            position: absolute;
             background-color: black;
-            border: calc(0.4273504274vh) solid #6ecdee; }
+            bottom: 30%;
+            left: 2%;
+            padding: 1vh 2vh 1vh 2vh;
+            color: #6ecdee;
+            font-size: 4.5vh;
+            line-height: 4.5vh; }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range #MapRangeUnit{
+              position: relative;
+              left: -1vh;
+              font-size: 2.2vh;
+              line-height: 2.2vh; }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range #MapDeclutterLevel{
+              position: relative;
+              left: -1vh;}
+        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParams {
+          background-color: black;
+          border: calc(0.4273504274vh) solid #6ecdee; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParamTitlesTop, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParamTitlesBot {
             width: 100%;
             color: #6ecdee; }
@@ -315,12 +326,6 @@ as530-element {
           as530-element #Electricity #TopDisplay #GpsPart #Map #MapInstrument #MapSVG {
             transform: rotateX(0);
             position: absolute; }
-          as530-element #Electricity #TopDisplay #GpsPart #Map #MapInstrument #MapRange {
-            position: absolute;
-            left: 5%;
-            bottom: 2%;
-            color: white;
-            background-color: black; }
         as530-element #Electricity #TopDisplay #GpsPart #Map #RightDisplay {
           position: absolute;
           right: 0%;
