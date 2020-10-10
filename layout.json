@@ -3,157 +3,162 @@
     {
       "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.html",
       "size": 123,
-      "date": 132453631615266150
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/mapConfig.json",
-      "size": 2336,
-      "date": 132453631615266150
+      "size": 2340,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.html",
-      "size": 57928,
-      "date": 132453631615266150
+      "size": 58256,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.css",
-      "size": 64923,
-      "date": 132453631615266150
+      "size": 65139,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.js",
-      "size": 4660,
-      "date": 132453631615266150
+      "size": 5665,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/BaseGPS.js",
-      "size": 131813,
-      "date": 132453631615266150
+      "size": 133468,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js",
       "size": 121745,
-      "date": 132453631615266150
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/CustomValue.js",
       "size": 5796,
-      "date": 132453631615266150
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Hard_EW.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 170,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Hard_NE_SW.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 180,
+      "date": 132453631615266151
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Hard_NS.png",
+      "size": 172,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Hard_NW_SE.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 182,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Airport_Soft.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 169,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Anchor.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 183,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/arc_left.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 203,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/arc_right.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 205,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 190,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 209,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Dme.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 165,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Helipad.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 173,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Intersection.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 165,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/left_hand.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 219,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/left_turn.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 224,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Localizer.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 172,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Marker.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 180,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Ndb.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 185,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Private_Airfield.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 180,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/right_hand.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 219,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/right_turn.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 216,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Tacan.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 174,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/vectors_to_final.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 196,
+      "date": 132453631615266151
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Vor.png",
-      "size": 5796,
-      "date": 132453631615266150
+      "size": 173,
+      "date": 132453631615266151
     }
   ]
 }
