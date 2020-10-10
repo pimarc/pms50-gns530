@@ -2005,6 +2005,14 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.newWaypointPage.gps = this.gps;
         this.waypointWindow = this.newWaypointPage;
     }
+//PM Modif: DirectTo flight plan's selected waypoint
+    onExit() {
+        if (this.gps.currentInteractionState == 1 && this.lines[this.fplSelectable.getIndex()].waypoint) {
+            let infos = this.lines[this.fplSelectable.getIndex()].waypoint.GetInfos();                
+            this.gps.lastRelevantICAO = infos.icao;
+        }
+    }
+//PM Modif: DirectTo flight plan's selected waypoint
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         if (this.gps.currentInteractionState != 2) {
