@@ -18,10 +18,10 @@ First release features:
 
 # Change log
 ## V 1.0.2
-- LOC/VOR correctly displayed on the VOR field following the captured frequency
+- LOC/VOR correctly displayed in the VOR field following the captured frequency
 - Setting 4 levels of declutter as the original GNS530
 - Adding the range and declutter level in the NAV map (left bottom corner)
-- Adding missing symbols files associated to waypoint, airports, etc...
+- Adding missing symbol files associated to waypoint, airports, etc...
 - No more flicking pages (I hope)
 - The NAV/COM page now works
 ## V 1.0.1
