@@ -36,7 +36,9 @@ class AS530 extends BaseGPS {
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", new GPS_Messages())]));
         this.addIndependentElementContainer(new NavSystemElementContainer("VorInfos", "RadioPart", new AS530_VorInfos()));
+//PM Modif: Add range and declutter level to map
         this.addIndependentElementContainer(new NavSystemElementContainer("RangeInfos", "MapPart", new AS530_RangeInfos()));
+//PM Modif: End add range and declutter level to map
     }
 }
 
@@ -81,6 +83,7 @@ class AS530_VorInfos extends NavSystemElement {
     }
 }
 
+//PM Modif: Add range and declutter level to map
 class AS530_RangeInfos extends NavSystemElement {
     init(root) {
         this.mrange = this.gps.getChildById("MapRangeValue");
@@ -100,6 +103,7 @@ class AS530_RangeInfos extends NavSystemElement {
         }
     }
 }
+//PM Modif: End add range and declutter level to map
 
 registerInstrument("as530-element", AS530);
 //# sourceMappingURL=AS530.js.map
