@@ -2,6 +2,14 @@
 //  - replace all log file in bmp by a png (search for .png)
 //PM Modif: End Global modif: replace all symbols files in bmp by a png
 
+//PM Modif: adding stack track
+// to callit: console.log(stackTrace());
+function stackTrace() {
+    var err = new Error();
+    return err.stack;
+ }
+//PM Modif: End adding stack track
+
 class BaseGPS extends NavSystem {
     constructor() {
         super();
@@ -189,10 +197,25 @@ class GPS_DefaultNavPage extends NavSystemPage {
         this.defaultMenu = new ContextualMenu("PAGE MENU", [
             new ContextualMenuElement("Crossfill?", null, true),
             new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
-            new ContextualMenuElement("Restore&nbsp;Defaults?", this.baseElem.restoreCustomValues.bind(this.baseElem))
+//PM Modif: Adding map orientation menu
+            new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)),
+//PM Modif: End Adding map orientation menu
+new ContextualMenuElement("Restore&nbsp;Defaults?", this.baseElem.restoreCustomValues.bind(this.baseElem))
         ]);
     }
+//PM Modif: Adding map orientation menu
+    toggleMapOrientation() {
+        let map = this.gps.getChildById("MapInstrument");
+        console.log("zut");
+        if (map && map.navMap) {
+            console.log("zut1");
+            map.navMap.rotateWithPlane ? map.navMap.rotateWithPlane = false :  map.navMap.rotateWithPlane = true;
+        }
+        this.gps.SwitchToInteractionState(0);
+     }
+//PM Modif: End Adding map orientation menu
 }
+
 class GPS_DefaultNav extends NavSystemElement {
     constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7]) {
         super();
@@ -1125,24 +1148,24 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
 //        SimVar.SetSimVarValue("C:fs9gps:FlightPlanLoadApproach", "number", 1);
 //        this.gps.currFlightPlan.FillWithCurrentFP();
 
-    // We disable auto activation
-    this.gps.autoActivateApproach = false;
-    // Do load approach
-    let infos = this.icaoSearchField.getUpdatedInfos();
-    if (infos && infos.icao) {
-        this.gps.currFlightPlanManager.setApproachIndex(this.selectedApproach, () => {
-            let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
-            if (elem) {
-                elem.updateWaypoints();
-            }
-        }, this.selectedTransition);
-    }
-    this.gps.closePopUpElement();
+        // We disable auto activation
+        this.gps.autoActivateApproach = false;
+        // Do load approach
+        let infos = this.icaoSearchField.getUpdatedInfos();
+        if (infos && infos.icao) {
+            this.gps.currFlightPlanManager.setApproachIndex(this.selectedApproach, () => {
+                let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                if (elem) {
+                    elem.updateWaypoints();
+                }
+            }, this.selectedTransition);
+        }
+        this.gps.closePopUpElement();
 //PM Modif: End Load approach from airport
-    this.gps.SwitchToMenuName("FPL");
-    this.gps.SwitchToInteractionState(0);
-    }
-    loadApproachAndActivate() {
+        this.gps.SwitchToMenuName("FPL");
+        this.gps.SwitchToInteractionState(0);
+        }
+        loadApproachAndActivate() {
 //PM Modif: Activate approach from airport
 //Auto activation and U-turn bug
 
@@ -1787,6 +1810,9 @@ class GPS_DirectTo extends NavSystemElement {
     constructor() {
         super();
         this.name = "DRCT";
+//PM Modif: DirecTO CLR button management
+        this.menuname = "";
+//PM Modif: End DirecTO CLR button management
     }
     init() {
         this.icao = this.gps.getChildById("DRCTIcao");
@@ -1811,6 +1837,9 @@ class GPS_DirectTo extends NavSystemElement {
         this.duplicateWaypoints = new NavSystemElementContainer("Duplicate Waypoints", "DuplicateWaypointWindow", new MFD_DuplicateWaypoint());
         this.duplicateWaypoints.setGPS(this.gps);
         this.duplicateWaypoints.element.icaoSearchField = this.icaoSearchField;
+//PM Modif: DirectoTO Set active selection to waypoint on enter
+        this.initialUpdate = true;
+//PM Modif: End DirectoTO Set active selection to waypoint on enter
     }
     onEnter() {
         this.currentFPLWpSelected = 0;
@@ -1820,6 +1849,13 @@ class GPS_DirectTo extends NavSystemElement {
         }
     }
     onUpdate(_deltaTime) {
+//PM Modif: DirectoTO Set active selection to waypoint on enter
+        if(this.initialUpdate){
+            this.gps.ActiveSelection(this.defaultSelectables);
+            this.gps.cursorIndex = 0;
+            this.initialUpdate = false;
+        }
+//PM Modif: End DirectoTO Set active selection to waypoint on enter
         var infos = this.icaoSearchField.getWaypoint() ? this.icaoSearchField.getWaypoint().infos : new WayPointInfo(this.gps);
         if (infos && infos.icao != '') {
             this.icao.textContent = infos.icao;
@@ -1859,22 +1895,79 @@ class GPS_DirectTo extends NavSystemElement {
         }
     }
     onExit() {
+//PM Modif: DirectoTO Set active selection to waypoint on enter
+        this.initialUpdate = true;
+//PM Modif: End DirectoTO Set active selection to waypoint on enter
     }
     onEvent(_event) {
+//PM Modif: DirecTO CLR button management
+        if (_event == "CLR_Push") {
+            this.gps.ActiveSelection(this.defaultSelectables);
+            if (this.gps.popUpElement || this.gps.currentContextualMenu) {
+                this.gps.closePopUpElement();
+                this.gps.SwitchToInteractionState(1);
+                this.gps.cursorIndex = 0;
+                if(this.menuname == "fpl"){
+                    this.gps.cursorIndex = 1;
+                }
+                if(this.menuname == "search"){
+                    this.gps.cursorIndex = 2;
+                }
+                this.menuname = "";
+                this.gps.currentContextualMenu = null;
+            }
+            else {
+                this.menuname = "";
+                this.gps.leaveEventPage();
+            }
+        }
+//PM Modif: End DirecTO CLR button management
     }
     searchField_SelectionCallback(_event) {
-        if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
+//PM Modif: DirecTO Managing enter button
+        if (_event == "ENT_Push") {
+            let infos = this.icaoSearchField.getWaypoint() ? this.icaoSearchField.getWaypoint().infos : new WayPointInfo(this.gps);
+            console.log("lastr: " + this.gps.lastRelevantICAO + ':' + infos.icao);
+            if(infos && infos.icao != ''){
+                this.gps.lastRelevantICAO = infos.icao;
+            }
+            if (this.gps.lastRelevantICAO && infos && infos.icao != '') {
+                this.icaoSearchField.getWaypoint().SetICAO(this.gps.lastRelevantICAO);
+                this.gps.ActiveSelection(this.defaultSelectables);
+                this.gps.cursorIndex = 2;
+//PM Modif: DirecTO CLR button management
+                this.menuname = ""
+//PM Modif: End DirecTO CLR button management
+            }
+        }
+        if (_event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
+            let infos = this.icaoSearchField.getWaypoint() ? this.icaoSearchField.getWaypoint().infos : new WayPointInfo(this.gps);
+            if (infos && infos.icao != '') {
+                this.gps.lastRelevantICAO = infos.icao;
+            }
             this.icaoSearchField.StartSearch(this.onSearchEnd.bind(this));
             this.gps.SwitchToInteractionState(3);
-        }
+//PM Modif: DirecTO CLR button management
+            this.menuname = "search";
+//PM Modif: End DirecTO CLR button management
+//PM Modif: End DirecTO Managing enter button
+}
     }
     onSearchEnd() {
         if (this.icaoSearchField.duplicates.length > 0) {
             this.gps.switchToPopUpPage(this.duplicateWaypoints, () => {
-                this.icaoSearchField.getWaypoint().SetICAO(this.gps.lastRelevantICAO);
-                this.gps.ActiveSelection(this.defaultSelectables);
-                this.gps.cursorIndex = 2;
+//PM Modif: DirecTO more checking on end search
+            if(this.gps.lastRelevantICAO)
+                {
+//PM Modif: End DirecTO more checking on end search
+                    this.icaoSearchField.getWaypoint().SetICAO(this.gps.lastRelevantICAO);
+                    this.gps.ActiveSelection(this.defaultSelectables);
+                    this.gps.cursorIndex = 2;
+//PM Modif: DirecTO CLR button management
+                    this.menuname = ""
+//PM Modif: End DirecTO CLR button management
+                }
             });
         }
     }
@@ -1886,17 +1979,21 @@ class GPS_DirectTo extends NavSystemElement {
             var wayPointList = this.gps.currFlightPlan.wayPoints;
             wayPointList = wayPointList.concat(this.gps.currFlightPlanManager.getApproachWaypoints());
             for (; i < wayPointList.length; i++) {
-                // We add only valid waypoints
-                if(wayPointList[i].GetInfos().region != ''){
+                // We add only valid waypoints (not the ones of "user" type)
+                if(wayPointList[i].icao.substr(0,2) != 'U '){
                     elements.push(new ContextualMenuElement(wayPointList[i].GetInfos().ident, function (_index) {
                         this.currentFPLWpSelected = _index;
                         this.icaoSearchField.SetWaypoint(wayPointList[_index].type, wayPointList[_index].GetInfos().icao);
-                        this.gps.SwitchToInteractionState(0);
+                        this.gps.SwitchToInteractionState(1);
+                        this.gps.cursorIndex = 2;
                     }.bind(this, i)));
                 }
             }
             if (this.gps.currFlightPlan.wayPoints.length > 0) {
                 this.gps.ShowContextualMenu(new ContextualMenu("FPL", elements));
+//PM Modif: DirecTO CLR button management
+                this.menuname = "fpl";
+//PM Modif: End DirecTO CLR button management
             }
         }
 //PM Modif: End Adding approach points for directTo
