@@ -17,6 +17,9 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.3
+- The DirectTo behavior  is now nearly similar to that of the native GNS530
+- Adding toggle of map orientation in map menu (North up or Track up)
 ## V 1.0.2
 - LOC/VOR correctly displayed in the VOR field following the captured frequency
 - Setting 4 levels of declutter as the original GNS530
