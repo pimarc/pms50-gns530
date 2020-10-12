@@ -20,6 +20,8 @@ First release features:
 ## V 1.0.3
 - The DirectTo behavior  is now nearly similar to that of the native GNS530
 - Adding toggle of map orientation in map menu (North up or Track up)
+- Better management of the CLR button when inserting a waypoint
+- Prevent add/removing of waypoints in approach sequence (for now)
 ## V 1.0.2
 - LOC/VOR correctly displayed in the VOR field following the captured frequency
 - Setting 4 levels of declutter as the original GNS530

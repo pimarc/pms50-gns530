@@ -576,8 +576,10 @@ as530-element {
           width: 95%;
           margin-left: 2.5%;
           line-height: 15vh; }
-        as530-element #Electricity #TopDisplay #GpsPart #Procedures [state="Inactive"] {
+/*PM Modif: The greyed status was missing for procedure menu*/
+        as530-element #Electricity #TopDisplay #GpsPart #Procedures [state="Inactive"], #Electricity #TopDisplay #GpsPart #Procedures [state="Greyed"] {
           color: grey; }
+/*PM Modif: End The greyed status was missing for procedure menu*/
         as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection {
           position: absolute;
           top: 0%;

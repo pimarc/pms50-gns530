@@ -36,7 +36,32 @@
       "date": 132453631615266151
     },
     {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js",
+      "size": 121745,
+      "date": 132453631615266151
+    },
+    {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/CustomValue.js",
+      "size": 5796,
+      "date": 132453631615266151
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js",
+      "size": 5796,
+      "date": 132453631615266151
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SelectableElement.js",
+      "size": 5796,
+      "date": 132453631615266151
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SearchField.js",
+      "size": 5796,
+      "date": 132453631615266151
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/Messages.js",
       "size": 5796,
       "date": 132453631615266151
     },
@@ -157,6 +182,21 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/Vor.png",
+      "size": 173,
+      "date": 132453631615266151
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html",
+      "size": 173,
+      "date": 132453631615266151
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.js",
+      "size": 173,
+      "date": 132453631615266151
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.css",
       "size": 173,
       "date": 132453631615266151
     }
