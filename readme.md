@@ -22,6 +22,8 @@ First release features:
 - Adding toggle of map orientation in map menu (North up or Track up)
 - Better management of the CLR button when inserting a waypoint
 - Prevent add/removing of waypoints in approach sequence (for now)
+- Bug correction: crash in load approach page when loading and there is no approach available
+- Adding confirmation window when removing approach, SID, STAR or waypoint
 ## V 1.0.2
 - LOC/VOR correctly displayed in the VOR field following the captured frequency
 - Setting 4 levels of declutter as the original GNS530
