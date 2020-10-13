@@ -218,7 +218,7 @@ new ContextualMenuElement("Restore&nbsp;Defaults?", this.baseElem.restoreCustomV
     toggleMapOrientation() {
         let map = this.gps.getChildById("MapInstrument");
         if (map && map.navMap) {
-            map.navMap.rotateWithPlane ? map.navMap.rotateWithPlane = false :  map.navMap.rotateWithPlane = true;
+            map.navMap.rotateWithPlane ? map.rotateWithPlane(false) :  map.rotateWithPlane(true);
         }
         this.gps.SwitchToInteractionState(0);
      }
