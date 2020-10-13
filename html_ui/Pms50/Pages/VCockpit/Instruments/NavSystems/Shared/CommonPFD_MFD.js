@@ -1553,6 +1553,18 @@ class MFD_DepartureLine extends MFD_FlightPlanLine {
         return '<td class="Select0 SelectableWhite" colspan="' + this.element.nbColumn + '">Departure - ' + this.name + '</td>';
     }
     onEvent(_subIndex, _event) {
+        switch (_event) {
+            case "CLR":
+            case "CLR_Push":
+                this.element.gps.confirmWindow.element.setTexts("Remove Departure ?");
+                this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
+                    if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getDeparture() != null)) {
+                        this.element.gps.currFlightPlanManager.removeDeparture();
+                    }
+                    this.element.gps.SwitchToInteractionState(0);
+                });
+                break;
+        }
         return false;
     }
 }
@@ -1566,6 +1578,18 @@ class MFD_ArrivalLine extends MFD_FlightPlanLine {
         return '<td class="Select0 SelectableWhite" colspan="' + this.element.nbColumn + '">Arrival - ' + this.name + '</td>';
     }
     onEvent(_subIndex, _event) {
+        switch (_event) {
+            case "CLR":
+            case "CLR_Push":
+                this.element.gps.confirmWindow.element.setTexts("Remove Arrival ?");
+                this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
+                    if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getArrival() != null)) {
+                        this.element.gps.currFlightPlanManager.removeArrival();
+                    }
+                    this.element.gps.SwitchToInteractionState(0);
+                });
+                break;
+        }
         return false;
     }
 }
@@ -1582,7 +1606,15 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
         switch (_event) {
             case "CLR":
             case "CLR_Push":
-                this.element.gps.currFlightPlanManager.setApproachIndex(-1);
+                this.element.gps.confirmWindow.element.setTexts("Remove Approach ?");
+                this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
+                    if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getApproach() != null)) {
+                        this.element.gps.currFlightPlanManager.setApproachIndex(-1);
+                        // We disable auto activation
+                        this.element.gps.autoActivateApproach = false;
+                    }
+                    this.element.gps.SwitchToInteractionState(0);
+                });
                 break;
         }
         return false;
@@ -1660,9 +1692,15 @@ class MFD_WaypointLine extends MFD_FlightPlanLine {
                 case "CLR_Push":
 // PM Modif: Prevent removing a waypoint after a clear on waypoint window
                     if(!this.element.waypointWindow.element || (this.element.waypointWindow.element.preventRemove == false)){
-                        this.element.removeWaypoint(this.index);
+                        this.element.gps.confirmWindow.element.setTexts("Remove Waypoint ?");
+                        this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
+                            if (this.element.gps.confirmWindow.element.Result == 1) {
+                                this.element.removeWaypoint(this.index);
+                            }
+                            this.element.gps.SwitchToInteractionState(0);
+                        });
                     }
-                    if(this.element.waypointWindow.element && this.element.waypointWindow.element.preventRemove){
+                    else{
                         this.element.waypointWindow.element.preventRemove = false;
                     }
 // PM Modif: Prevent removing a waypoint after a clear on waypoint window

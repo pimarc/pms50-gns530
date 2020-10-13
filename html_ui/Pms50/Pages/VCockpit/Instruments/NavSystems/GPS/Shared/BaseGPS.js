@@ -45,7 +45,6 @@ class BaseGPS extends NavSystem {
 //PM Modif: Confirmation window
         this.confirmWindow = new NavSystemElementContainer("ConfirmationWindow", "ConfirmationWindow", new GPS_ConfirmationWindow());
         this.confirmWindow.setGPS(this);
-        this.confirmWindowActive = false;
 //PM Modif: End Confirmation window
     }
     parseXMLConfig() {
@@ -2215,7 +2214,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.switchToPopUpPage(this.gps.selectDeparturePage);
     }
     FPLRemoveApproach_CB() {
-//PM Modif: Remove approach was not working and added confirmation window;
+//PM Modif: Remove approach was not working and added confirmation window
         this.gps.confirmWindow.element.setTexts("Remove Approach ?");
         this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
             if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getApproach() != null)) {
@@ -2228,10 +2227,26 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
 //PM Modif: End Remove approach was not working;
     }
     FPLRemoveArrival_CB() {
-        this.gps.currFlightPlanManager.removeArrival();
+//PM Modif: Remove arrival added confirmation window
+        this.gps.confirmWindow.element.setTexts("Remove Arrival ?");
+        this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+            if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getArrival() != null)) {
+                this.gps.currFlightPlanManager.removeArrival();
+            }
+            this.gps.SwitchToInteractionState(0);
+        });
+//PM Modif: End Remove arrival added confirmation window
     }
     FPLRemoveDeparture_CB() {
-        this.gps.currFlightPlanManager.removeDeparture();
+//PM Modif: Remove arrival added confirmation window
+        this.gps.confirmWindow.element.setTexts("Remove Departure ?");
+        this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+            if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getDeparture() != null)) {
+                this.gps.currFlightPlanManager.removeDeparture();
+            }
+            this.gps.SwitchToInteractionState(0);
+        });
+//PM Modif: End Remove approach was not working
     }
     FPLClosestPoint_CB() {
         this.gps.SwitchToInteractionState(0);
@@ -2958,7 +2973,6 @@ class GPS_ConfirmationWindow extends NavSystemElement {
         this.Active = false;
     }
     init(root) {
-console.log("Do init");
         this.window = this.gps.getChildById("ConfirmationWindow");
         this.text = this.gps.getChildById("CW_Text");
         this.button1 = this.gps.getChildById("CW_Button1");

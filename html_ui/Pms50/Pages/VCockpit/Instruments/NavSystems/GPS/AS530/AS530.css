@@ -1119,6 +1119,9 @@ as530-element {
 /*PM Modif: Confirmation window*/
         as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow {
           z-index: 11;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
           position: absolute;
           height: 30%;
           top: 35%;
@@ -1129,30 +1132,18 @@ as530-element {
           text-align: center;
           font-size: 5vh;
           border: 0.4vh solid white; }
+          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow #ButtonGroup {
+            display:flex;
+            justify-content: space-around; }
           as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow[state=Inactive] {
-            visibility: hidden; }
+              visibility: hidden; }
           as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow[state=Active] {
             visibility: inherit; }
           as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow #CW_Text {
-            position: absolute;
-            top: 5%;
-            left: 5%;
-            width: 90%;
-            height: 75%;
             text-align: center;}
-            as530-element #Electricity #ConfirmationWindow .gradientButton {
-              position: absolute;
-              width: 20%;
-              height: 20%; }
-            as530-element #Electricity #ConfirmationWindow #CW_Button1 {
-              left: 10%;
-              bottom: 5%; }
-            as530-element #Electricity #ConfirmationWindow #CW_Button2 {
-              right: 10%;
-              bottom: 5%; }
-            as530-element #Electricity #ConfirmationWindow  .gradientButton[state=Selected] {
-              color: #11118c;
-              background-color: #6ecdee; }
+          as530-element #Electricity #ConfirmationWindow  .gradientButton[state=Selected] {
+            color: #11118c;
+            background-color: #6ecdee; }
 /*PM Modif: End Confirmation window*/
       as530-element #Electricity #BotDisplay {
         height: 10%;

@@ -24,6 +24,8 @@ First release features:
 - Prevent add/removing of waypoints in approach sequence (for now)
 - Bug correction: crash in load approach page when loading and there is no approach available
 - Adding confirmation window when removing approach, SID, STAR or waypoint
+- Removing approach, SID and STAR works by selecting the corresponding line on flight plan
+- Less dependency from other Mods
 ## V 1.0.2
 - LOC/VOR correctly displayed in the VOR field following the captured frequency
 - Setting 4 levels of declutter as the original GNS530
