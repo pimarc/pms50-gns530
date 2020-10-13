@@ -42,6 +42,11 @@ class BaseGPS extends NavSystem {
         this.selectArrivalPage.setGPS(this);
         this.selectDeparturePage = new NavSystemElementContainer("DepartureSelection", "DepartureSelection", new GPS_DepartureSelection());
         this.selectDeparturePage.setGPS(this);
+//PM Modif: Confirmation window
+        this.confirmWindow = new NavSystemElementContainer("ConfirmationWindow", "ConfirmationWindow", new GPS_ConfirmationWindow());
+        this.confirmWindow.setGPS(this);
+        this.confirmWindowActive = false;
+//PM Modif: End Confirmation window
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -184,6 +189,13 @@ class BaseGPS extends NavSystem {
         this.pagePos.innerHTML = pagesMenu;
         this.menuTitle.textContent = this.getCurrentPageGroup().name;
     }
+//PM Modif: Confirmation window
+    closeConfirmWindow() {
+        if(this.confirmWindow.element.Active) {
+            this.closePopUpElement();
+        }
+    }
+//PM Modif: End Confirmation window
 }
 class GPS_DefaultNavPage extends NavSystemPage {
     constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7]) {
@@ -206,9 +218,7 @@ new ContextualMenuElement("Restore&nbsp;Defaults?", this.baseElem.restoreCustomV
 //PM Modif: Adding map orientation menu
     toggleMapOrientation() {
         let map = this.gps.getChildById("MapInstrument");
-        console.log("zut");
         if (map && map.navMap) {
-            console.log("zut1");
             map.navMap.rotateWithPlane ? map.navMap.rotateWithPlane = false :  map.navMap.rotateWithPlane = true;
         }
         this.gps.SwitchToInteractionState(0);
@@ -1842,6 +1852,9 @@ class GPS_DirectTo extends NavSystemElement {
 //PM Modif: End DirectoTO Set active selection to waypoint on enter
     }
     onEnter() {
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
         this.currentFPLWpSelected = 0;
         this.gps.currFlightPlan.FillWithCurrentFP();
         if (this.gps.lastRelevantICAO) {
@@ -1895,6 +1908,9 @@ class GPS_DirectTo extends NavSystemElement {
         }
     }
     onExit() {
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
 //PM Modif: DirectoTO Set active selection to waypoint on enter
         this.initialUpdate = true;
 //PM Modif: End DirectoTO Set active selection to waypoint on enter
@@ -1936,7 +1952,6 @@ class GPS_DirectTo extends NavSystemElement {
 //PM Modif: DirecTO Managing enter button
         if (_event == "ENT_Push") {
             let infos = this.icaoSearchField.getWaypoint() ? this.icaoSearchField.getWaypoint().infos : new WayPointInfo(this.gps);
-            console.log("lastr: " + this.gps.lastRelevantICAO + ':' + infos.icao);
             if(infos && infos.icao != ''){
                 this.gps.lastRelevantICAO = infos.icao;
             }
@@ -2110,20 +2125,29 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.newWaypointPage.gps = this.gps;
         this.waypointWindow = this.newWaypointPage;
     }
+    onEnter() {
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
+    }
 //PM Modif: DirectTo flight plan's selected waypoint
     onExit() {
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
         if (this.gps.currentInteractionState == 1 && this.lines[this.fplSelectable.getIndex()].waypoint) {
             let infos = this.lines[this.fplSelectable.getIndex()].waypoint.GetInfos();                
             this.gps.lastRelevantICAO = infos.icao;
         }
     }
-//PM Modif: DirectTo flight plan's selected waypoint
+//PM Modif: End DirectTo flight plan's selected waypoint
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         if (this.gps.currentInteractionState != 2) {
             this.selectedLine = null;
         }
     }
+
     activateStateCB() {
         return this.selectedLine == null;
     }
@@ -2133,7 +2157,6 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.SwitchToInteractionState(0);
     }
     activateLeg(_index, _approach = false) {
-//        console.log("CommonPFD_MFD.ts > Activate leg for index " + _index);
         if (_approach) {
             let icao = this.gps.currFlightPlanManager.getApproachWaypoints()[_index].icao;
             this.gps.currFlightPlanManager.activateApproach(() => {
@@ -2192,14 +2215,16 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.switchToPopUpPage(this.gps.selectDeparturePage);
     }
     FPLRemoveApproach_CB() {
-//PM Modif: Remove approach was not working;
-//        this.gps.currFlightPlanManager.setArrivalProcIndex(-1);
-        if (this.gps.currFlightPlanManager.getApproach() != null) {
-            this.gps.currFlightPlanManager.setApproachIndex(-1);
-            // We disable auto activation
-            this.gps.autoActivateApproach = false;
-        }
-        this.gps.SwitchToInteractionState(0);
+//PM Modif: Remove approach was not working and added confirmation window;
+        this.gps.confirmWindow.element.setTexts("Remove Approach ?");
+        this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+            if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getApproach() != null)) {
+                this.gps.currFlightPlanManager.setApproachIndex(-1);
+                // We disable auto activation
+                this.gps.autoActivateApproach = false;
+            }
+            this.gps.SwitchToInteractionState(0);
+        });
 //PM Modif: End Remove approach was not working;
     }
     FPLRemoveArrival_CB() {
@@ -2243,14 +2268,27 @@ class GPS_Messages extends NavSystemElement {
         this.messages = this.gps.getChildById("Messages");
     }
     onEnter() {
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
     }
     onUpdate(_deltaTime) {
         var html = "";
         this.messages.innerHTML = html;
     }
     onExit() {
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
     }
     onEvent(_event) {
+// PM Modif: CLR button management
+        if (_event == "CLR_Push") {
+            this.gps.SwitchToInteractionState(0);
+            this.gps.SwitchToPageName("NAV", "DefaultNav");
+            this.gps.currentEventLinkedPageGroup = null;
+        }
+// PM Modif: End CLR button management
     }
 }
 class GPS_FPLWaypointSelection extends NavSystemElement {
@@ -2262,7 +2300,6 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
 // PM Modif: End Prevent removing a waypoint after a clear on waypoint window
     }
     init(_root) {
-        console.log("init");
         this.root = _root;
         this.wpSIdent = this.gps.getChildById("WPSIdent");
         this.wpSRegion = this.gps.getChildById("WPSIdent2");
@@ -2350,6 +2387,9 @@ class GPS_Procedures extends NavSystemElement {
         ];
     }
     onEnter() {
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
         this.initialupdate = true;
         this.gps.ActiveSelection(this.defaultSelectables);
     }
@@ -2366,6 +2406,9 @@ class GPS_Procedures extends NavSystemElement {
 //PM Modif: End Unactivate "Activate Approach" element if not relevant and preset selection
     }
     onExit() {
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
     }
     onEvent(_event) {
     }
@@ -2391,7 +2434,7 @@ class GPS_Procedures extends NavSystemElement {
             this.gps.SwitchToPageName("NAV", "DefaultNav");
         }
 //PM Modif: End Activate and load approach modification
-}
+    }
     selectApproach_CB(_event) {
         if (_event == "ENT_Push") {
             this.gps.SwitchToInteractionState(0);
@@ -2436,14 +2479,22 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
     onEnter(){
         super.onEnter();
         this.gps.cursorIndex = 0;
+// PM Modif: Let cursor to load if no approachs
+        let infos = this.icaoSearchField.getUpdatedInfos();
+        if ((infos == null) || (infos.icao == "") || (!infos.approaches.length)) {
+            this.gps.cursorIndex = 2;
+// PM Modif: End Let cursor to load if no approachs
+        }
     }
 //PM Modif: Activate and load approach modification
 //Auto activation and U-turn bug
     loadApproach(_event) {
         if (_event == "ENT_Push") {
-            this.gps.autoActivateApproach = false;
             let infos = this.icaoSearchField.getUpdatedInfos();
-            if (infos && infos.icao) {
+// PM Modif: bug correction crash if no approach
+            if (infos && infos.icao && infos.approaches.length) {
+                this.gps.autoActivateApproach = false;
+// PM Modif: End bug correction crash if no approach
                 this.gps.currFlightPlanManager.setApproachIndex(this.selectedApproach, () => {
                     let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
                     if (elem) {
@@ -2460,28 +2511,43 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
     }
     activateApproach(_event) {
         if (_event == "ENT_Push") {
-            // We enable auto activation
-            this.gps.autoActivateApproach = true;
-            // Remove waypoints only if we are after the last enroute waypoint
-            let doRemoveWaypoints = false;
-            if (this.gps.currFlightPlanManager.isLoadedApproach()){
-                if(this.gps.currFlightPlanManager.getActiveWaypointIndex() > this.gps.currFlightPlanManager.getLastIndexBeforeApproach()){
+// PM Modif: bug correction crash if no approach
+            let infos = this.icaoSearchField.getUpdatedInfos();
+            if (infos && infos.icao && infos.approaches.length) {
+// PM Modif: End bug correction crash if no approach
+                // We enable auto activation
+                this.gps.autoActivateApproach = true;
+                // Remove waypoints only if we are after the last enroute waypoint
+                let doRemoveWaypoints = false;
+                if (this.gps.currFlightPlanManager.isLoadedApproach()){
+                    if(this.gps.currFlightPlanManager.getActiveWaypointIndex() > this.gps.currFlightPlanManager.getLastIndexBeforeApproach()){
+                        doRemoveWaypoints = true;
+                    }
+                }
+                else if((this.gps.currFlightPlanManager.getActiveWaypointIndex() == -1) || (this.gps.currFlightPlanManager.getActiveWaypointIndex() >= (this.gps.currFlightPlanManager.getWaypointsCount() - 1))){
                     doRemoveWaypoints = true;
                 }
+                // If we are flying a directTo we activate approach in any case
+                if (this.gps.currFlightPlanManager.getIsDirectTo()) {
+                    doRemoveWaypoints = true;
+                }
+                if(doRemoveWaypoints){
+                    this.gps.removeWaypointsBeforeActivateApproach();
+                }
+                super.activateApproach(_event);
+                this.gps.closePopUpElement();
+                this.gps.SwitchToPageName("NAV", "DefaultNav");
             }
-            else if((this.gps.currFlightPlanManager.getActiveWaypointIndex() == -1) || (this.gps.currFlightPlanManager.getActiveWaypointIndex() >= (this.gps.currFlightPlanManager.getWaypointsCount() - 1))){
-                doRemoveWaypoints = true;
+// PM Modif: Go back to the flight plan page
+            else {
+                this.gps.closePopUpElement();
+                // This the way I've found to go to the flight plan page
+                this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
+                this.gps.currentEventLinkedPageGroup = null;
+                this.gps.currFlightPlanManager.index = this.gps.currFlightPlanManager.getLastIndexBeforeApproach();
+                this.gps.computeEvent("FPL_Push");
             }
-            // If we are flying a directTo we activate approach in any case
-            if (this.gps.currFlightPlanManager.getIsDirectTo()) {
-                doRemoveWaypoints = true;
-            }
-            if(doRemoveWaypoints){
-                this.gps.removeWaypointsBeforeActivateApproach();
-            }
-            super.activateApproach(_event);
-            this.gps.closePopUpElement();
-            this.gps.SwitchToPageName("NAV", "DefaultNav");
+// PM Modif: End Go back to the flight plan page
         }
     }
 //PM Modif: End Activate and load approach modification
@@ -2529,7 +2595,9 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
     openTransitionList(_event) {
         if (_event == "ENT_Push" || _event == "NavigationSmallInc" || _event == "NavigationSmallDec") {
             let infos = this.icaoSearchField.getUpdatedInfos();
-            if (infos && infos.icao) {
+// PM Modif: bug correction crash if no approach
+            if (infos && infos.icao && infos.approaches.length) {
+// PM Modif: bug correction crash if no approach
                 let elems = new Array();
                 for (let i = 0; i < infos.approaches[this.selectedApproach].transitions.length; i++) {
                     elems.push(infos.approaches[this.selectedApproach].transitions[i].name);
@@ -2590,8 +2658,18 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
             this.gps.closePopUpElement();
         }
     }
+// PM Modif: Go back to the flight plan page
+    loadArrival(_event) {
+        super.loadArrival(_event);
+        if (_event == "ENT_Push") {
+            // This the way I've found to go to the flight plan page
+            this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
+            this.gps.currentEventLinkedPageGroup = null;
+            this.gps.computeEvent("FPL_Push");
+        }
+    }
+// PM Modif: End Go back to the flight plan page
     arrival_CB(_event, _index) {
-        console.log("arrival");
         if (_event == "ENT_Push") {
             this.selectArrival(_index, _event);
             this.gps.ActiveSelection(this.defaultSelectables);
@@ -2608,7 +2686,6 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
         }
     }
     runway_CB(_event, _index) {
-        console.log("runway");
         if (_event == "ENT_Push") {
             this.selectRunway(_index, _event);
             this.gps.ActiveSelection(this.defaultSelectables);
@@ -2616,7 +2693,6 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
         }
     }
     transition_CB(_event, _index) {
-        console.log("transition");
         if (_event == "ENT_Push") {
             this.selectTransition(_index, _event);
             this.gps.ActiveSelection(this.defaultSelectables);
@@ -2720,18 +2796,39 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
             this.gps.closePopUpElement();
         }
     }
+// PM Modif: Go back to the flight plan page
+    loadDeparture(_event) {
+        super.loadDeparture(_event);
+        if (_event == "ENT_Push") {
+            // This the way I've found to go to the flight plan page
+            this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
+            this.gps.currentEventLinkedPageGroup = null;
+            this.gps.computeEvent("FPL_Push");
+        }
+    }
+// PM Modif: End Go back to the flight plan page
+
     departure_CB(_event, _index) {
         this.selectDeparture(_index, _event);
         if (_event == "ENT_Push") {
             this.gps.ActiveSelection(this.defaultSelectables);
             this.gps.cursorIndex = 1;
-        }
+//PM Modif: Select departure set cursor to next element if no transition nor runway
+            let infos = this.icaoSearchField.getUpdatedInfos();
+            if ((infos == null) || (infos.icao == "") || (infos.departures.length <= this.selectedDeparture) || (infos.departures[this.selectedDeparture].enRouteTransitions.length == 0)) {
+                this.gps.cursorIndex = 2;
+            }
+            if ((infos == null) || (infos.icao == "") || (infos.departures.length <= this.selectedDeparture) || (infos.departures[this.selectedDeparture].runwayTransitions.length == 0)) {
+                this.gps.cursorIndex = 3;
+            }
+//PM Modif: End Select departure set cursor to next element if no transition nor runway
+}
     }
     runway_CB(_event, _index) {
         this.selectRunway(_index, _event);
         if (_event == "ENT_Push") {
             this.gps.ActiveSelection(this.defaultSelectables);
-            this.gps.cursorIndex = 2;
+            this.gps.cursorIndex = 3;
         }
     }
     transition_CB(_event, _index) {
@@ -2739,7 +2836,13 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
         if (_event == "ENT_Push") {
             this.gps.ActiveSelection(this.defaultSelectables);
             this.gps.cursorIndex = 3;
-        }
+//PM Modif: Select departure set cursor to next element if no runway
+            let infos = this.icaoSearchField.getUpdatedInfos();
+            if ((infos == null) || (infos.icao == "") || (infos.departures.length <= this.selectedDeparture) || (infos.departures[this.selectedDeparture].runwayTransitions.length == 0)) {
+                this.gps.cursorIndex = 3;
+            }
+//PM Modif: End Select departure set cursor to next element if no runway
+}
     }
     openDepartureList(_event) {
         if (_event == "ENT_Push" || _event == "NavigationSmallInc" || _event == "NavigationSmallDec") {
@@ -2843,4 +2946,76 @@ class GPS_COMSetup extends NavSystemElement {
         this.gps.SwitchToInteractionState(0);
     }
 }
+
+//PM Modif: Confirmation window
+class GPS_ConfirmationWindow extends NavSystemElement {
+    constructor() {
+        super();
+        this.CurrentText = "Confirm ?";
+        this.CurrentButton1Text = "Yes";
+        this.CurrentButton2Text = "No";
+        this.Result = 0;
+        this.Active = false;
+    }
+    init(root) {
+console.log("Do init");
+        this.window = this.gps.getChildById("ConfirmationWindow");
+        this.text = this.gps.getChildById("CW_Text");
+        this.button1 = this.gps.getChildById("CW_Button1");
+        this.button1Text = this.gps.getChildById("CW_Button1Text");
+        this.button2 = this.gps.getChildById("CW_Button2");
+        this.button2Text = this.gps.getChildById("CW_Button2Text");
+        this.defaultSelectables = [
+            new SelectableElement(this.gps, this.button1, this.button1_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.button2, this.button2_SelectionCallback.bind(this)),
+        ];
+    }
+    onEnter() {
+        this.initialupdate = true;
+        this.Result = 0;
+        this.gps.ActiveSelection(this.defaultSelectables);
+        this.gps.cursorIndex = 0;
+        this.Active = true;
+        this.window.setAttribute("state", "Active");
+    }
+    onUpdate(_deltaTime) {
+        if(this.initialupdate){
+            this.gps.SwitchToInteractionState(1);
+            this.initialupdate = false;
+        }
+        this.defaultSelectables[0].setActive(true);
+        this.text.textContent = this.CurrentText;
+        this.button1Text.textContent = this.CurrentButton1Text;
+        this.button2Text.textContent = this.CurrentButton2Text;
+    }
+    onExit() {
+        this.window.setAttribute("state", "Inactive");
+        this.Active = false;
+    }
+    onEvent(_event) {
+        if (_event == "CLR_Push") {
+            this.Result = 2;
+            this.gps.closePopUpElement();
+        }
+    }
+    button1_SelectionCallback(_event) {
+        if (_event == "ENT_Push") {
+            this.Result = 1;
+            this.gps.closePopUpElement();
+        }
+    }
+    button2_SelectionCallback(_event) {
+        if (_event == "ENT_Push") {
+            this.Result = 2;
+            this.gps.closePopUpElement();
+        }
+    }
+    setTexts(WindowText = "Confirm ?", Button1Txt = "Yes", Button2Text = "No") {
+        this.CurrentText = WindowText;
+        this.CurrentButton1Text = Button1Txt;
+        this.CurrentButton2Text = Button2Text;
+    }
+}
+//PM Modif: End Confirmation window
+
 //# sourceMappingURL=BaseGPS.js.map
