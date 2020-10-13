@@ -17,6 +17,8 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.4
+- Bug in v1.0.3 with the track up mode half working 
 ## V 1.0.3
 - The DirectTo behavior is now nearly similar to that of the native GNS530
 - Adding toggle of map orientation in map menu (North up or Track up)
