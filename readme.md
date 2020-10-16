@@ -17,6 +17,11 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.5
+- Fixing the conflict when using 2 or more GPS in an aircraft
+- Works now with Cessna 172
+- Some small enhancements and bug corrections
+- Modified GNS430 now included 
 ## V 1.0.4
 - Bug in v1.0.3 with the track up mode half working 
 ## V 1.0.3
