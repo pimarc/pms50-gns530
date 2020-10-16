@@ -46,7 +46,11 @@ class BaseGPS extends NavSystem {
         this.confirmWindow = new NavSystemElementContainer("ConfirmationWindow", "ConfirmationWindow", new GPS_ConfirmationWindow());
         this.confirmWindow.setGPS(this);
 //PM Modif: End Confirmation window
-    }
+//PM Modif: Alert window
+        this.alertWindow = new NavSystemElementContainer("AlertWindow", "AlertWindow", new GPS_AlertWindow());
+        this.alertWindow.setGPS(this);
+//PM Modif: End Alert window
+}
     parseXMLConfig() {
         super.parseXMLConfig();
         if (this.instrumentXmlConfig) {
@@ -189,27 +193,35 @@ class BaseGPS extends NavSystem {
         this.menuTitle.textContent = this.getCurrentPageGroup().name;
     }
 //PM Modif: Confirmation window
-    closeConfirmWindow() {
-        if(this.confirmWindow.element.Active) {
-            this.closePopUpElement();
-        }
+closeConfirmWindow() {
+    if(this.confirmWindow.element.Active) {
+        this.closePopUpElement();
     }
+}
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+closeAlertWindow() {
+    if(this.alertWindow.element.Active) {
+        this.closePopUpElement();
+    }
+}
+//PM Modif: End Alert window
 
 //PM Modif: Activate approach modification
     // This is to avoid the U-turn bug
     // We remove the enroute waypoints before activating approach
     // If we are after the last enroute waypoint
-    activateApproach() {
-        console.log(this.currFlightPlanManager.getActiveWaypointIndex());
-        console.log(this.currFlightPlanManager.getLastIndexBeforeApproach());
+    activateApproach(callback = EmptyCallback.Void) {
+        if(this.currFlightPlanManager.getIsDirectTo()){
+            this.currFlightPlanManager.cancelDirectTo();
+        }
         if ((this.currFlightPlanManager.getActiveWaypointIndex() != -1) && (this.currFlightPlanManager.getActiveWaypointIndex() <= this.currFlightPlanManager.getLastIndexBeforeApproach())) {
             Coherent.call("DEACTIVATE_APPROACH").then(() => {
                 Coherent.call("ACTIVATE_APPROACH");
             });
         }
         else {
-            let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
+            let removeWaypointForApproachMethod = (callback_here = EmptyCallback.Void) => {
                 let i = 1;
                 let destinationIndex = this.currFlightPlanManager.getWaypoints().findIndex(w => {
                     return w.icao === this.currFlightPlanManager.getDestination().icao;
@@ -218,11 +230,11 @@ class BaseGPS extends NavSystem {
                 if (i < destinationIndex) {
                     this.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
                         //i++;
-                        removeWaypointForApproachMethod(callback);
+                        removeWaypointForApproachMethod(callback_here);
                     });
                 }
                 else {
-                    callback();
+                    callback_here();
                 }
             };
 
@@ -241,6 +253,7 @@ class BaseGPS extends NavSystem {
 //                this.currFlightPlanManager.activateApproach();
             });
         }
+        callback();
     }
     //PM Modif: End Activate approach modification
 
@@ -1885,6 +1898,9 @@ class GPS_DirectTo extends NavSystemElement {
 //PM Modif: Confirmation window
         this.gps.closeConfirmWindow();
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
         this.currentFPLWpSelected = 0;
         this.gps.currFlightPlan.FillWithCurrentFP();
         if (this.gps.lastRelevantICAO) {
@@ -1941,6 +1957,9 @@ class GPS_DirectTo extends NavSystemElement {
 //PM Modif: Confirmation window
         this.gps.closeConfirmWindow();
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
 //PM Modif: DirectoTO Set active selection to waypoint on enter
         this.initialUpdate = true;
 //PM Modif: End DirectoTO Set active selection to waypoint on enter
@@ -2156,12 +2175,18 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
 //PM Modif: Confirmation window
         this.gps.closeConfirmWindow();
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
     }
 //PM Modif: DirectTo flight plan's selected waypoint
     onExit() {
 //PM Modif: Confirmation window
         this.gps.closeConfirmWindow();
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
         if (this.gps.currentInteractionState == 1 && this.lines[this.fplSelectable.getIndex()].waypoint) {
             let infos = this.lines[this.fplSelectable.getIndex()].waypoint.GetInfos();                
             this.gps.lastRelevantICAO = infos.icao;
@@ -2180,20 +2205,47 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
     }
 //PM Modif: Activate leg approach
     activateLegFromMenu() {
-        this.activateLeg(this.lines[this.fplSelectable.getIndex()].getIndex());
+        let infos = this.lines[this.fplSelectable.getIndex()].waypoint.GetInfos();
+        this.activateLeg(this.lines[this.fplSelectable.getIndex()].getIndex(), infos.icao);
         this.gps.SwitchToInteractionState(0);
     }
-    activateLeg(_index, _approach = false) {
-        if (_approach) {
+    activateLeg(_index, _icao) {
+        // Check if the requested index is an approach index
+        let is_approach_index = false;
+        if (this.gps.currFlightPlanManager.isLoadedApproach() && _index < this.gps.currFlightPlanManager.getApproachWaypoints().length){
             let icao = this.gps.currFlightPlanManager.getApproachWaypoints()[_index].icao;
-            this.gps.currFlightPlanManager.activateApproach(() => {
-                let index = this.gps.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === icao; });
-                this.gps.currFlightPlanManager.setActiveWaypointIndex(index);
-            });
+            if(icao == _icao){
+                is_approach_index = true;                
+            }
         }
-        else {
-            this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
+        if(is_approach_index){
+            if(!this.gps.currFlightPlanManager.isActiveApproach()){
+                this.gps.alertWindow.element.setTexts("Activate approach first", "Ok");
+                this.gps.switchToPopUpPage(this.gps.alertWindow, () => {
+                    this.gps.SwitchToInteractionState(1);
+                });
+                return;
+            }
         }
+        else{
+            // Activating a leg outside the approach deactive it
+            if(this.gps.currFlightPlanManager.isActiveApproach()){
+                Coherent.call("DEACTIVATE_APPROACH").then(() => {
+                    // Do nothing
+                });
+            }
+        }
+        this.gps.confirmWindow.element.setTexts("Confirm activate leg ?");
+        this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+            if (this.gps.confirmWindow.element.Result == 1) {
+                // Remove any direct to before activating leg
+                if(this.gps.currFlightPlanManager.getIsDirectTo()){
+                    this.gps.currFlightPlanManager.cancelDirectTo();
+                }
+                this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
+                }
+        });
+
     }
     isCurrentlySelectedNotALeg() {
         return this.lines[this.fplSelectable.getIndex()].getType() == MFD_WaypointType.empty;
@@ -2312,6 +2364,9 @@ class GPS_Messages extends NavSystemElement {
 //PM Modif: Confirmation window
         this.gps.closeConfirmWindow();
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
     }
     onUpdate(_deltaTime) {
         var html = "";
@@ -2321,6 +2376,9 @@ class GPS_Messages extends NavSystemElement {
 //PM Modif: Confirmation window
         this.gps.closeConfirmWindow();
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
     }
     onEvent(_event) {
 // PM Modif: CLR button management
@@ -2431,6 +2489,9 @@ class GPS_Procedures extends NavSystemElement {
 //PM Modif: Confirmation window
         this.gps.closeConfirmWindow();
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
         this.initialupdate = true;
         this.gps.ActiveSelection(this.defaultSelectables);
     }
@@ -2450,6 +2511,9 @@ class GPS_Procedures extends NavSystemElement {
 //PM Modif: Confirmation window
         this.gps.closeConfirmWindow();
 //PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
     }
     onEvent(_event) {
     }
@@ -2560,7 +2624,6 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
                 // This the way I've found to go to the flight plan page
                 this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
                 this.gps.currentEventLinkedPageGroup = null;
-                this.gps.currFlightPlanManager.index = this.gps.currFlightPlanManager.getLastIndexBeforeApproach();
                 this.gps.computeEvent("FPL_Push");
             }
 // PM Modif: End Go back to the flight plan page
@@ -2975,11 +3038,11 @@ class GPS_ConfirmationWindow extends NavSystemElement {
     }
     init(root) {
         this.window = this.gps.getChildById("ConfirmationWindow");
-        this.text = this.gps.getChildById("CW_Text");
-        this.button1 = this.gps.getChildById("CW_Button1");
-        this.button1Text = this.gps.getChildById("CW_Button1Text");
-        this.button2 = this.gps.getChildById("CW_Button2");
-        this.button2Text = this.gps.getChildById("CW_Button2Text");
+        this.text = this.gps.getChildById("CW_ConfirmationWindowText");
+        this.button1 = this.gps.getChildById("CW_ConfirmationWindowButton1");
+        this.button1Text = this.gps.getChildById("CW_ConfirmationWindowButton1Text");
+        this.button2 = this.gps.getChildById("CW_ConfirmationWindowButton2");
+        this.button2Text = this.gps.getChildById("CW_ConfirmationWindowButton2Text");
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.button1, this.button1_SelectionCallback.bind(this)),
             new SelectableElement(this.gps, this.button2, this.button2_SelectionCallback.bind(this)),
@@ -3032,5 +3095,60 @@ class GPS_ConfirmationWindow extends NavSystemElement {
     }
 }
 //PM Modif: End Confirmation window
+
+//PM Modif: Alert window
+class GPS_AlertWindow extends NavSystemElement {
+    constructor() {
+        super();
+        this.CurrentText = "Alert";
+        this.CurrentButtonText = "Ok";
+        this.Active = false;
+    }
+    init(root) {
+        this.window = this.gps.getChildById("AlertWindow");
+        this.text = this.gps.getChildById("CW_AlertWindowText");
+        this.button = this.gps.getChildById("CW_AlertWindowButton");
+        this.buttonText = this.gps.getChildById("CW_AlertWindowButtonText");
+        this.defaultSelectables = [
+            new SelectableElement(this.gps, this.button, this.button_SelectionCallback.bind(this)),
+        ];
+    }
+    onEnter() {
+        this.initialupdate = true;
+        this.gps.ActiveSelection(this.defaultSelectables);
+        this.gps.cursorIndex = 0;
+        this.Active = true;
+        this.window.setAttribute("state", "Active");
+    }
+    onUpdate(_deltaTime) {
+        if(this.initialupdate){
+            this.gps.SwitchToInteractionState(1);
+            this.initialupdate = false;
+        }
+        this.defaultSelectables[0].setActive(true);
+        this.text.textContent = this.CurrentText;
+        this.buttonText.textContent = this.CurrentButtonText;
+    }
+    onExit() {
+        this.window.setAttribute("state", "Inactive");
+        this.Active = false;
+    }
+    onEvent(_event) {
+        if (_event == "CLR_Push") {
+            this.gps.closePopUpElement();
+        }
+    }
+    button_SelectionCallback(_event) {
+        if (_event == "ENT_Push") {
+            this.gps.closePopUpElement();
+        }
+    }
+    setTexts(WindowText = "Alert", ButtonTxt = "Ok") {
+        this.CurrentText = WindowText;
+        this.CurrentButtonText = ButtonTxt;
+    }
+}
+//PM Modif: End Alert window
+
 
 //# sourceMappingURL=BaseGPS.js.map

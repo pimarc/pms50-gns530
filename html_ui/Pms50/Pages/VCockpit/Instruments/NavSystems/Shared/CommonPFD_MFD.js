@@ -1556,6 +1556,7 @@ class MFD_DepartureLine extends MFD_FlightPlanLine {
         switch (_event) {
             case "CLR":
             case "CLR_Push":
+//PM Modif: Add confirmation window
                 this.element.gps.confirmWindow.element.setTexts("Remove Departure ?");
                 this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
                     if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getDeparture() != null)) {
@@ -1566,6 +1567,7 @@ class MFD_DepartureLine extends MFD_FlightPlanLine {
                 break;
         }
         return false;
+//PM Modif: End Add confirmation window
     }
 }
 class MFD_ArrivalLine extends MFD_FlightPlanLine {
@@ -1581,6 +1583,7 @@ class MFD_ArrivalLine extends MFD_FlightPlanLine {
         switch (_event) {
             case "CLR":
             case "CLR_Push":
+//PM Modif: Add confirmation window
                 this.element.gps.confirmWindow.element.setTexts("Remove Arrival ?");
                 this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
                     if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getArrival() != null)) {
@@ -1592,6 +1595,7 @@ class MFD_ArrivalLine extends MFD_FlightPlanLine {
         }
         return false;
     }
+//PM Modif: End Add confirmation window
 }
 class MFD_ApproachLine extends MFD_FlightPlanLine {
     constructor(_name, _element) {
@@ -1606,6 +1610,7 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
         switch (_event) {
             case "CLR":
             case "CLR_Push":
+//PM Modif: Add confirmation window
                 this.element.gps.confirmWindow.element.setTexts("Remove Approach ?");
                 this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
                     if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getApproach() != null)) {
@@ -1617,6 +1622,7 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
         }
         return false;
     }
+//PM Modif: End Add confirmation window
 }
 class MFD_EnrouteLine extends MFD_FlightPlanLine {
     getString() {

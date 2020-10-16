@@ -286,6 +286,7 @@ as530-element {
             left: 25%;
             vertical-align: top;
             height: 10%; }
+/* PM Modif: Range display */
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range {
             position: absolute;
             background-color: black;
@@ -303,6 +304,7 @@ as530-element {
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range #MapDeclutterLevel{
               position: relative;
               left: -1vh;}
+/* PM Modif: End Range display */
         as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParams {
           background-color: black;
           border: calc(0.4273504274vh) solid #6ecdee; }
@@ -577,8 +579,8 @@ as530-element {
           margin-left: 2.5%;
           line-height: 15vh; }
 /*PM Modif: The greyed status was missing for procedure menu*/
-        as530-element #Electricity #TopDisplay #GpsPart #Procedures [state="Inactive"], #Electricity #TopDisplay #GpsPart #Procedures [state="Greyed"] {
-          color: grey; }
+          as530-element #Electricity #TopDisplay #GpsPart #Procedures [state="Inactive"], #Electricity #TopDisplay #GpsPart #Procedures [state="Greyed"] {
+            color: grey; }
 /*PM Modif: End The greyed status was missing for procedure menu*/
         as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection {
           position: absolute;
@@ -1116,8 +1118,8 @@ as530-element {
               background-color: #6ecdee; }
         as530-element #Electricity #TopDisplay #GpsPart .PopupWindow[state=Inactive] {
           display: none; }
-/*PM Modif: Confirmation window*/
-        as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow {
+/*PM Modif: Confirmation and alert window*/
+        as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow, as530-element #Electricity #TopDisplay #GpsPart #AlertWindow {
           z-index: 11;
           display: flex;
           flex-direction: column;
@@ -1125,26 +1127,26 @@ as530-element {
           position: absolute;
           height: 30%;
           top: 35%;
-          width: 50%;
+          width: 60%;
           left: 25%;
           color: white;
           background-color: #11118c;
           text-align: center;
           font-size: 5vh;
           border: 0.4vh solid white; }
-          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow #ButtonGroup {
+          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow #ButtonGroup, as530-element #Electricity #TopDisplay #GpsPart #AlertWindow #ButtonGroup {
             display:flex;
             justify-content: space-around; }
-          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow[state=Inactive] {
+          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow[state=Inactive], as530-element #Electricity #TopDisplay #GpsPart #AlertWindow[state=Inactive] {
               visibility: hidden; }
-          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow[state=Active] {
+          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow[state=Active], as530-element #Electricity #TopDisplay #GpsPart #AlertWindow[state=Active] {
             visibility: inherit; }
-          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow #CW_Text {
+          as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow #CW_ConfirmationWindowText, as530-element #Electricity #TopDisplay #GpsPart #AlertWindow #CW_AlertWindowText {
             text-align: center;}
-          as530-element #Electricity #ConfirmationWindow  .gradientButton[state=Selected] {
+          as530-element #Electricity #ConfirmationWindow  .gradientButton[state=Selected], as530-element #Electricity #AlertWindow  .gradientButton[state=Selected] {
             color: #11118c;
             background-color: #6ecdee; }
-/*PM Modif: End Confirmation window*/
+/*PM Modif: End Confirmation and alert window*/
       as530-element #Electricity #BotDisplay {
         height: 10%;
         width: 100%;
