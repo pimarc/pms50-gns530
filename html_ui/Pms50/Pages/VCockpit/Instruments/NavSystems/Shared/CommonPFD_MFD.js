@@ -1610,8 +1610,6 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
                 this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
                     if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getApproach() != null)) {
                         this.element.gps.currFlightPlanManager.setApproachIndex(-1);
-                        // We disable auto activation
-                        this.element.gps.autoActivateApproach = false;
                     }
                     this.element.gps.SwitchToInteractionState(0);
                 });

@@ -195,6 +195,55 @@ class BaseGPS extends NavSystem {
         }
     }
 //PM Modif: End Confirmation window
+
+//PM Modif: Activate approach modification
+    // This is to avoid the U-turn bug
+    // We remove the enroute waypoints before activating approach
+    // If we are after the last enroute waypoint
+    activateApproach() {
+        console.log(this.currFlightPlanManager.getActiveWaypointIndex());
+        console.log(this.currFlightPlanManager.getLastIndexBeforeApproach());
+        if ((this.currFlightPlanManager.getActiveWaypointIndex() != -1) && (this.currFlightPlanManager.getActiveWaypointIndex() <= this.currFlightPlanManager.getLastIndexBeforeApproach())) {
+            Coherent.call("DEACTIVATE_APPROACH").then(() => {
+                Coherent.call("ACTIVATE_APPROACH");
+            });
+        }
+        else {
+            let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
+                let i = 1;
+                let destinationIndex = this.currFlightPlanManager.getWaypoints().findIndex(w => {
+                    return w.icao === this.currFlightPlanManager.getDestination().icao;
+                });
+
+                if (i < destinationIndex) {
+                    this.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
+                        //i++;
+                        removeWaypointForApproachMethod(callback);
+                    });
+                }
+                else {
+                    callback();
+                }
+            };
+
+            removeWaypointForApproachMethod(() => {
+                Coherent.call("DEACTIVATE_APPROACH").then(() => {
+                    Coherent.call("ACTIVATE_APPROACH");
+                });
+/*                this.currFlightPlanManager.activateApproach((function(){
+                    if(this.currFlightPlanManager.isActiveApproach()){
+                        console.log("Approach activated");
+                    }
+                    else{
+                        console.log("Approach not activated");
+                    }
+                }).bind(this));*/
+//                this.currFlightPlanManager.activateApproach();
+            });
+        }
+    }
+    //PM Modif: End Activate approach modification
+
 }
 class GPS_DefaultNavPage extends NavSystemPage {
     constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7]) {
@@ -1157,8 +1206,6 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
 //        SimVar.SetSimVarValue("C:fs9gps:FlightPlanLoadApproach", "number", 1);
 //        this.gps.currFlightPlan.FillWithCurrentFP();
 
-        // We disable auto activation
-        this.gps.autoActivateApproach = false;
         // Do load approach
         let infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao) {
@@ -1184,22 +1231,6 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
 //        SimVar.SetSimVarValue("C:fs9gps:FlightPlanLoadApproach", "number", 2);
 //        this.gps.currFlightPlan.FillWithCurrentFP();
 
-        // We enable auto activation
-        this.gps.autoActivateApproach = true;
-        // Remove waypoints only if we are after the last enroute waypoint
-        let doRemoveWaypoints = false;
-        if (this.gps.currFlightPlanManager.isLoadedApproach()){
-            if(this.gps.currFlightPlanManager.getActiveWaypointIndex() > this.gps.currFlightPlanManager.getLastIndexBeforeApproach()){
-                doRemoveWaypoints = true;
-            }
-        }
-        else if((this.gps.currFlightPlanManager.getActiveWaypointIndex() == -1) || (this.gps.currFlightPlanManager.getActiveWaypointIndex() >= (this.gps.currFlightPlanManager.getWaypointsCount() - 1))){
-            doRemoveWaypoints = true;
-        }
-        if(doRemoveWaypoints){
-            this.gps.removeWaypointsBeforeActivateApproach();
-        }
-
         // Do activate approach
         let infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao) {
@@ -1209,7 +1240,7 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
                     elem.updateWaypoints();
                 }
             }, this.selectedTransition);
-            this.gps.currFlightPlanManager.activateApproach();
+            this.gps.activateApproach();
             this.gps.closePopUpElement();
         }
         
@@ -2031,9 +2062,6 @@ class GPS_DirectTo extends NavSystemElement {
 
 
         if (_event == "ENT_Push") {
-//PM Modif: DirecTO release approach mode so we must disable auto activate approach in order to not reactive it
-            this.gps.autoActivateApproach = false; 
-//PM Modif: End DirecTO release approach mode
 
 //PM Modif: DirecTO bug correction when direct to an airport
 // FS2020 removes the origin airport (first flight plan index)
@@ -2219,8 +2247,6 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
             if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getApproach() != null)) {
                 this.gps.currFlightPlanManager.setApproachIndex(-1);
-                // We disable auto activation
-                this.gps.autoActivateApproach = false;
             }
             this.gps.SwitchToInteractionState(0);
         });
@@ -2415,7 +2441,7 @@ class GPS_Procedures extends NavSystemElement {
             this.initialupdate = false;
         }
         this.defaultSelectables[0].setActive(true);
-        if (!this.gps.currFlightPlanManager.isLoadedApproach() || this.gps.currFlightPlanManager.isActiveApproach() || this.gps.autoActivateApproach) {
+        if (!this.gps.currFlightPlanManager.isLoadedApproach() || this.gps.currFlightPlanManager.isActiveApproach()) {
             this.defaultSelectables[0].setActive(false);
         }
 //PM Modif: End Unactivate "Activate Approach" element if not relevant and preset selection
@@ -2430,26 +2456,13 @@ class GPS_Procedures extends NavSystemElement {
     activateVTF_CB(_event) {
     }
     activateApproach_CB(_event) {
-//PM Modif: Activate and load approach modification
-//Auto activation and U-turn bug
         if (_event == "ENT_Push") {
-            this.gps.SwitchToInteractionState(0);
-            if (this.gps.currFlightPlanManager.isLoadedApproach() && !this.gps.currFlightPlanManager.isActiveApproach() && (this.gps.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.gps.currFlightPlanManager.getActiveWaypointIndex() > this.gps.currFlightPlanManager.getLastIndexBeforeApproach()))) {
-                this.gps.removeWaypointsBeforeActivateApproach();
-            }
-            // We enable auto activation
-            this.gps.autoActivateApproach = true;
-            // Auto activation will do the job at the end of the last enroute point
-            // Except if we are flying a directTo
-            if (this.gps.currFlightPlanManager.getIsDirectTo()) {
-                this.gps.removeWaypointsBeforeActivateApproach();
-                this.gps.currFlightPlanManager.activateApproach();
-            }
+            this.gps.activateApproach();
             this.gps.closePopUpElement();
             this.gps.SwitchToPageName("NAV", "DefaultNav");
         }
-//PM Modif: End Activate and load approach modification
     }
+
     selectApproach_CB(_event) {
         if (_event == "ENT_Push") {
             this.gps.SwitchToInteractionState(0);
@@ -2508,7 +2521,6 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
             let infos = this.icaoSearchField.getUpdatedInfos();
 // PM Modif: bug correction crash if no approach
             if (infos && infos.icao && infos.approaches.length) {
-                this.gps.autoActivateApproach = false;
 // PM Modif: End bug correction crash if no approach
                 this.gps.currFlightPlanManager.setApproachIndex(this.selectedApproach, () => {
                     let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
@@ -2530,26 +2542,15 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
             let infos = this.icaoSearchField.getUpdatedInfos();
             if (infos && infos.icao && infos.approaches.length) {
 // PM Modif: End bug correction crash if no approach
-                // We enable auto activation
-                this.gps.autoActivateApproach = true;
-                // Remove waypoints only if we are after the last enroute waypoint
-                let doRemoveWaypoints = false;
-                if (this.gps.currFlightPlanManager.isLoadedApproach()){
-                    if(this.gps.currFlightPlanManager.getActiveWaypointIndex() > this.gps.currFlightPlanManager.getLastIndexBeforeApproach()){
-                        doRemoveWaypoints = true;
+                // Remove all enroute waypoints when activating an approach (U-turn bug)
+                this.gps.currFlightPlanManager.setApproachIndex(this.selectedApproach, () => {
+                    let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                    if (elem) {
+                        elem.updateWaypoints();
                     }
-                }
-                else if((this.gps.currFlightPlanManager.getActiveWaypointIndex() == -1) || (this.gps.currFlightPlanManager.getActiveWaypointIndex() >= (this.gps.currFlightPlanManager.getWaypointsCount() - 1))){
-                    doRemoveWaypoints = true;
-                }
-                // If we are flying a directTo we activate approach in any case
-                if (this.gps.currFlightPlanManager.getIsDirectTo()) {
-                    doRemoveWaypoints = true;
-                }
-                if(doRemoveWaypoints){
-                    this.gps.removeWaypointsBeforeActivateApproach();
-                }
-                super.activateApproach(_event);
+                }, this.selectedTransition);
+                // In some rare cases the approach is not activated. Don't know why.
+                this.gps.activateApproach();
                 this.gps.closePopUpElement();
                 this.gps.SwitchToPageName("NAV", "DefaultNav");
             }

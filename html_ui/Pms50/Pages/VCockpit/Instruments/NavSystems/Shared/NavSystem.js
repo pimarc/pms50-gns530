@@ -33,9 +33,6 @@ class NavSystem extends BaseInstrument {
         this.initAcknowledged = true;
         this.reversionaryMode = false;
         this.alwaysUpdateList = new Array();
-//PM Modif: Auto Activate modification
-        this.autoActivateApproach = true;
-//PM Modif: End Auto Activate modification
     }
     get instrumentAlias() { return null; }
     connectedCallback() {
@@ -328,11 +325,9 @@ class NavSystem extends BaseInstrument {
         super.Update();
         if (this.currFlightPlanManager.isLoadedApproach() && !this.currFlightPlanManager.isActiveApproach() && (this.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.currFlightPlanManager.getActiveWaypointIndex() > this.currFlightPlanManager.getLastIndexBeforeApproach()))) {
             if (SimVar.GetSimVarValue("L:FMC_FLIGHT_PLAN_IS_TEMPORARY", "number") != 1) {
-//PM Modif: Auto Activate modification
-                if(this.autoActivateApproach) {
-//PM Modif: End Auto Activate modification
-                    this.currFlightPlanManager.tryAutoActivateApproach();
-                }
+//PM Modif: Auto Activateremoval
+//                    this.currFlightPlanManager.tryAutoActivateApproach();
+//PM Modif: End Auto Activate removal
             }
         }
         if (this.CanUpdate()) {
@@ -474,31 +469,6 @@ class NavSystem extends BaseInstrument {
     }
     onUpdate(_deltaTime) {
     }
-//PM Modif: Activate and load approach modification
-    // This is to avoid the U-turn bug
-    removeWaypointsBeforeActivateApproach() {
-            // Remove waypoints only if we are after the last enroute waypoint
-        let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
-            let i = 1;
-            let destinationIndex = this.currFlightPlanManager.getWaypoints().findIndex(w => {
-                return w.icao === this.currFlightPlanManager.getDestination().icao;
-            });
-
-            if (i < destinationIndex) {
-                this.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
-                    //i++;
-                    removeWaypointForApproachMethod(callback);
-                });
-            }
-            else {
-                callback();
-            }
-        };
-
-        removeWaypointForApproachMethod(() => {
-        });
-    }
-//PM Modif: End Activate and load approach modification
     GetComActiveFreq() {
         return this.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), 3);
     }
