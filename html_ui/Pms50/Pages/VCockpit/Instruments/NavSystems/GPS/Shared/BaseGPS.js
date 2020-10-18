@@ -50,7 +50,11 @@ class BaseGPS extends NavSystem {
         this.alertWindow = new NavSystemElementContainer("AlertWindow", "AlertWindow", new GPS_AlertWindow());
         this.alertWindow.setGPS(this);
 //PM Modif: End Alert window
-}
+//PM Modif: Using four levels of declutter as in the original GNS530
+        this.declutterLevelIndex = 0;
+        this.declutterLevels = [0, 0, 2, 4];
+//PM Modif: End Using four levels of declutter as in the original GNS530
+    }
     parseXMLConfig() {
         super.parseXMLConfig();
         if (this.instrumentXmlConfig) {
@@ -107,15 +111,16 @@ class BaseGPS extends NavSystem {
             this.currentEventLinkedPageGroup = null;
         }
         if (_event == "CLR_Push") {
+//PM Modif: Using four levels of declutter as in the original GNS530
             let map = this.getChildById("MapInstrument");
             if (map) {
-                map.declutterLevel+=2;
-//PM Modif: Using four levels of declutter as in the original GNS530
-                if (map.declutterLevel > 6) {
-//PM Modif: Using four levels of declutter as in the original GNS530
-                    map.declutterLevel = 0;
+                this.declutterLevelIndex ++;
+                if (this.declutterLevelIndex >= this.declutterLevels.length) {
+                    this.declutterLevelIndex = 0;
                 }
+                map.declutterLevel=this.declutterLevels[this.declutterLevelIndex];
             }
+//PM Modif: End Using four levels of declutter as in the original GNS530
         }
         if (_event == "COMSWAP_Push") {
             SimVar.SetSimVarValue("K:COM" + (this.comIndex == 1 ? "_STBY" : this.comIndex) + "_RADIO_SWAP", "boolean", 0);
@@ -191,20 +196,35 @@ class BaseGPS extends NavSystem {
         }
         this.pagePos.innerHTML = pagesMenu;
         this.menuTitle.textContent = this.getCurrentPageGroup().name;
+ //PM Modif: Using four levels of declutter as in the original GNS530
+        let map = this.getChildById("MapInstrument");
+        if (map) {
+            if(this.declutterLevelIndex || map.getDisplayRange() > 50) {
+                map.roadNetwork.setVisible(false);
+                map.showAirspaces = false;
+                map.showRoads  = false;
+            }
+            else {
+                map.showAirspaces = true;
+                map.showRoads  = true;
+                map.roadNetwork.setVisible(true);
+            }
+        }
+//PM Modif: End Using four levels of declutter as in the original GNS530
     }
 //PM Modif: Confirmation window
-closeConfirmWindow() {
-    if(this.confirmWindow.element.Active) {
-        this.closePopUpElement();
+    closeConfirmWindow() {
+        if(this.confirmWindow.element.Active) {
+            this.closePopUpElement();
+        }
     }
-}
 //PM Modif: End Confirmation window
 //PM Modif: Alert window
-closeAlertWindow() {
-    if(this.alertWindow.element.Active) {
-        this.closePopUpElement();
+    closeAlertWindow() {
+        if(this.alertWindow.element.Active) {
+            this.closePopUpElement();
+        }
     }
-}
 //PM Modif: End Alert window
 
 //PM Modif: Activate approach modification
@@ -255,7 +275,7 @@ closeAlertWindow() {
         }
         callback();
     }
-    //PM Modif: End Activate approach modification
+//PM Modif: End Activate approach modification
 
 }
 class GPS_DefaultNavPage extends NavSystemPage {
@@ -1591,7 +1611,7 @@ class GPS_NearestAirports extends NavSystemElement {
                 logo = "Private_Airfield.png";
             }
             firstLine += '<td class="SelectableElement">' + this.nearestAirportList.airports[i].ident + '</td>';
-//PM Modif: Flicking sceen for nearest airports
+//PM Modif: Flicking screen for nearest airports
 // The reason is the missing of airport logo files so we created them
             firstLine += '<td><img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/' + logo + '" class="imgSizeM"/> </td>';
 //PM Modif: End Flicking sceen for nearest airports
@@ -2071,15 +2091,6 @@ class GPS_DirectTo extends NavSystemElement {
 //PM Modif: End Adding approach points for directTo
     }
     activateButton_SelectionCallback(_event) {
-
-
-//        let destination = this.getDestination();
-//        if (destination) {
-//            let destinationInfos = destination.infos;
-//            if (destinationInfos instanceof AirportInfo) {
-
-
-
         if (_event == "ENT_Push") {
 
 //PM Modif: DirecTO bug correction when direct to an airport
@@ -2410,8 +2421,10 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
         this.duplicateWaypoints = new NavSystemElementContainer("Duplicate Waypoints", "DuplicateWaypointWindow", new MFD_DuplicateWaypoint());
         this.duplicateWaypoints.setGPS(this.gps);
         this.duplicateWaypoints.element.icaoSearchField = this.waypointSelectionSearchField;
+// PM Modif: Prevent removing a waypoint after a clear on waypoint window
         this.preventRemove = false;
-}
+// PM Modif: End Prevent removing a waypoint after a clear on waypoint window
+    }
     onEnter() {
 // PM Modif: Prevent removing a waypoint after a clear on waypoint window
         this.preventRemove = false;
@@ -2520,28 +2533,36 @@ class GPS_Procedures extends NavSystemElement {
     activateVTF_CB(_event) {
     }
     activateApproach_CB(_event) {
-        if (_event == "ENT_Push") {
+//PM Modif: Activate approach
+    if (_event == "ENT_Push") {
             this.gps.activateApproach();
             this.gps.closePopUpElement();
             this.gps.SwitchToPageName("NAV", "DefaultNav");
         }
+//PM Modif: End Activate approach
     }
 
     selectApproach_CB(_event) {
         if (_event == "ENT_Push") {
+//PM Modif: Select approach
             this.gps.SwitchToInteractionState(0);
-            this.gps.switchToPopUpPage(this.gps.selectApproachPage);
+//PM Modif: End Select approach
+        this.gps.switchToPopUpPage(this.gps.selectApproachPage);
         }
     }
     selectArrival_CB(_event) {
         if (_event == "ENT_Push") {
+//PM Modif: Select arrival
             this.gps.SwitchToInteractionState(0);
+//PM Modif: End Select arrival
             this.gps.switchToPopUpPage(this.gps.selectArrivalPage);
         }
     }
     selectDeparture_CB(_event) {
         if (_event == "ENT_Push") {
+//PM Modif: Select departure
             this.gps.SwitchToInteractionState(0);
+//PM Modif: End Select departure
             this.gps.switchToPopUpPage(this.gps.selectDeparturePage);
         }
     }
@@ -2568,18 +2589,18 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
         ], this.transitionList.getElementsByClassName("Slider")[0], this.transitionList.getElementsByClassName("SliderCursor")[0]);
         this.transitionSelectables = [this.transitionSelectionGroup];
     }
+// PM Modif: Let cursor to load if no approachs
     onEnter(){
         super.onEnter();
         this.gps.cursorIndex = 0;
-// PM Modif: Let cursor to load if no approachs
         let infos = this.icaoSearchField.getUpdatedInfos();
         if ((infos == null) || (infos.icao == "") || (!infos.approaches.length)) {
             this.gps.cursorIndex = 2;
-// PM Modif: End Let cursor to load if no approachs
         }
     }
-//PM Modif: Activate and load approach modification
-//Auto activation and U-turn bug
+// PM Modif: End Let cursor to load if no approachs
+// PM Modif: Activate and load approach modification
+// Auto activation and U-turn bug
     loadApproach(_event) {
         if (_event == "ENT_Push") {
             let infos = this.icaoSearchField.getUpdatedInfos();
@@ -2768,15 +2789,17 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
         if (_event == "ENT_Push") {
             this.selectRunway(_index, _event);
             this.gps.ActiveSelection(this.defaultSelectables);
+//PM Modif: Select arrival set cursor to next element
             this.gps.cursorIndex = 3;
+//PM Modif: End Select arrival set cursor to next element
         }
     }
     transition_CB(_event, _index) {
         if (_event == "ENT_Push") {
             this.selectTransition(_index, _event);
             this.gps.ActiveSelection(this.defaultSelectables);
-            this.gps.cursorIndex = 2;
 //PM Modif: Select arrival set cursor to next element if no runway
+            this.gps.cursorIndex = 2;
             let infos = this.icaoSearchField.getUpdatedInfos();
             if ((infos == null) || (infos.icao == "") || (infos.arrivals.length <= this.selectedArrival) || (infos.arrivals[this.selectedArrival].runwayTransitions.length == 0)) {
                 this.gps.cursorIndex = 3;
@@ -2907,7 +2930,9 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
         this.selectRunway(_index, _event);
         if (_event == "ENT_Push") {
             this.gps.ActiveSelection(this.defaultSelectables);
+//PM Modif: Select departure set cursor to next element
             this.gps.cursorIndex = 3;
+//PM Modif: End Select departure set cursor to next element
         }
     }
     transition_CB(_event, _index) {

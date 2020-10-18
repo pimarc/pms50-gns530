@@ -17,6 +17,9 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.6
+- First declutter level hides roads and airspaces
+- DME distance correctly rounded
 ## V 1.0.5
 - Fixing the conflict when using 2 or more GPS in an aircraft
 - Works now with Cessna 172
@@ -57,13 +60,11 @@ If you choose an approach and just load it, it's then added to the flight plan b
 
 Activating
 
-If you activate the approach before the last enroute waypoint, the autopilot continues following the route and automatically activates the approach after the last enroute waypoint. If you want to bypass the next enroute waypoints, do a direct to the first waypoint approach and then activate the approach.
+If you activate the approach before the last enroute waypoint, the autopilot goes directly to the first approach waypoint. This may remove your enroute waypoints.
 
-If you activate the approach after the last enroute waypoint, the autopilot goes directly to the first approach waypoint (without U-turn!!!).
+If you activate the approach after the last enroute waypoint, the autopilot goes directly to the first approach waypoint (without U-turn!!!). This removes all the enroute waypoints.
 
-Note: If you set a Direct To, this automatically de-activates the approach.
-
-Note: If you preset an approach from the FS2020 map, this one is automatically activated.
+Note: If you set a Direct To, this automatically de-activates the approach. You will have to reactivate it if needed.
 
 ## U-turn bug
 This FS2020 bug probably made many of us crazy. It occurs when you select/activate an approach after the last enroute waypoint. Then the autopilot comes back to the last enroute waypoint before reaching the first approach waypoint.

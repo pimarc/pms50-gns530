@@ -39,6 +39,12 @@
   font-weight: normal;
   font-style: normal; }
 
+@font-face {
+  font-family: "Consola";
+  src: url("/Fonts/consolas.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal; }
+
 as530-element {
   width: 100%;
   height: 100%;
@@ -56,6 +62,7 @@ as530-element {
     font-weight: bold;
 */
     font-weight: normal;
+/*    font-family: "Consola";*/
     width: 100%;
     height: 100%;
     padding-right: calc(2.1367521368vh);
@@ -267,18 +274,26 @@ as530-element {
             position: absolute;
             top: 1%;
             left: 0%; }
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable1 .value {
+            font-size: 7vh; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable2 {
             position: absolute;
             top: 1%;
             right: 0%; }
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable2 .value {
+            font-size: 7vh; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable3 {
             position: absolute;
             bottom: 0%;
             left: 0%; }
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable3 .value {
+            font-size: 7vh; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable4 {
             position: absolute;
             bottom: 0%;
             right: 0%; }
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable4 .value {
+            font-size: 7vh; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 {
             position: absolute;
             width: 50%;
@@ -286,7 +301,9 @@ as530-element {
             left: 25%;
             vertical-align: top;
             height: 10%; }
-/* PM Modif: Range display */
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 .value {
+            font-size: 7vh; }
+  /* PM Modif: Range display */
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range {
             position: absolute;
             background-color: black;

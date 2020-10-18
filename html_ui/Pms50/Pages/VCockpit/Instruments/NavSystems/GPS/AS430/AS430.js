@@ -56,7 +56,9 @@ class AS430_RangeInfos extends NavSystemElement {
         let map = this.gps.getChildById("MapInstrument");
         if (map) {
             Avionics.Utils.diffAndSet(this.mrange, map.getDisplayRange());
-            Avionics.Utils.diffAndSet(this.dlevel, map.declutterLevel ? "-" + map.declutterLevel/2 : "");
+//PM Modif: Change declutter management
+            Avionics.Utils.diffAndSet(this.dlevel, this.gps.declutterLevelIndex ? "-" + this.gps.declutterLevelIndex : "");
+//PM Modif: End Change declutter management
         }
     }
 }

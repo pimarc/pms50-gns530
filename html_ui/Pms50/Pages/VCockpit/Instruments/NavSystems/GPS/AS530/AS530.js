@@ -70,7 +70,9 @@ class AS530_VorInfos extends NavSystemElement {
             radnum = radnum < 0 ? 360 + radnum : radnum;
             radial = radnum.toString();
             ident = SimVar.GetSimVarValue("NAV IDENT:1", "string") != "" ? SimVar.GetSimVarValue("NAV IDENT:1", "string"):"____";
-            distance = (SimVar.GetSimVarValue("NAV HAS DME:1", "bool") ? SimVar.GetSimVarValue("NAV DME:1", "Nautical Miles").toFixed(1) : "__._");
+//PM Modif: Change rounded DME distance
+            distance = (SimVar.GetSimVarValue("NAV HAS DME:1", "bool") ? (Math.round((SimVar.GetSimVarValue("NAV DME:1", "Nautical Miles")*10))/10).toFixed(1) : "__._");
+//PM Modif: End Change rounded DME distance
             // LOC frequency is < 112Mhz and first decimal digit is odd
             let frequency = SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz");
             type = frequency && frequency < 112 && Math.trunc(frequency*10)%2 ? "LOC" : "VOR";
@@ -99,7 +101,9 @@ class AS530_RangeInfos extends NavSystemElement {
         let map = this.gps.getChildById("MapInstrument");
         if (map) {
             Avionics.Utils.diffAndSet(this.mrange, map.getDisplayRange());
-            Avionics.Utils.diffAndSet(this.dlevel, map.declutterLevel ? "-" + map.declutterLevel/2 : "");
+//PM Modif: End Change declutter management
+            Avionics.Utils.diffAndSet(this.dlevel, this.gps.declutterLevelIndex ? "-" + this.gps.declutterLevelIndex : "");
+//PM Modif: End Change declutter management
         }
     }
 }

@@ -6,11 +6,6 @@
       "date": 132453631615266152
     },
     {
-      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/mapConfig.json",
-      "size": 2340,
-      "date": 132453631615266152
-    },
-    {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.html",
       "size": 59832,
       "date": 132453631615266152
@@ -26,13 +21,13 @@
       "date": 132453631615266152
     },
     {
-      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/AS430.html",
-      "size": 123,
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/mapConfig.json",
+      "size": 2340,
       "date": 132453631615266152
     },
     {
-      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/mapConfig.json",
-      "size": 2341,
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/AS430.html",
+      "size": 123,
       "date": 132453631615266152
     },
     {
@@ -48,6 +43,11 @@
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/AS430.js",
       "size": 3822,
+      "date": 132453631615266152
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/mapConfig.json",
+      "size": 2340,
       "date": 132453631615266152
     },
     {

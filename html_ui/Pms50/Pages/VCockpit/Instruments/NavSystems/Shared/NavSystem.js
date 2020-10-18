@@ -28,9 +28,9 @@ class NavSystem extends BaseInstrument {
         this.forcedScreenRatio = 1;
         this.initDuration = 0;
         this.hasBeenOff = false;
-        this.needValidationAfterInit = false;
         this.isStarted = false;
-        this.initAcknowledged = true;
+        this.needValidationAfterInit = false;
+        this.initAcknowledged = false;
         this.reversionaryMode = false;
         this.alwaysUpdateList = new Array();
     }
@@ -47,9 +47,11 @@ class NavSystem extends BaseInstrument {
             this.currFlightPlanManager.registerListener();
         }
         this.currFlightPlan = new FlightPlan(this);
+//PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
+//PM Modif: End Add debugging tool WebUI-DevKit (must be on the community folder)
     }
     disconnectedCallback() {
         super.disconnectedCallback();
@@ -318,7 +320,7 @@ class NavSystem extends BaseInstrument {
         this.startTime = Date.now();
         this.hasBeenOff = false;
         this.isStarted = false;
-        this.initAcknowledged = true;
+        this.initAcknowledged = false;
         this.budgetedItemId = 0;
     }
     Update() {
@@ -371,6 +373,7 @@ class NavSystem extends BaseInstrument {
                 }
             }
             else {
+                this.hasBeenOff = true;
                 if (this.isStarted) {
                     this.onShutDown();
                 }
@@ -885,7 +888,9 @@ class NavSystem extends BaseInstrument {
         }
     }
     isBootProcedureComplete() {
-        if (((Date.now() - this.startTime > this.initDuration) || !this.hasBeenOff) && (this.initAcknowledged || !this.needValidationAfterInit))
+        if (!this.hasBeenOff)
+            return true;
+            if ((Date.now() - this.startTime > this.initDuration) && (this.initAcknowledged || !this.needValidationAfterInit))
             return true;
         return false;
     }

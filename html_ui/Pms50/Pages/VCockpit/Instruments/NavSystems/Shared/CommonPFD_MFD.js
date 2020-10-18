@@ -1553,10 +1553,10 @@ class MFD_DepartureLine extends MFD_FlightPlanLine {
         return '<td class="Select0 SelectableWhite" colspan="' + this.element.nbColumn + '">Departure - ' + this.name + '</td>';
     }
     onEvent(_subIndex, _event) {
+//PM Modif: Add confirmation window
         switch (_event) {
             case "CLR":
             case "CLR_Push":
-//PM Modif: Add confirmation window
                 this.element.gps.confirmWindow.element.setTexts("Remove Departure ?");
                 this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
                     if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getDeparture() != null)) {
@@ -1566,8 +1566,8 @@ class MFD_DepartureLine extends MFD_FlightPlanLine {
                 });
                 break;
         }
-        return false;
 //PM Modif: End Add confirmation window
+        return false;
     }
 }
 class MFD_ArrivalLine extends MFD_FlightPlanLine {
@@ -1580,10 +1580,10 @@ class MFD_ArrivalLine extends MFD_FlightPlanLine {
         return '<td class="Select0 SelectableWhite" colspan="' + this.element.nbColumn + '">Arrival - ' + this.name + '</td>';
     }
     onEvent(_subIndex, _event) {
+//PM Modif: Add confirmation window
         switch (_event) {
             case "CLR":
             case "CLR_Push":
-//PM Modif: Add confirmation window
                 this.element.gps.confirmWindow.element.setTexts("Remove Arrival ?");
                 this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
                     if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getArrival() != null)) {
@@ -1593,9 +1593,9 @@ class MFD_ArrivalLine extends MFD_FlightPlanLine {
                 });
                 break;
         }
+//PM Modif: End Add confirmation window
         return false;
     }
-//PM Modif: End Add confirmation window
 }
 class MFD_ApproachLine extends MFD_FlightPlanLine {
     constructor(_name, _element) {
@@ -1618,11 +1618,11 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
                     }
                     this.element.gps.SwitchToInteractionState(0);
                 });
-                break;
+//PM Modif: End Add confirmation window
+            break;
         }
         return false;
     }
-//PM Modif: End Add confirmation window
 }
 class MFD_EnrouteLine extends MFD_FlightPlanLine {
     getString() {
@@ -1747,15 +1747,15 @@ class MFD_ApproachWaypointLine extends MFD_FlightPlanLine {
     onEvent(_subIndex, _event) {
         if (this.element.gps.popUpElement == null) {
             switch (_event) {
-// PM Modif: Prevent adding an approach waypoint for now
                 case "NavigationSmallInc":
                 case "NavigationSmallDec":
+// PM Modif: Prevent adding an approach waypoint for now
 //                    this.element.gps.switchToPopUpPage(this.element.waypointWindow, this.element.onWaypointSelectionEnd.bind(this.element));
 //                    this.element.selectedIndex = this.index;
 //                  return true;
+// PM Modif: End Prevent adding an approach waypoint for now
                 case "CLR":
                 case "CLR_Push":
-// PM Modif: End Prevent adding an approach waypoint for now
 // PM Modif: Prevent removing an approach waypoint
 //                    this.element.removeWaypoint(this.index);
 // PM Modif: End Prevent removing an approach waypoint
@@ -2069,6 +2069,7 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
         this.gps.SwitchToInteractionState(1);
     }
     activateLeg(_index, _approach = false) {
+        console.log("CommonPFD_MFD.ts > Activate leg for index " + _index);
         if (_approach) {
             let icao = this.gps.currFlightPlanManager.getApproachWaypoints()[_index].icao;
             this.gps.currFlightPlanManager.activateApproach(() => {
@@ -3601,8 +3602,6 @@ class MFD_ArrivalSelection extends NavSystemElement {
         }
     }
 }
-
-
 class MFD_DepartureSelection extends NavSystemElement {
     constructor(_nbLines = 6) {
         super();
