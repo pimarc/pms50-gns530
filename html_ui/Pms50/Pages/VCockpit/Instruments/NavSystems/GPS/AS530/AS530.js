@@ -46,6 +46,7 @@ class AS530_VorInfos extends NavSystemElement {
     init(root) {
         this.vor = this.gps.getChildById("vorValue");
         this.rad = this.gps.getChildById("radValue");
+        this.radTitle = this.gps.getChildById("radTitle");
         this.dis = this.gps.getChildById("disValue");
 //PM Modif: check for LOC or VOR
         this.typ = this.gps.getChildById("vorTitle");
@@ -60,6 +61,7 @@ class AS530_VorInfos extends NavSystemElement {
     onUpdate(_deltaTime) {
 //PM Modif: World4Fly Mod integration (Wrong radial and Rounded DME) and check for LOC or VOR
         let radial = "___";
+        let radialtitle = "RAD";
         let ident = "____";
         let distance = "__._";
         // VOR by default
@@ -68,18 +70,29 @@ class AS530_VorInfos extends NavSystemElement {
             let radnum = Math.round(SimVar.GetSimVarValue("NAV RADIAL:1", "degrees"));
             // radnum is from -179 to 180 degrees ...
             radnum = radnum < 0 ? 360 + radnum : radnum;
-            radial = radnum.toString();
+            radial = radnum.toString() + "°";
+            // Add leading 0s
+            radial = radnum < 100 ? "0" + radial : radial;
+            radial = radnum < 10 ? "0" + radial : radial;
             ident = SimVar.GetSimVarValue("NAV IDENT:1", "string") != "" ? SimVar.GetSimVarValue("NAV IDENT:1", "string"):"____";
 //PM Modif: Change rounded DME distance
             distance = (SimVar.GetSimVarValue("NAV HAS DME:1", "bool") ? (Math.round((SimVar.GetSimVarValue("NAV DME:1", "Nautical Miles")*10))/10).toFixed(1) : "__._");
 //PM Modif: End Change rounded DME distance
+            ident = SimVar.GetSimVarValue("NAV IDENT:1", "string") != "" ? SimVar.GetSimVarValue("NAV IDENT:1", "string"):"____";
             // LOC frequency is < 112Mhz and first decimal digit is odd
             let frequency = SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz");
-            type = frequency && frequency < 112 && Math.trunc(frequency*10)%2 ? "LOC" : "VOR";
+            let islocfrequency = frequency && frequency < 112 && Math.trunc(frequency*10)%2 ? true : false;
+            this.radTitle.setAttribute("style", "display: block;");
+            if(islocfrequency){
+                type = "LOC";
+                // Hide rad title if LOC and display LOC name
+                this.radTitle.setAttribute("style", "display: none");
+                radial = SimVar.GetSimVarValue("NAV NAME:1", "string") != "" ? SimVar.GetSimVarValue("NAV NAME:1", "string"):"____";
+            }
         }
         Avionics.Utils.diffAndSet(this.vor, ident);
         Avionics.Utils.diffAndSet(this.typ, type);
-        Avionics.Utils.diffAndSet(this.rad, radial + "°");
+        Avionics.Utils.diffAndSet(this.rad, radial);
         Avionics.Utils.diffAndSet(this.dis, distance);
 //PM Modif: End World4Fly Mod integration (Wrong radial and Rounded DME) and check for LOC or VOR
     }

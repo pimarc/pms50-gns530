@@ -20,6 +20,7 @@ First release features:
 ## V 1.0.6
 - First declutter level hides roads and airspaces
 - DME distance correctly rounded
+- LOC Radial not any more displayed as in the original GNS530. LOC name displayed instead (ex ILS RW 31).
 ## V 1.0.5
 - Fixing the conflict when using 2 or more GPS in an aircraft
 - Works now with Cessna 172

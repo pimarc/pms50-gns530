@@ -93,21 +93,34 @@ as530-element {
           color: white; }
         as530-element #Electricity #TopDisplay #RadioPart .StandbyFreq {
           font-size: calc(8.1196581197vh);
+/*PM Modif: Frequency and VOR/LOC display
+          font-weight: normal;
+/*PM Modif: End Frequency and VOR/LOC display
           line-height: calc(6.4102564103vh);
           padding: calc(0.4273504274vh);
           color: #6ecdee; }
-          as530-element #Electricity #TopDisplay #RadioPart .StandbyFreq[state=Selected] {
-            color: #11118c;
-            background-color: #6ecdee; }
+/*PM Modif: Frequency and VOR/LOC display
+        as530-element #Electricity #TopDisplay #RadioPart .ActiveFreq, #Electricity #TopDisplay #RadioPart .StandbyFreq, #Electricity #TopDisplay #RadioPart #vorValue, #Electricity #TopDisplay #RadioPart #radValue {
+          white-space: nowrap;
+          text-align: center;
+          width:100%; }
+/*PM Modif: End Frequency and VOR/LOC display
+        as530-element #Electricity #TopDisplay #RadioPart .StandbyFreq[state=Selected] {
+          color: #11118c;
+/*PM Modif: Frequency and VOR/LOC display
+          font-weight: bold;
+/*PM Modif: End Frequency and VOR/LOC display
+          background-color: #6ecdee; }
         as530-element #Electricity #TopDisplay #RadioPart .FrecDecimals {
           font-size: calc(5.1282051282vh); }
         as530-element #Electricity #TopDisplay #RadioPart #VorRad {
           border: calc(0.4273504274vh) solid #6ecdee; }
           as530-element #Electricity #TopDisplay #RadioPart #VorRad #VOR, as530-element #Electricity #TopDisplay #RadioPart #VorRad #RAD {
             width: 100%;
-            display: flex; }
-            as530-element #Electricity #TopDisplay #RadioPart #VorRad #VOR div, as530-element #Electricity #TopDisplay #RadioPart #VorRad #RAD div {
-              width: 49%; }
+/*PM Modif: Frequency and VOR/LOC display
+            display: flex; 
+            justify-content: space-between;}
+/*PM Modif: Frequency and End VOR/LOC display
         as530-element #Electricity #TopDisplay #RadioPart #VOR, as530-element #Electricity #TopDisplay #RadioPart #RAD, as530-element #Electricity #TopDisplay #RadioPart #DIS {
           color: white;
           font-size: 5vh;
