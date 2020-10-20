@@ -364,8 +364,8 @@ as530-element {
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range {
             position: absolute;
             background-color: black;
-            bottom: 30%;
-            left: 2%;
+            bottom: 25%;
+            left: 1%;
             padding: 1vh 2vh 1vh 2vh;
             color: #6ecdee;
             font-size: 4.5vh;
