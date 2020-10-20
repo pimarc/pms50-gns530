@@ -21,6 +21,9 @@ First release features:
 - First declutter level hides roads and airspaces
 - DME distance correctly rounded
 - LOC Radial not any more displayed as in the original GNS530. LOC name displayed instead (ex ILS RW 31).
+- Adding compass in track up map mode
+- Map is now a little bit bigger
+- Adding range levels
 ## V 1.0.5
 - Fixing the conflict when using 2 or more GPS in an aircraft
 - Works now with Cessna 172

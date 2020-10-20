@@ -103,6 +103,7 @@ class AS530_RangeInfos extends NavSystemElement {
     init(root) {
         this.mrange = this.gps.getChildById("MapRangeValue");
         this.dlevel = this.gps.getChildById("MapDeclutterLevel");
+       this.map = this.gps.getChildById("MapInstrument");
     }
     onEnter() {
     }
@@ -111,10 +112,9 @@ class AS530_RangeInfos extends NavSystemElement {
     onEvent(_event) {
     }
     onUpdate(_deltaTime) {
-        let map = this.gps.getChildById("MapInstrument");
-        if (map) {
-            Avionics.Utils.diffAndSet(this.mrange, map.getDisplayRange());
-//PM Modif: End Change declutter management
+        if (this.map) {
+            Avionics.Utils.diffAndSet(this.mrange, this.gps.mapDisplayRanges[this.map.rangeIndex]);
+//PM Modif: Change declutter management
             Avionics.Utils.diffAndSet(this.dlevel, this.gps.declutterLevelIndex ? "-" + this.gps.declutterLevelIndex : "");
 //PM Modif: End Change declutter management
         }

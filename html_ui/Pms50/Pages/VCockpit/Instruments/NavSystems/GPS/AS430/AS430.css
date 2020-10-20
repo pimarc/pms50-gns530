@@ -82,12 +82,24 @@ as430-element {
           color: white; }
         as430-element #Electricity #TopDisplay #RadioPart .StandbyFreq {
           font-size: calc(11.0526315789vh);
+/*PM Modif: Frequency and VOR/LOC display */
+          font-weight: normal;
+/*PM Modif: End Frequency and VOR/LOC display */
           line-height: calc(8.9473684211vh);
           padding: calc(0.5263157895vh);
           color: #6ecdee; }
-          as430-element #Electricity #TopDisplay #RadioPart .StandbyFreq[state=Selected] {
-            color: #11118c;
-            background-color: #6ecdee; }
+/*PM Modif: Frequency display */
+        as430-element #Electricity #TopDisplay #RadioPart .ActiveFreq, #Electricity #TopDisplay #RadioPart .StandbyFreq {
+          white-space: nowrap;
+          text-align: center;
+          width:100%; }
+/*PM Modif: End Frequency display */
+        as430-element #Electricity #TopDisplay #RadioPart .StandbyFreq[state=Selected] {
+          color: #11118c;
+/*PM Modif: Frequency and VOR/LOC display */
+          font-weight: bold;
+/*PM Modif: End Frequency and VOR/LOC display */
+          background-color: #6ecdee; }
         as430-element #Electricity #TopDisplay #RadioPart .FrecDecimals {
           font-size: calc(6.8421052632vh); }
         as430-element #Electricity #TopDisplay #RadioPart #BotRadioPartTop, as430-element #Electricity #TopDisplay #RadioPart #BotRadioPartMid, as430-element #Electricity #TopDisplay #RadioPart #BotRadioPartBot {

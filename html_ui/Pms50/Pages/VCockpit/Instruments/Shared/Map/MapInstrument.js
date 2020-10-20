@@ -98,6 +98,9 @@ class MapInstrument extends ISvgMapRootElement {
         this.weatherRanges = [10, 20, 30, 40, 50, 60, 80, 100];
         this.weatherHideGPS = false;
         this.isBushTrip = false;
+// PM Modif: Trackup
+        this.mapScaleFactor = 1.4;  // overscan for hiding corners when we rotate
+// PM Modif: End Trackup
     }
     get flightPlanManager() {
         if (this.gps) {
@@ -599,7 +602,9 @@ class MapInstrument extends ISvgMapRootElement {
                 else {
                     this.navMap.setRange(this.getDisplayRange());
                 }
-                var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor;
+// PM Modif: Trackup
+                var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.mapScaleFactor;
+// PM Modif: End Trackup
                 if (!this.isDisplayingWeather())
                     this.updateBingMapSize();
                 if (this.navMap.lastCenterCoordinates)
@@ -1220,7 +1225,9 @@ class MapInstrument extends ISvgMapRootElement {
     updateBingMapSize() {
         let w = this.curWidth;
         let h = this.curHeight;
-        let max = Math.max(w, h);
+// PM Modif: Trackup
+        let max = Math.max(w, h) * this.mapScaleFactor;
+// PM Modif: End Trackup
         if (w * h > 1 && w * h !== this.lastWH) {
             this.lastWH = w * h;
             this.bingMap.style.width = fastToFixed(max, 0) + "px";

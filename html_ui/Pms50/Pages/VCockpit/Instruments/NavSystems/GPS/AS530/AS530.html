@@ -23,6 +23,9 @@
                             <div id="radValue">___°</div>
                         </div>
                     </div>
+<!-- PM Modif: Look near original -->
+                    <div id="VorRadDisSep"><hr /></div>
+<!-- PM Modif: End Look near original -->
                     <div id="DIS">
                         <div id="disTitle">DIS </div>
                         <div id="disValue">__._</div>
@@ -36,12 +39,18 @@
                     <div id="DefaultNav">
                         <map-instrument id="MapInstrument" bing-id="AS530_Default" show-roads="true" show-overlay="false" show-traffic="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/"></map-instrument>
                         <div id="CDI">
-                            <div id="CDIBackground"><img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/430_CDI.bmp" /></div>
-                            <div id="ToFrom"><img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/430_TO.bmp" /></div>
+<!-- PM Modif: Look near original -->
+                            <!-- <div id="CDIBackground"><img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/430_CDI.bmp" /></div>
+                            <div id="ToFrom"><img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/430_TO.bmp" /></div> -->
+<!-- PM Modif: End Look near original -->
                             <div id="CDICursor"> </div>
                             <div id="CDIBotLeft">1.0</div>
                             <div id="CDIBotRight">1.0</div>
                         </div>
+<!-- PM Modif: Adding black box to avoid some display outsid of the map -->
+                        <div id="BlackBox">
+                        </div>
+<!-- PM Modif: End Adding black box to avoid some display outsid of the map -->
 <!-- PM Modif: Map range and declutter                         -->
                         <div id="Range">
                             <div class="Align value" id="MapRangeValue">500</div>
@@ -49,6 +58,13 @@
                             <div class="Align value" id="MapDeclutterLevel">-2</div>
                         </div>
 <!-- PM Modif: End Map range and declutter                         -->
+<!-- PM Modif: Compass                         -->
+                        <div id="NavCompass">
+                            <div id="NavCompassBackground">
+                                <img id="NavCompassBackgroundImg" src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/compass.png" width="286" />
+                            </div>
+                        </div>
+<!-- PM Modif: End Compass                         -->
                         <div id="CurrActiveBranch">
                             <div class="Align" id="CurrBranchFrom"></div>
                             <div class="Align" id="CurrBranchArrow"><img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png" class="imgSizeM" /> </div>
