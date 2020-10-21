@@ -358,9 +358,22 @@ as530-element {
             left: 25%;
             vertical-align: top;
             height: 10%; }
+/* PM Modif: Changing TRK position */
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 .value {
+            padding-top: 2vh;
             font-size: 7vh; }
-  /* PM Modif: Range display */
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 .unit {
+            padding-top: 1.2vh; }
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 #DNBlock5 {
+            display: flex;
+            justify-content: center;
+            font-size: 7vh; }
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 .SelectableTitle {
+            position: absolute;
+            left: 20%;
+            top: 27%; }
+/* PM Modif: EndChanging TRK position */
+/* PM Modif: Range display */
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range {
             position: absolute;
             background-color: black;
@@ -379,7 +392,7 @@ as530-element {
               position: relative;
               left: -1vh;}
 /* PM Modif: End Range display */
-  /* PM Modif: NavCompass display */
+/* PM Modif: NavCompass display */
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavCompass {
             position: absolute;
             display: flex;
