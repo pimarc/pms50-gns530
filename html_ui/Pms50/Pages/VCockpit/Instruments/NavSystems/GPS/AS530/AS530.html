@@ -37,7 +37,7 @@
                 </div>
                 <div class="Align" id="GpsPart" state="DefaultNav">
                     <div id="DefaultNav">
-                        <map-instrument id="MapInstrument" bing-id="AS530_Default" show-roads="true" show-overlay="false" show-traffic="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/"></map-instrument>
+                        <map-instrument id="MapInstrument1" bing-id="AS530_Map1" show-roads="true" show-overlay="false" show-traffic="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/"></map-instrument>
                         <div id="CDI">
 <!-- PM Modif: Look near original -->
                             <!-- <div id="CDIBackground"><img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/430_CDI.bmp" /></div>
@@ -52,22 +52,22 @@
                         </div>
 <!-- PM Modif: End Adding black box to avoid some display outsid of the map -->
 <!-- PM Modif: Map range and declutter                         -->
-                        <div id="Range">
-                            <div class="Align value" id="MapRangeValue">500</div>
-                            <div class="Align unit" id="MapRangeUnit">n<br/>m</div>
-                            <div class="Align value" id="MapDeclutterLevel">-2</div>
+                        <div id="Range1">
+                            <div class="Align value" id="MapRangeValue1">500</div>
+                            <div class="Align unit" id="MapRangeUnit1">n<br/>m</div>
+                            <div class="Align value" id="MapDeclutterLevel1">-2</div>
                         </div>
 <!-- PM Modif: End Map range and declutter                         -->
 <!-- PM Modif: Compass                         -->
-                        <div id="NavCompass">
-                            <div id="NavCompassBackground">
-                                <img id="NavCompassBackgroundImg" src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/compass.png" width="286" />
+                        <div id="NavCompass1">
+                            <div id="NavCompassBackground1">
+                                <img id="NavCompassBackgroundImg1" src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/compass.png" width="286" />
                             </div>
                         </div>
 <!-- PM Modif: End Compass                         -->
 <!-- PM Modif: Trk Indicator                       -->
-                        <div id="TrkIndicator">
-                            <div id="TrkIndicatorBackground">
+                        <div id="TrkIndicator1">
+                            <div id="TrkIndicatorBackground1">
                                 <img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/repere.png" width="39" />
                             </div>
                         </div>
@@ -103,24 +103,33 @@
                             </div>
                         </div>
                     </div>
-                    <div id="Map">
-                        <map-instrument class="Align" bing-id="AS530_Map" id="MapInstrument" show-overlay="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/"></map-instrument>
-                        <div class="Align" id="RightDisplay">
-                            <div>WPT</div>
-                            <div class="Display">
-                                <div id="WPT"></div>
+                    <div id="MapNav">
+                        <map-instrument class="Align" bing-id="AS530_Map2" show-roads="true" id="MapInstrument2" show-overlay="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/"></map-instrument>
+                        <div id="Range2">
+                            <div class="Align value" id="MapRangeValue2">500</div>
+                            <div class="Align unit" id="MapRangeUnit2">n<br/>m</div>
+                            <div class="Align value" id="MapDeclutterLevel2">-2</div>
+                        </div>
+                        <div class="Align" id="MapRightDisplay">
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName1">WPT</div>
+                                <div class="Display"><div class="Align value" id="MNValue1"></div><div class="Align unit" id="MNUnit1"></div></div>
                             </div>
-                            <div>DTK</div>
-                            <div class="Display">
-                                <div class="Align" id="DTKMap"></div><div class="Align unit">o<br />M</div>
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName2">DTK</div>
+                                <div class="Display"><div class="Align value" id="MNValue2"></div><div class="Align unit" id="MNUnit2"></div></div>
                             </div>
-                            <div>DIS</div>
-                            <div class="Display">
-                                <div class="Align" id="DISMap"></div><div class="Align unit">n<br />m</div>
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName3">TRK</div>
+                                <div class="Display"><div class="Align value" id="MNValue3"></div><div class="Align unit" id="MNUnit3"></div></div>
                             </div>
-                            <div>GS</div>
-                            <div class="Display">
-                                <div class="Align" id="GSMap"></div><div class="Align unit">k<br />t</div>
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName4">DIS</div>
+                                <div class="Display"><div class="Align value" id="MNValue4"></div><div class="Align unit" id="MNUnit4"></div></div>
+                            </div>
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName5">GS</div>
+                                <div class="Display"><div class="Align value" id="MNValue5"></div><div class="Align unit" id="MNUnit5"></div></div>
                             </div>
                         </div>
                     </div>

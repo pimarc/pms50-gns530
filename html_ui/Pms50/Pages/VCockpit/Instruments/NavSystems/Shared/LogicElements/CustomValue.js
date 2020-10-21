@@ -96,6 +96,11 @@ class CustomValue {
                 this.unitDisplay.innerHTML = "m<br/>b";
                 this.valueDisplay.textContent = fastToFixed(SimVar.GetSimVarValue("BAROMETER PRESSURE", "Millibars"), 0);
                 break;
+            case 16:
+                this.nameDisplay.textContent = "WPT";
+                this.unitDisplay.innerHTML = "";
+                this.valueDisplay.textContent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
+                break;
         }
     }
 }

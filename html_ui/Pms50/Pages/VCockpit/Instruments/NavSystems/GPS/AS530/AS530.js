@@ -5,10 +5,12 @@ class AS530 extends BaseGPS {
         this.menuMaxElems = 11;
         var defaultNav = new GPS_DefaultNavPage(5, [3, 4, 9, 7, 10]);
         defaultNav.element.addElement(new MapInstrumentElement());
+        var mapNav = new GPS_MapNavPage(5, [16, 3, 10, 4, 9]);
+        mapNav.element.addElement(new MapInstrumentElement());
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
                 defaultNav,
-                new NavSystemPage("Map", "Map", new NavSystemElementGroup([new MapInstrumentElement(), new GPS_MapInfos()])),
+                mapNav,
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav(8)),
             ]),
             new NavSystemPageGroup("WPT", this, [

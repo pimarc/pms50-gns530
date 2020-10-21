@@ -173,7 +173,7 @@ as530-element {
         height: 93%;
 /*PM End Modif: Look near original */
         width: 80%; }
-        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav, as530-element #Electricity #TopDisplay #GpsPart #Map, as530-element #Electricity #TopDisplay #GpsPart #ComNav, as530-element #Electricity #TopDisplay #GpsPart #Position, as530-element #Electricity #TopDisplay #GpsPart #Satellite, as530-element #Electricity #TopDisplay #GpsPart #VNav, as530-element #Electricity #TopDisplay #GpsPart #Terrain, as530-element #Electricity #TopDisplay #GpsPart #DRCT, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as530-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
+        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav, as530-element #Electricity #TopDisplay #GpsPart #MapNav, as530-element #Electricity #TopDisplay #GpsPart #Map, as530-element #Electricity #TopDisplay #GpsPart #ComNav, as530-element #Electricity #TopDisplay #GpsPart #Position, as530-element #Electricity #TopDisplay #GpsPart #Satellite, as530-element #Electricity #TopDisplay #GpsPart #VNav, as530-element #Electricity #TopDisplay #GpsPart #Terrain, as530-element #Electricity #TopDisplay #GpsPart #DRCT, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as530-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
         as530-element #Electricity #TopDisplay #GpsPart #Procedures, as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection, as530-element #Electricity #TopDisplay #GpsPart #AirportLocation, as530-element #Electricity #TopDisplay #GpsPart #AirportRunway, as530-element #Electricity #TopDisplay #GpsPart #AirportFrequency, as530-element #Electricity #TopDisplay #GpsPart #AirportApproach,
         as530-element #Electricity #TopDisplay #GpsPart #AirportArrival, as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture, as530-element #Electricity #TopDisplay #GpsPart #Intersection, as530-element #Electricity #TopDisplay #GpsPart #NDB, as530-element #Electricity #TopDisplay #GpsPart #VOR, as530-element #Electricity #TopDisplay #GpsPart #UserWaypoint, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirport, as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection,
         as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR, as530-element #Electricity #TopDisplay #GpsPart #NRSTUser, as530-element #Electricity #TopDisplay #GpsPart #NRSTCenter, as530-element #Electricity #TopDisplay #GpsPart #NRSTFlightService, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirspace, as530-element #Electricity #TopDisplay #GpsPart #COMSetup, as530-element #Electricity #TopDisplay #GpsPart #MSG {
@@ -182,6 +182,7 @@ as530-element {
           height: 100%;
           position: absolute; }
         as530-element #Electricity #TopDisplay #GpsPart[state=DefaultNav] #DefaultNav,
+        as530-element #Electricity #TopDisplay #GpsPart[state=MapNav] #MapNav,
         as530-element #Electricity #TopDisplay #GpsPart[state=Map] #Map,
         as530-element #Electricity #TopDisplay #GpsPart[state=ComNav] #ComNav,
         as530-element #Electricity #TopDisplay #GpsPart[state=Position] #Position,
@@ -217,7 +218,7 @@ as530-element {
           display: block; }
         as530-element #Electricity #TopDisplay #GpsPart #DefaultNav {
           background-color: black; }
-          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapInstrument {
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapInstrument1 {
             width: 100%;
 /*PM Modif: Look near original */
             height: 66%;
@@ -225,12 +226,12 @@ as530-element {
             position: absolute;
             overflow: hidden;
             top: 10%; }
-            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapInstrument bing-map {
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapInstrument1 bing-map {
               transform: rotateX(0);
               position: absolute;
               left: 0;
               right: 0; }
-            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapInstrument #MapSVG {
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapInstrument1 #MapSVG {
               transform: rotateX(0);
               position: absolute; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI {
@@ -376,7 +377,7 @@ as530-element {
             top: 27%; }
 /* PM Modif: EndChanging TRK position */
 /* PM Modif: Range display */
-          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range {
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 {
             position: absolute;
             background-color: black;
             bottom: 25%;
@@ -385,17 +386,19 @@ as530-element {
             color: #6ecdee;
             font-size: 4.5vh;
             line-height: 4.5vh; }
-            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range #MapRangeUnit{
+            as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 {
+              bottom: 2%; }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1 #MapRangeUnit1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapRangeUnit2 {
               position: relative;
               left: -1vh;
               font-size: 2.2vh;
               line-height: 2.2vh; }
-            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range #MapDeclutterLevel{
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1 #MapDeclutterLevel1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapDeclutterLevel2 {
               position: relative;
               left: -1vh;}
 /* PM Modif: End Range display */
 /* PM Modif: NavCompass display */
-          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavCompass {
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavCompass1 {
             position: absolute;
             display: flex;
             justify-content: space-around;
@@ -404,11 +407,11 @@ as530-element {
             width: 94%;
             height: 35%;
             overflow: hidden; }
-            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavCompass #NavCompassBackGround {
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavCompass1 #NavCompassBackGround1 {
               overflow: hidden; }
 /* PM Modif: End NavCompass display */
 /* PM Modif: Trk indicator */
-        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #TrkIndicator {
+        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #TrkIndicator1 {
           position: absolute;
           z-index: 1;
           display: flex;
@@ -427,31 +430,34 @@ as530-element {
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #topNavParams, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #BotNavParams {
             margin-top: calc(0.8547008547vh);
             margin-bottom: calc(0.8547008547vh); }
-        as530-element #Electricity #TopDisplay #GpsPart #Map #MapInstrument {
-          position: absolute;
-          height: 100%;
-          width: 70%;
-          background-color: black;
-          overflow: hidden; }
-          as530-element #Electricity #TopDisplay #GpsPart #Map #MapInstrument bing-map {
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #MapInstrument2 {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: black;
+            overflow: hidden; }
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #MapInstrument2 bing-map {
             transform: rotateX(0);
             position: absolute;
             left: 0;
             right: 0; }
-          as530-element #Electricity #TopDisplay #GpsPart #Map #MapInstrument #MapSVG {
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #MapInstrument2 #MapSVG {
             transform: rotateX(0);
             position: absolute; }
-        as530-element #Electricity #TopDisplay #GpsPart #Map #RightDisplay {
-          position: absolute;
-          right: 0%;
-          height: 100%;
-          width: 30%;
-          vertical-align: top;
-          color: #6ecdee; }
-          as530-element #Electricity #TopDisplay #GpsPart #Map #RightDisplay .Display {
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #MapRightDisplay {
+            position: absolute;
+            right: 0%;
+            height: 100%;
+            width: 30%;
+            vertical-align: top;
+            padding-left: calc(0.4273504274vh);
+            padding-right: calc(0.4273504274vh);
+            border-left: calc(0.4273504274vh) solid #6ecdee;
+            color: #6ecdee; }
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #MapRightDisplay .Display {
             background-color: black;
             text-align: center;
-            width: calc(21.875vw);
+            width: 100%;
             height: calc(8.547008547vh);
             color: #4ce22c;
             border: calc(0.4273504274vh) solid #6ecdee; }
