@@ -361,9 +361,11 @@ as530-element {
 /* PM Modif: Changing TRK position */
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 .value {
             padding-top: 2vh;
+            margin-left: -1vh;
             font-size: 7vh; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 .unit {
-            padding-top: 1.2vh; }
+            padding-top: 1.2vh;
+            padding-left: 0.4vh; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #UserSlectable5 #DNBlock5 {
             display: flex;
             justify-content: center;
@@ -398,14 +400,25 @@ as530-element {
             display: flex;
             justify-content: space-around;
             left: 3%;
-            top: 10%;
+            top: 9%;
             width: 94%;
             height: 35%;
             overflow: hidden; }
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavCompass #NavCompassBackGround {
               overflow: hidden; }
-  /* PM Modif: End NavCompass display */
-        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParams {
+/* PM Modif: End NavCompass display */
+/* PM Modif: Trk indicator */
+        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #TrkIndicator {
+          position: absolute;
+          z-index: 1;
+          display: flex;
+          justify-content: center;
+          left: 40%;
+          top: 5%;
+          width: 20%;
+          height: 10%; }
+/* PM Modif: End Trk indicator */
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParams {
           background-color: black;
           border: calc(0.4273504274vh) solid #6ecdee; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParamTitlesTop, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParamTitlesBot {

@@ -309,6 +309,8 @@ class GPS_DefaultNavPage extends NavSystemPage {
         this.navCompassImg = this.gps.getChildById("NavCompassBackgroundImg");
         let NavCompass = this.gps.getChildById("NavCompass");
         NavCompass.setAttribute("style", "visibility: hidden");
+        let TrkIndicator = this.gps.getChildById("TrkIndicator");
+        TrkIndicator.setAttribute("style", "visibility: hidden");
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -323,8 +325,10 @@ class GPS_DefaultNavPage extends NavSystemPage {
             this.map.navMap.rotateWithPlane ? this.map.rotateWithPlane(false) :  this.map.rotateWithPlane(true);
             this.trackUp = !this.trackUp;
             let NavCompass = this.gps.getChildById("NavCompass");
+            let TrkIndicator = this.gps.getChildById("TrkIndicator");
             if(this.trackUp){
                 NavCompass.setAttribute("style", "visibility: visible");
+                TrkIndicator.setAttribute("style", "visibility: visible");
                 this.map.setAttribute("style", "height: 110%");
                 this.map._ranges = [0.81, 1.62, 3.24, 4.84, 8.08, 16.2, 23.9, 32.3, 56.5, 81, 162, 243, 324, 565, 809, 1618, 2427, 3236];
                 this.map.intersectionMaxRange = 27
@@ -343,6 +347,7 @@ class GPS_DefaultNavPage extends NavSystemPage {
             }
             else{
                 NavCompass.setAttribute("style", "visibility: hidden");
+                TrkIndicator.setAttribute("style", "visibility: hidden");
                 this.map.setAttribute("style", "height: 66%");
                 this.map._ranges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
                 this.map.intersectionMaxRange = 16;
@@ -381,7 +386,10 @@ class GPS_DefaultNav extends NavSystemElement {
         for (let i = 0; i < this.customValuesNumber; i++) {
             let num = i + 1;
             this.dnCustoms.push(new CustomValue(this.gps, "DNName" + num, "DNValue" + num, "DNUnit" + num));
-            this.dnCustomSelectableArray.push(new SelectableElement(this.gps, this.dnCustoms[i].nameDisplay, this.customValueSelect_CB.bind(this, i)));
+// PM Modif: TRK cannot be changed in the original GNS530
+            if(i!=4)
+                this.dnCustomSelectableArray.push(new SelectableElement(this.gps, this.dnCustoms[i].nameDisplay, this.customValueSelect_CB.bind(this, i)));
+// PM Modif: End TRK cannot be changed in the original GNS530
         }
         this.dnCustomFieldSelectorMenu = new ContextualMenu("SELECT&nbsp;FIELD&nbsp;TYPE", [
             new ContextualMenuElement("BRG&nbsp;&nbsp;-&nbsp;Bearing", this.customValueSet_CB.bind(this, 0)),
