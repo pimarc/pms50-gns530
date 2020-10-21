@@ -24,6 +24,7 @@ First release features:
 - Adding compass in track up map mode
 - Map is now a little bit bigger
 - Adding range levels
+- Prevent changing the TRK field (like original GNS530)
 ## V 1.0.5
 - Fixing the conflict when using 2 or more GPS in an aircraft
 - Works now with Cessna 172

@@ -34,35 +34,8 @@ class AS430 extends BaseGPS {
         this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL())]));
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", new GPS_Messages())]));
-//PM Modif: Add range and declutter level to map
-        this.addIndependentElementContainer(new NavSystemElementContainer("RangeInfos", "MapPart", new AS430_RangeInfos()));
-//PM Modif: End add range and declutter level to map
     }
 }
-
-//PM Modif: Add range and declutter level to map
-class AS430_RangeInfos extends NavSystemElement {
-    init(root) {
-        this.mrange = this.gps.getChildById("MapRangeValue");
-        this.dlevel = this.gps.getChildById("MapDeclutterLevel");
-    }
-    onEnter() {
-    }
-    onExit() {
-    }
-    onEvent(_event) {
-    }
-    onUpdate(_deltaTime) {
-        let map = this.gps.getChildById("MapInstrument");
-        if (map) {
-            Avionics.Utils.diffAndSet(this.mrange, map.getDisplayRange());
-//PM Modif: Change declutter management
-            Avionics.Utils.diffAndSet(this.dlevel, this.gps.declutterLevelIndex ? "-" + this.gps.declutterLevelIndex : "");
-//PM Modif: End Change declutter management
-        }
-    }
-}
-//PM Modif: End add range and declutter level to map
 
 
 registerInstrument("as430-element", AS430);

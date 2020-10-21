@@ -50,10 +50,6 @@ class BaseGPS extends NavSystem {
         this.alertWindow = new NavSystemElementContainer("AlertWindow", "AlertWindow", new GPS_AlertWindow());
         this.alertWindow.setGPS(this);
 //PM Modif: End Alert window
-//PM Modif: Using four levels of declutter as in the original GNS530
-        this.declutterLevelIndex = 0;
-        this.declutterLevels = [0, 0, 2, 4];
-//PM Modif: End Using four levels of declutter as in the original GNS530
 //PM Modif: Compass                         -->
          this.mapDisplayRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
 //PM Modif: End Compass                         -->
@@ -112,18 +108,6 @@ class BaseGPS extends NavSystem {
             this.SwitchToInteractionState(0);
             this.SwitchToPageName("NAV", "DefaultNav");
             this.currentEventLinkedPageGroup = null;
-        }
-        if (_event == "CLR_Push") {
-//PM Modif: Using four levels of declutter as in the original GNS530
-            let map = this.getChildById("MapInstrument");
-            if (map) {
-                this.declutterLevelIndex ++;
-                if (this.declutterLevelIndex >= this.declutterLevels.length) {
-                    this.declutterLevelIndex = 0;
-                }
-                map.declutterLevel=this.declutterLevels[this.declutterLevelIndex];
-            }
-//PM Modif: End Using four levels of declutter as in the original GNS530
         }
         if (_event == "COMSWAP_Push") {
             SimVar.SetSimVarValue("K:COM" + (this.comIndex == 1 ? "_STBY" : this.comIndex) + "_RADIO_SWAP", "boolean", 0);
@@ -199,21 +183,6 @@ class BaseGPS extends NavSystem {
         }
         this.pagePos.innerHTML = pagesMenu;
         this.menuTitle.textContent = this.getCurrentPageGroup().name;
- //PM Modif: Using four levels of declutter as in the original GNS530
-        let map = this.getChildById("MapInstrument");
-        if (map) {
-            if(this.declutterLevelIndex || map.getDisplayRange() > 90) {
-                if(map.roadNetwork)map.roadNetwork.setVisible(false);
-                map.showAirspaces = false;
-                map.showRoads  = false;
-            }
-            else {
-                map.showAirspaces = true;
-                map.showRoads  = true;
-                if(map.roadNetwork)map.roadNetwork.setVisible(true);
-            }
-        }
-//PM Modif: End Using four levels of declutter as in the original GNS530
     }
 //PM Modif: Confirmation window
     closeConfirmWindow() {
@@ -281,54 +250,93 @@ class BaseGPS extends NavSystem {
 //PM Modif: End Activate approach modification
 
 }
-class GPS_DefaultNavPage extends NavSystemPage {
-    constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7]) {
-        var cdiElem = new CDIElement();
-        var baseElem = new GPS_DefaultNav(_customValuesNumber, _customValuesDefaults);
-        super("DefaultNav", "DefaultNav", new NavSystemElementGroup([baseElem, cdiElem]));
-        this.cdiElement = cdiElem;
-        this.baseElem = baseElem;
+
+// PM Modif adding base class for all nav pages with a map
+class GPS_BaseNavPage extends NavSystemPage {
+    constructor() {
+        super(...arguments);
+    }
+    init() {
 // PM Modif: Compass and Trackup
         this.trackUp = false;
 // PM Modif: End Compass and Trackup
-    }
-    init() {
-        this.defaultMenu = new ContextualMenu("PAGE MENU", [
-            new ContextualMenuElement("Crossfill?", null, true),
-            new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
-//PM Modif: Adding map orientation menu
-            new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)),
-//PM Modif: End Adding map orientation menu
-            new ContextualMenuElement("Restore&nbsp;Defaults?", this.baseElem.restoreCustomValues.bind(this.baseElem))
-        ]);
+//PM Modif: Using four levels of declutter as in the original GNS530
+        this.declutterLevelIndex = 0;
+        this.declutterLevels = [0, 0, 2, 4];
+//PM Modif: End Using four levels of declutter as in the original GNS530
+//PM Modif: Add range and declutter level to map
+        this.mrange = this.gps.getChildById("MapRangeValue");
+        this.dlevel = this.gps.getChildById("MapDeclutterLevel");
+//PM Modif: Add range and declutter level to map
 // PM Modif: Compass and Trackup
         this.map = this.gps.getChildById("MapInstrument");
         this.map._ranges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
         this.map.intersectionMaxRange = 16;
         this.map.mapScaleFactor = 1.4;
         this.navCompassImg = this.gps.getChildById("NavCompassBackgroundImg");
-        let NavCompass = this.gps.getChildById("NavCompass");
-        NavCompass.setAttribute("style", "visibility: hidden");
-        let TrkIndicator = this.gps.getChildById("TrkIndicator");
-        TrkIndicator.setAttribute("style", "visibility: hidden");
+        this.navCompass = this.gps.getChildById("NavCompass");
+        this.trkIndicator = this.gps.getChildById("TrkIndicator");
+        this.lasttrk = -1;
+        this.navCompass.setAttribute("style", "visibility: hidden");
+        this.trkIndicator.setAttribute("style", "visibility: hidden");
+// PM Modif: End Compass and Trackup
+    }
+    onEvent(_event){
+        super.onEvent(_event);
+        if (_event == "CLR_Push") {
+//PM Modif: Using four levels of declutter as in the original GNS530
+            if (this.map) {
+                this.declutterLevelIndex ++;
+                if (this.declutterLevelIndex >= this.declutterLevels.length) {
+                    this.declutterLevelIndex = 0;
+                }
+                this.map.declutterLevel=this.declutterLevels[this.declutterLevelIndex];
+            }
+//PM Modif: End Using four levels of declutter as in the original GNS530
+        }
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        if(this.navCompassImg){
-            this.navCompassImg.style.transform = "rotate(-" + fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1) + "deg)";
+        if(this.trackUp && this.navCompassImg){
+            let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
+            if(trk != this.lasttrk){
+                // Last trk is used to save time in update (no rotation if no change)
+                this.navCompassImg.style.transform = "rotate(-" + trk + "deg)";
+                this.lasttrk = trk;
+            }
         }
+//PM Modif: Declutter
+        if (this.map) {
+            if(this.declutterLevelIndex || this.map.getDisplayRange() > 90) {
+                if(this.map.roadNetwork)
+                    this.map.roadNetwork.setVisible(false);
+                this.map.showAirspaces = false;
+                this.map.showRoads  = false;
+            }
+            else {
+                this.map.showAirspaces = true;
+                this.map.showRoads  = true;
+                if(this.map.roadNetwork)
+                    this.map.roadNetwork.setVisible(true);
+            }
+            if(this.mrange)
+                Avionics.Utils.diffAndSet(this.mrange, this.gps.mapDisplayRanges[this.map.rangeIndex]);
+            if(this.dlevel)
+                Avionics.Utils.diffAndSet(this.dlevel, this.declutterLevelIndex ? "-" + this.declutterLevelIndex : "");
+        }
+//PM Modif: End Declutter
     }
 // PM Modif: End Compass and Trackup
 //PM Modif: Adding map orientation menu
     toggleMapOrientation() {
         if (this.map && this.map.navMap) {
-            this.map.navMap.rotateWithPlane ? this.map.rotateWithPlane(false) :  this.map.rotateWithPlane(true);
             this.trackUp = !this.trackUp;
-            let NavCompass = this.gps.getChildById("NavCompass");
-            let TrkIndicator = this.gps.getChildById("TrkIndicator");
             if(this.trackUp){
-                NavCompass.setAttribute("style", "visibility: visible");
-                TrkIndicator.setAttribute("style", "visibility: visible");
+                this.map.rotateWithPlane(true);
+                if(this.navCompass)
+                    this.navCompass.setAttribute("style", "visibility: visible");
+                if(this.trkIndicator)
+                    this.trkIndicator.setAttribute("style", "visibility: visible");
                 this.map.setAttribute("style", "height: 110%");
                 this.map._ranges = [0.81, 1.62, 3.24, 4.84, 8.08, 16.2, 23.9, 32.3, 56.5, 81, 162, 243, 324, 565, 809, 1618, 2427, 3236];
                 this.map.intersectionMaxRange = 27
@@ -340,14 +348,15 @@ class GPS_DefaultNavPage extends NavSystemPage {
                 this.map.medCityMaxRange = 360;
                 this.map.largeCityMaxRange = 2670;
                 this.map.npcAirplaneMaxRange = 107;
-                this.mapNorhtUp = true;
-                this.map.setAttribute("bing-mode", "vfr");
                 this.map.roadNetwork._lastRange = -1;
 
             }
             else{
-                NavCompass.setAttribute("style", "visibility: hidden");
-                TrkIndicator.setAttribute("style", "visibility: hidden");
+                this.map.rotateWithPlane(false);
+                if(this.navCompass)
+                    this.navCompass.setAttribute("style", "visibility: hidden");
+                if(this.trkIndicator)
+                    this.trkIndicator.setAttribute("style", "visibility: hidden");
                 this.map.setAttribute("style", "height: 66%");
                 this.map._ranges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
                 this.map.intersectionMaxRange = 16;
@@ -359,13 +368,43 @@ class GPS_DefaultNavPage extends NavSystemPage {
                 this.map.medCityMaxRange = 200;
                 this.map.largeCityMaxRange = 1500;
                 this.map.npcAirplaneMaxRange = 60;
-
-                this.mapNorhtUp = false;
+                this.map.roadNetwork._lastRange = -1;
             }
         }
         this.gps.SwitchToInteractionState(0);
      }
 //PM Modif: End Adding map orientation menu
+}
+
+class GPS_DefaultNavPage extends GPS_BaseNavPage {
+    constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7]) {
+        var cdiElem = new CDIElement();
+        var baseElem = new GPS_DefaultNav(_customValuesNumber, _customValuesDefaults);
+        super("DefaultNav", "DefaultNav", new NavSystemElementGroup([baseElem, cdiElem]));
+        this.cdiElement = cdiElem;
+        this.baseElem = baseElem;
+
+    }
+    init() {
+        super.init();
+        this.defaultMenu = new ContextualMenu("PAGE MENU", [
+            new ContextualMenuElement("Crossfill?", null, true),
+            new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
+//PM Modif: Adding map orientation menu
+            new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)),
+//PM Modif: End Adding map orientation menu
+            new ContextualMenuElement("Restore&nbsp;Defaults?", this.baseElem.restoreCustomValues.bind(this.baseElem))
+        ]);
+        // By default the main nav page is trk up oriented
+        this.toggleMapOrientation();
+// PM Modif: End Compass and Trackup
+    }
+    onEvent(_event){
+        super.onEvent(_event);
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+    }
 }
 
 class GPS_DefaultNav extends NavSystemElement {

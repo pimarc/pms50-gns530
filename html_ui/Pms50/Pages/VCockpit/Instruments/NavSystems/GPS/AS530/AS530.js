@@ -36,9 +36,6 @@ class AS530 extends BaseGPS {
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", new GPS_Messages())]));
         this.addIndependentElementContainer(new NavSystemElementContainer("VorInfos", "RadioPart", new AS530_VorInfos()));
-//PM Modif: Add range and declutter level to map
-        this.addIndependentElementContainer(new NavSystemElementContainer("RangeInfos", "MapPart", new AS530_RangeInfos()));
-//PM Modif: End add range and declutter level to map
     }
 }
 
@@ -97,30 +94,6 @@ class AS530_VorInfos extends NavSystemElement {
 //PM Modif: End World4Fly Mod integration (Wrong radial and Rounded DME) and check for LOC or VOR
     }
 }
-
-//PM Modif: Add range and declutter level to map
-class AS530_RangeInfos extends NavSystemElement {
-    init(root) {
-        this.mrange = this.gps.getChildById("MapRangeValue");
-        this.dlevel = this.gps.getChildById("MapDeclutterLevel");
-       this.map = this.gps.getChildById("MapInstrument");
-    }
-    onEnter() {
-    }
-    onExit() {
-    }
-    onEvent(_event) {
-    }
-    onUpdate(_deltaTime) {
-        if (this.map) {
-            Avionics.Utils.diffAndSet(this.mrange, this.gps.mapDisplayRanges[this.map.rangeIndex]);
-//PM Modif: Change declutter management
-            Avionics.Utils.diffAndSet(this.dlevel, this.gps.declutterLevelIndex ? "-" + this.gps.declutterLevelIndex : "");
-//PM Modif: End Change declutter management
-        }
-    }
-}
-//PM Modif: End add range and declutter level to map
 
 registerInstrument("as530-element", AS530);
 //# sourceMappingURL=AS530.js.map
