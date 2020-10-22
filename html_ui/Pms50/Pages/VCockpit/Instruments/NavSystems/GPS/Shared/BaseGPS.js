@@ -278,6 +278,8 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.navCompassImg = this.gps.getChildById("NavCompassBackgroundImg" + this.mapnum);
         this.navCompass = this.gps.getChildById("NavCompass" + this.mapnum);
         this.trkIndicator = this.gps.getChildById("TrkIndicator" + this.mapnum);
+        this.northIndicatorImg = this.gps.getChildById("NorthIndicatorBackgroundImg" + this.mapnum);
+        this.northIndicator = this.gps.getChildById("NorthIndicator" + this.mapnum);
         this.lasttrk = -1;
         if(this.navCompass)
             this.navCompass.setAttribute("style", "visibility: hidden");
@@ -304,11 +306,14 @@ class GPS_BaseNavPage extends NavSystemPage {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        if(this.trackUp && this.navCompassImg){
+        if(this.trackUp && (this.navCompassImg || this.northIndicatorImg)){
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
             if(trk != this.lasttrk){
                 // Last trk is used to save time in update (no rotation if no change)
-                this.navCompassImg.style.transform = "rotate(-" + trk + "deg)";
+                if(this.navCompassImg)
+                    this.navCompassImg.style.transform = "rotate(-" + trk + "deg)";
+                if(this.northIndicatorImg)
+                    this.northIndicatorImg.style.transform = "rotate(-" + trk + "deg)";
                 this.lasttrk = trk;
             }
         }
@@ -350,6 +355,8 @@ class GPS_BaseNavPage extends NavSystemPage {
                     this.navCompass.setAttribute("style", "visibility: visible");
                 if(this.trkIndicator)
                     this.trkIndicator.setAttribute("style", "visibility: visible");
+                if(this.northIndicator)
+                    this.northIndicator.setAttribute("style", "visibility: visible");
                 this.map.setAttribute("style", "height: " + this.trkUpHeight + ";");
                 this.setMapRanges();
                 this.map.intersectionMaxRange = 27
@@ -370,6 +377,8 @@ class GPS_BaseNavPage extends NavSystemPage {
                     this.navCompass.setAttribute("style", "visibility: hidden;");
                 if(this.trkIndicator)
                     this.trkIndicator.setAttribute("style", "visibility: hidden;");
+                if(this.northIndicator)
+                    this.northIndicator.setAttribute("style", "visibility: hidden");
                 this.map.setAttribute("style", "height: " + this.northUpHeight + ";");
                 this.setMapRanges();
                 this.map.intersectionMaxRange = 16;

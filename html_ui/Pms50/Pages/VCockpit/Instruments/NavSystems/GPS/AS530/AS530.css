@@ -421,7 +421,18 @@ as530-element {
           width: 20%;
           height: 10%; }
 /* PM Modif: End Trk indicator */
-          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParams {
+/* PM Modif: North indicator */
+        as530-element #Electricity #TopDisplay #GpsPart #MapNav #NorthIndicator2 {
+          position: absolute;
+          z-index: 1;
+          display: flex;
+          justify-content: center;
+          left: 4%;
+          top: 5%;
+          width: 10%;
+          height: 10%; }
+/* PM Modif: End North indicator */
+        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParams {
           background-color: black;
           border: calc(0.4273504274vh) solid #6ecdee; }
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParamTitlesTop, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParamTitlesBot {
