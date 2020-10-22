@@ -273,8 +273,10 @@ class GPS_BaseNavPage extends NavSystemPage {
 // PM Modif: Compass and Trackup
         this.map = this.gps.getChildById("MapInstrument" + this.mapnum);
         this.mapDisplayRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
-        this.map.intersectionMaxRange = 16;
-        this.map.mapScaleFactor = 1.4;
+        if(this.map){
+            this.map.intersectionMaxRange = 16;
+            this.map.mapScaleFactor = 1.4;
+        }
         this.navCompassImg = this.gps.getChildById("NavCompassBackgroundImg" + this.mapnum);
         this.navCompass = this.gps.getChildById("NavCompass" + this.mapnum);
         this.trkIndicator = this.gps.getChildById("TrkIndicator" + this.mapnum);
