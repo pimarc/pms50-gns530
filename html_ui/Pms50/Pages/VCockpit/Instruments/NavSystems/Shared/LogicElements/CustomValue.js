@@ -11,12 +11,28 @@ class CustomValue {
             case 0:
                 this.nameDisplay.textContent = "BRG";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(SimVar.GetSimVarValue("GPS WP BEARING", "degree"), 0);
+                if(flightPlanActive){
+                    let value = fastToFixed(SimVar.GetSimVarValue("GPS WP BEARING", "degree"), 0);
+                    // Add leading 0s
+                    value = value < 100 ? "0" + value : value;
+                    value = value < 10 ? "0" + value : value;
+                    this.valueDisplay.textContent = value;
+                }
+                else
+                    this.valueDisplay.textContent = "___";
                 break;
             case 1:
                 this.nameDisplay.textContent = "CTS";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(SimVar.GetSimVarValue("GPS COURSE TO STEER", "degree"), 0);
+                if(flightPlanActive){
+                    let value = fastToFixed(SimVar.GetSimVarValue("GPS COURSE TO STEER", "degree"), 0);
+                    // Add leading 0s
+                    value = value < 100 ? "0" + value : value;
+                    value = value < 10 ? "0" + value : value;
+                    this.valueDisplay.textContent = value;
+                }
+                else
+                    this.valueDisplay.textContent = "___";
                 break;
             case 2:
                 this.nameDisplay.textContent = "XTK";
@@ -26,7 +42,15 @@ class CustomValue {
             case 3:
                 this.nameDisplay.textContent = "DTK";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0);
+                if(flightPlanActive){
+                    let value = fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0);
+                    // Add leading 0s
+                    value = value < 100 ? "0" + value : value;
+                    value = value < 10 ? "0" + value : value;
+                    this.valueDisplay.textContent = value;
+                }
+                else
+                    this.valueDisplay.textContent = "___";
                 break;
             case 4:
                 this.nameDisplay.textContent = "DIS";
@@ -69,7 +93,11 @@ class CustomValue {
             case 10:
                 this.nameDisplay.textContent = "TRK";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                this.valueDisplay.textContent = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 0);
+                let value = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 0);
+                // Add leading 0s
+                value = value < 100 ? "0" + value : value;
+                value = value < 10 ? "0" + value : value;
+                this.valueDisplay.textContent = value;
                 break;
             case 11:
                 this.nameDisplay.textContent = "MSA";
@@ -79,7 +107,15 @@ class CustomValue {
             case 12:
                 this.nameDisplay.textContent = "TKE";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(SimVar.GetSimVarValue("GPS WP TRACK ANGLE ERROR", "degrees"), 0);
+                if(flightPlanActive){
+                    let value = fastToFixed(SimVar.GetSimVarValue("GPS WP TRACK ANGLE ERROR", "degrees"), 0);
+                    // Add leading 0s
+                    value = value < 100 ? "0" + value : value;
+                    value = value < 10 ? "0" + value : value;
+                    this.valueDisplay.textContent = value;
+                }
+                else
+                    this.valueDisplay.textContent = "___";
                 break;
             case 13:
                 this.nameDisplay.textContent = "VSR";

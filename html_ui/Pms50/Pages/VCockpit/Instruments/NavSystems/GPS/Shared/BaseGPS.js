@@ -417,15 +417,23 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
     }
     init() {
         super.init(1, true, "110%", "66%", 1.62, 1);
-        this.defaultMenu = new ContextualMenu("PAGE MENU", [
-            new ContextualMenuElement("Crossfill?", null, true),
-            new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
+        if(this.gps.gpsType == "530") {
+            this.defaultMenu = new ContextualMenu("PAGE MENU", [
+                new ContextualMenuElement("Crossfill?", null, true),
+                new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
 //PM Modif: Adding map orientation menu
-            new ContextualMenuElement("North up/Trk up?", this.toggleMapOrientation.bind(this)),
+                new ContextualMenuElement("North up/Trk up?", this.toggleMapOrientation.bind(this)),
 //PM Modif: End Adding map orientation menu
-            new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
-        ]);
-// PM Modif: End Compass and Trackup
+                new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
+            ]);
+        }
+        else {
+            this.defaultMenu = new ContextualMenu("PAGE MENU", [
+                new ContextualMenuElement("Crossfill?", null, true),
+                new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
+                new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
+            ]);
+        }
     }
     onEvent(_event){
         super.onEvent(_event);
@@ -473,7 +481,7 @@ class GPS_DefaultNav extends NavSystemElement {
             let num = i + 1;
             this.dnCustoms.push(new CustomValue(this.gps, "DNName" + num, "DNValue" + num, "DNUnit" + num));
 // PM Modif: TRK cannot be changed in the original GNS530
-            if(i!=4)
+            if(this.gps.gpsType != "530" || i!=4)
                 this.dnCustomSelectableArray.push(new SelectableElement(this.gps, this.dnCustoms[i].nameDisplay, this.customValueSelect_CB.bind(this, i)));
 // PM Modif: End TRK cannot be changed in the original GNS530
         }
@@ -683,7 +691,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
 
 
 class GPS_MapNav extends NavSystemElement {
-    constructor(_customValuesNumber = 5, _customValuesDefaults = [16, 3, 0, 9, 10, 7]) {
+    constructor(_customValuesNumber = 6, _customValuesDefaults = [16, 3, 0, 9, 10, 7]) {
         super(_customValuesNumber, _customValuesDefaults);
         this.dnCustoms = [];
         this.legSymbol = 0;
@@ -2326,6 +2334,7 @@ class GPS_DirectTo extends NavSystemElement {
             }
             else {
                 this.menuname = "";
+                this.gps.SwitchToInteractionState(0);
                 this.gps.leaveEventPage();
             }
         }

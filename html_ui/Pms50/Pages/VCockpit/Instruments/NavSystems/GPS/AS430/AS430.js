@@ -1,12 +1,18 @@
 class AS430 extends BaseGPS {
     get templateID() { return "AS430"; }
     connectedCallback() {
+        this.gpsType = "430";
         super.connectedCallback();
-        this.manageAutoActivateApproach = false;
+        this.menuMaxElems = 11;
+        var defaultNav = new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7]);
+        defaultNav.element.addElement(new MapInstrumentElement());
+        var mapNav = new GPS_MapNavPage(4, [16, 3, 4, 9]);
+        mapNav.element.addElement(new MapInstrumentElement());
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
-                new GPS_DefaultNavPage(),
-                new NavSystemPage("Map", "Map", new NavSystemElementGroup([new MapInstrumentElement(), new GPS_MapInfos()])),
+                defaultNav,
+                mapNav,
+//                new NavSystemPage("Map", "Map", new NavSystemElementGroup([new MapInstrumentElement(), new GPS_MapInfos()])),
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav()),
                 new NavSystemPage("Position", "Position", new GPS_Position()),
             ]),

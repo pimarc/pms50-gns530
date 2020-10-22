@@ -50,6 +50,39 @@
                             <div class="Third"><span class="SelectableTitle" id="DNName4">GS</span></div><div class="Third"><span class="SelectableTitle" id="DNName5">TRK</span></div><div class="Third"><span class="SelectableTitle" id="DNName6">ETE</span></div>
                         </div>
                     </div>
+                    <div id="MapNav">
+                        <map-instrument class="Align" bing-id="AS430_Map2" show-roads="true" id="MapInstrument2" show-overlay="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/"></map-instrument>
+                        <div id="Range2">
+                            <div class="Align value" id="MapRangeValue2">500</div>
+                            <div class="Align unit" id="MapRangeUnit2">n<br/>m</div>
+                            <div class="Align value" id="MapDeclutterLevel2">-2</div>
+                        </div>
+<!-- PM Modif: North Indicator                       -->
+                        <div id="NorthIndicator2">
+                            <div id="NorthIndicatorBackground2">
+                                <img id="NorthIndicatorBackgroundImg2" src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/north.png" width="20" />
+                            </div>
+                        </div>
+<!-- PM Modif: End North Indicator                   -->
+                        <div class="Align" id="MapRightDisplay">
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName1">WPT</div>
+                                <div class="Display"><div class="Align value" id="MNValue1"></div><div class="Align unit" id="MNUnit1"></div></div>
+                            </div>
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName2">DTK</div>
+                                <div class="Display"><div class="Align value" id="MNValue2"></div><div class="Align unit" id="MNUnit2"></div></div>
+                            </div>
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName3">DIS</div>
+                                <div class="Display"><div class="Align value" id="MNValue3"></div><div class="Align unit" id="MNUnit3"></div></div>
+                            </div>
+                            <div class="CustomVal">
+                                <div class="SelectableTitle" id="MNName4">GS</div>
+                                <div class="Display"><div class="Align value" id="MNValue4"></div><div class="Align unit" id="MNUnit4"></div></div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="Map">
                         <map-instrument class="Align" id="MapInstrument" bing-id="AS430" show-overlay="false" show-flightplan="true" show-traffic="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/"></map-instrument>
 <!-- PM Modif: Map range and declutter                         -->

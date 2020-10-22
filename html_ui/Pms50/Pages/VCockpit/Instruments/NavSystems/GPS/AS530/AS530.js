@@ -1,6 +1,7 @@
 class AS530 extends BaseGPS {
     get templateID() { return "AS530"; }
     connectedCallback() {
+        this.gpsType = "530";
         super.connectedCallback();
         this.menuMaxElems = 11;
         var defaultNav = new GPS_DefaultNavPage(5, [3, 4, 9, 7, 10]);
