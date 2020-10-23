@@ -611,15 +611,27 @@ as530-element {
           padding: calc(0.8547008547vh); }
         as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit .SelectableElement {
           height: calc(7.264957265vh); }
-        as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit #FlightPlanName {
+        as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit #FlightPlanInfo {
+          display: flex;
+          justify-content: center;
+          width: 100%; }
+        as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit #AFPL_Name {
           width: 80%;
+          text-align: center;
+          height: calc(9.4017094017vh); }
+        as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit #FlightPlanNumber {
+          margin-right: 2vh;
           height: calc(9.4017094017vh); }
         as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table {
-          width: 95%;
+          width: 100%;
           margin-left: 2.5%;
+          margin-right: 2.5%;
           overflow: hidden; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table th {
-            text-align: center; }
+            text-align: center;
+            padding-left: 3vw; }
+          as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table th:first-child {
+            text-align: left; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody {
             width: 100%;
             overflow: visible; }
@@ -654,16 +666,19 @@ as530-element {
             height: calc(8.547008547vh);
             background-color: black; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr td {
-            text-align: center; }
+            text-align: right; 
+            padding-right: 1vw; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr td:first-child {
             text-align: left;
             padding-left: 5vw; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead tr th:nth-child(1), as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr:first-child td:nth-child(1) {
-            width: 40%; }
+            width: 34%; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead tr th:nth-child(2), as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr:first-child td:nth-child(2) {
-            width: 30%; }
+            width: 22%; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead tr th:nth-child(3), as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr:first-child td:nth-child(3) {
-            width: 30%; }
+            width: 22%; }
+          as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead tr th:nth-child(4), as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr:first-child td:nth-child(4) {
+            width: 22%; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table .SizeSetter, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table .SizeSetter td {
             height: 0vh;
             overflow: visible;

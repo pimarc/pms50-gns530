@@ -22,12 +22,15 @@ First release features:
 - DME distance correctly rounded
 - LOC Radial not any more displayed as in the original GNS530. LOC name displayed instead (ex ILS RW 31).
 - Adding compass in track up map mode
-- Map size is now a little bit bigger
+- Default NAV page is in track up mode by default
 - Adding range levels to 2000nm
 - Prevent changing the TRK field (like original GNS530) in default NAV
 - Better management of the CLR button in NAV pages
 - Map page completely rebuilt
 - Frequency NAV page works now like original GNS530 (except when pressing Ent on selected airport)
+- Flight plan has ow 7 lines instead of 4
+- Depart and destination now displayed in flight plan
+- Flight plan columns conform to the original GNS530 (added DTK and changed order)
 ## V 1.0.5
 - Fixing the conflict when using 2 or more GPS in an aircraft
 - Works now with Cessna 172

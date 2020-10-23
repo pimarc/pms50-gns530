@@ -632,7 +632,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.displayData = true;
         this.defaultMenu = new ContextualMenu("PAGE MENU", [
             new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this)),
-            new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
+            new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)),
             new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)),
             new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
         ]);
@@ -685,6 +685,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         }
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
+    }
+    changeFieldsStateCB() {
+        return !this.displayData;
     }
 }
 
@@ -2445,15 +2448,17 @@ class GPS_WaypointLine extends MFD_WaypointLine {
     getString() {
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
+            this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>___<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
             return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident : this.waypoint.ident) + '</td><td>'
-                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : fastToFixed(this.waypoint.cumulativeDistanceInFP, 0) + '<div class="Align unit">n<br/>m</div>') + '</td><td>'
-                + fastToFixed(this.waypoint.distanceInFP, 1) + '<div class="Align unit">n<br/>m</div></td>';
+                + (isNaN(this.waypoint.bearingInFP) ? "" : fastToFixed(this.waypoint.bearingInFP, 0) + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>') + '</td><td>'
+                + fastToFixed(this.waypoint.distanceInFP, 1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
+                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : fastToFixed(this.waypoint.cumulativeDistanceInFP, 1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>') + '</td>';
         }
         else if (this.element.emptyLine != "") {
             return this.element.emptyLine;
         }
         else {
-            return '<td class="SelectableElement Select0"></td><td> </td><td> </td>';
+            return '<td class="SelectableElement Select0"></td><td> </td><td> </td><td> </td>';
         }
     }
     onEvent(_subindex, _event) {
@@ -2473,18 +2478,22 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
     getString() {
         if (this.waypoint) {
             return '<td class="SelectableElement Select0">' + this.waypoint.ident + '</td><td>'
-                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : fastToFixed(this.waypoint.cumulativeDistanceInFP, 0) + '<div class="Align unit">n<br/>m</div>') + '</td><td>'
-                + fastToFixed(this.waypoint.distanceInFP, 1) + '<div class="Align unit">n<br/>m</div></td>';
+                + (isNaN(this.waypoint.bearingInFP) ? "" : fastToFixed(this.waypoint.bearingInFP, 0) + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>') + '</td><td>'
+                + fastToFixed(this.waypoint.distanceInFP, 1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
+                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : fastToFixed(this.waypoint.cumulativeDistanceInFP, 1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>') + '</td>';
         }
         else {
-            return '<td class="SelectableElement Select0"></td><td> </td><td> </td>';
+            return '<td class="SelectableElement Select0"></td><td> </td><td> </td><td> </td>';
         }
     }
 }
 class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
-    constructor() {
-        super(GPS_WaypointLine, GPS_ApproachWaypointLine, 4, 3);
-        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">n<br/>m</div></td><td>__._<div class="Align unit">n<br/> m </div></td>';
+    constructor(_type = "530") {
+        if(_type == "530")
+            super(GPS_WaypointLine, GPS_ApproachWaypointLine, 7, 4);
+        else
+            super(GPS_WaypointLine, GPS_ApproachWaypointLine, 5, 4);
+        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>___<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
         this.name = "ActiveFPL";
     }
     init(_root) {

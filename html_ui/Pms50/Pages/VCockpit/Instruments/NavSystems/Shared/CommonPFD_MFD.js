@@ -1838,7 +1838,7 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
             });
             this._t = 0;
         }
-        Avionics.Utils.diffAndSet(this.titleElement, (this.gps.currFlightPlanManager.getWaypointsCount() > 0 ? (this.gps.currFlightPlanManager.getWaypoint(0).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(0).infos.ident : this.gps.currFlightPlanManager.getWaypoint(0).ident) : "______") + "/" + (this.gps.currFlightPlanManager.getWaypointsCount() > 1 ? (this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident : this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).ident) : "______"));
+        Avionics.Utils.diffAndSet(this.titleElement, (this.gps.currFlightPlanManager.getWaypointsCount() > 0 ? (this.gps.currFlightPlanManager.getWaypoint(0).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(0).infos.ident : this.gps.currFlightPlanManager.getWaypoint(0).ident) : "______") + "&nbsp;/&nbsp;" + (this.gps.currFlightPlanManager.getWaypointsCount() > 1 ? (this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident : this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).ident) : "______"));
         if (!this.upToDateWaypoints) {
             this.updateWaypoints();
         }
