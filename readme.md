@@ -27,8 +27,8 @@ First release features:
 - Prevent changing the TRK field (like original GNS530) in default NAV
 - Better management of the CLR button in NAV pages
 - Map page completely rebuilt
-- Frequency NAV page works now like original GNS530 (except when pressing Ent on selected airport)
-- Flight plan has ow 7 lines instead of 4
+- Frequency NAV page works now nearly like original GNS530
+- Flight plan has now 7 lines instead of 4 (5 vs 4 in GNS430)
 - Depart and destination now displayed in flight plan
 - Flight plan columns conform to the original GNS530 (added DTK and changed order)
 ## V 1.0.5

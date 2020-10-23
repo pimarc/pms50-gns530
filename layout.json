@@ -7,22 +7,22 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.html",
-      "size": 59832,
+      "size": 63192,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.css",
-      "size": 67151,
+      "size": 74127,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.js",
-      "size": 5873,
+      "size": 5917,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/mapConfig.json",
-      "size": 2340,
+      "size": 2336,
       "date": 132453631615266152
     },
     {
@@ -32,42 +32,42 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/AS430.html",
-      "size": 58328,
+      "size": 60994,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/AS430.css",
-      "size": 62292,
+      "size": 67756,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/AS430.js",
-      "size": 3822,
+      "size": 3190,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/mapConfig.json",
-      "size": 2340,
+      "size": 2341,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/BaseGPS.js",
-      "size": 153135,
+      "size": 171388,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js",
-      "size": 120547,
+      "size": 120797,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js",
-      "size": 191048,
+      "size": 191129,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/CustomValue.js",
-      "size": 5796,
+      "size": 7525,
       "date": 132453631615266152
     },
     {
@@ -212,27 +212,27 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/compass.png",
-      "size": 173,
+      "size": 9229,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/repere.png",
-      "size": 173,
+      "size": 255,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/north.png",
-      "size": 173,
+      "size": 734,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html",
-      "size": 5189,
+      "size": 5195,
       "date": 132453631615266152
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.js",
-      "size": 63557,
+      "size": 63828,
       "date": 132453631615266152
     },
     {
