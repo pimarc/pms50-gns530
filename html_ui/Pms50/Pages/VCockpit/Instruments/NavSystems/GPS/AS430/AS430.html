@@ -3,19 +3,44 @@
         <div id="Electricity" state="off">
             <div id="TopDisplay">
                 <div class="Align" id="RadioPart">
-                    <div id="ComDisplay">
-                        COM
-                        <div class="ActiveFreq" id="ComActive"><span class="FrecDecimals"></span></div>
-                        <div class="StandbyFreq" id="ComStandby" state="Selected"><span class="FrecDecimals"></span></div>
+                    <div class="RadioPartBox">
+                        <div id="ComDisplay">
+                            <div>COM</div>
+                            <div class="ActiveFreq" id="ComActive"><span class="FrecDecimals"></span></div>
+                            <div class="StandbyFreq" id="ComStandby" state="Selected"><span class="FrecDecimals"></span></div>
+                            <div class="RadioPartBoxBorderV1"></div>
+                        </div>
+                        <div class="RadioPartBoxBorderH1"></div>
+                        <div class="RadioPartBoxBorderH2"></div>
                     </div>
-                    <div id="VlocDisplay">
-                        VLOC
-                        <div class="ActiveFreq" id="VlocActive"><span class="FrecDecimals"></span></div>
-                        <div class="StandbyFreq" id="VlocStandby"><span class="FrecDecimals"></span></div>
+                    <div class="RadioPartBoxBorderV2"></div>
+                    <div class="RadioPartBoxBorderV3"></div>
+                    <div class="RadioPartBoxBorderV4"></div>
+                    <div class="RadioPartBox">
+                        <div id="VlocDisplay">
+                            <div>VLOC</div>
+                            <div class="ActiveFreq" id="VlocActive"><span class="FrecDecimals"></span></div>
+                            <div class="StandbyFreq" id="VlocStandby"><span class="FrecDecimals"></span></div>
+                            <div class="RadioPartBoxBorderV1"></div>
+                        </div>
+                        <div class="RadioPartBoxBorderH1"></div>
+                        <div class="RadioPartBoxBorderH2"></div>
                     </div>
-                    <div id="BotRadioPartTop"></div>
-                    <div id="BotRadioPartMid"></div>
-                    <div id="BotRadioPartBot"></div>
+                    <div class="RadioPartBoxBorderV2"></div>
+                    <div class="RadioPartBoxBorderV3"></div>
+                    <div class="RadioPartBoxBorderV4"></div>
+                    <div class="RadioPartBox">
+                        <div id="RadioBotDisplay">
+                            <div id="BotRadioPartTop"></div>
+                            <div id="BotRadioPartMid"></div>
+                            <div id="BotRadioPartBot"></div>
+                        </div>
+                        <div class="RadioPartBoxBorderH1 RadioPartBoxBorderBotH1"></div>
+                        <div class="RadioPartBoxBorderH2"></div>
+                    </div>
+                    <div class="RadioPartBoxBorderV2"></div>
+                    <div class="RadioPartBoxBorderV3"></div>
+                    <div class="RadioPartBoxBorderV4"></div>
                 </div>
                 <div class="Align" id="GpsPart" state="DefaultNav">
                     <div id="DefaultNav">
@@ -80,34 +105,6 @@
                             <div class="CustomVal">
                                 <div class="SelectableTitle" id="MNName4">GS</div>
                                 <div class="Display"><div class="Align value" id="MNValue4"></div><div class="Align unit" id="MNUnit4"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="Map">
-                        <map-instrument class="Align" id="MapInstrument" bing-id="AS430" show-overlay="false" show-flightplan="true" show-traffic="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/"></map-instrument>
-<!-- PM Modif: Map range and declutter                         -->
-                        <div id="Range">
-                            <div class="Align value" id="MapRangeValue">500</div>
-                            <div class="Align unit" id="MapRangeUnit">n<br/>m</div>
-                            <div class="Align value" id="MapDeclutterLevel">-2</div>
-                        </div>
-<!-- PM Modif: End Map range and declutter                         -->
-                        <div class="Align" id="RightDisplay">
-                            <div>WPT</div>
-                            <div class="Display">
-                                <div id="WPT"></div>
-                            </div>
-                            <div>DTK</div>
-                            <div class="Display">
-                                <div class="Align" id="DTKMap"></div><div class="Align unit">o<br />M</div>
-                            </div>
-                            <div>DIS</div>
-                            <div class="Display">
-                                <div class="Align" id="DISMap"></div><div class="Align unit">n<br />m</div>
-                            </div>
-                            <div>GS</div>
-                            <div class="Display">
-                                <div class="Align" id="GSMap"></div><div class="Align unit">k<br />t</div>
                             </div>
                         </div>
                     </div>

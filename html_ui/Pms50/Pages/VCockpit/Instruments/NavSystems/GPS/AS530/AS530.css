@@ -75,24 +75,68 @@ as530-element {
       as530-element #Electricity #TopDisplay #RadioPart {
         transform: rotateX(0);
         position: absolute;
+        display: flex;
+        flex-direction: column;
         left: 0%;
         top: 0%;
         width: 20%;
         height: 100%;
         color: #6ecdee;
         vertical-align: top; }
-        as530-element #Electricity #TopDisplay #RadioPart #ComDisplay, as530-element #Electricity #TopDisplay #RadioPart #VlocDisplay {
-          border: calc(0.4273504274vh) solid #6ecdee;
+        as530-element #Electricity #TopDisplay #RadioPart .RadioPartBox {
+          width: 100%;
+          display: flex; }
+        as530-element #Electricity #TopDisplay #RadioPart .RadioPartBoxBorderH1 {
+          background-color: black;
+          border: 1px solid #6ecdee;
+          border-width: 1px 1px 0 0;
+          width: 2px;
+        }
+        as530-element #Electricity #TopDisplay #RadioPart .RadioPartBoxBorderBotH1 {
+          width: 1px;
+        }
+        as530-element #Electricity #TopDisplay #RadioPart .RadioPartBoxBorderH2 {
+          background-color: black;
+          margin-top: 2px;
+          margin-bottom: -2px;
+          width: 2px;
+          border: 1px solid white;
+          border-width: 0 1px 0 0;
+        }
+        as530-element #Electricity #TopDisplay #RadioPart .RadioPartBoxBorderV1 {
+          background-color: black;
+          height: 1px;
+        }
+        as530-element #Electricity #TopDisplay #RadioPart .RadioPartBoxBorderV2 {
+          margin-right: 2px;
+          border: 1px solid #6ecdee;
+          border-width: 0 0 1px 0;
+        }
+        as530-element #Electricity #TopDisplay #RadioPart .RadioPartBoxBorderV3 {
+          background-color: black;
+          height: 1px;
+          margin-left: 1px;
+        }
+        as530-element #Electricity #TopDisplay #RadioPart .RadioPartBoxBorderV4 {
+          background-color: white;
+          height: 1px;
+          margin-left: 2px;
+          margin-right: 1px;
+        }
+        as530-element #Electricity #TopDisplay #RadioPart #ComDisplay, as530-element #Electricity #TopDisplay #RadioPart #VlocDisplay, as530-element #Electricity #TopDisplay #RadioPart #VorRadDisDisplay, as530-element #Electricity #TopDisplay #RadioPart #RadioBotDisplay {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          width: 100%;
+          border: 1px solid #6ecdee;
+          border-width: 1px 0 0 1px;
           font-size: calc(5.1282051282vh); }
-        as530-element #Electricity #TopDisplay #RadioPart #VlocDisplay {
-          margin-top: calc(0.4273504274vh);
-          margin-bottom: calc(0.4273504274vh); }
         as530-element #Electricity #TopDisplay #RadioPart .ActiveFreq {
-          font-size: calc(8.1196581197vh);
+          font-size: calc(7.5vh);
           line-height: calc(6.4102564103vh);
           color: white; }
         as530-element #Electricity #TopDisplay #RadioPart .StandbyFreq {
-          font-size: calc(8.1196581197vh);
+          font-size: calc(7.5vh);
 /*PM Modif: Frequency and VOR/LOC display */
           font-weight: normal;
 /*PM Modif: End Frequency and VOR/LOC display */
@@ -110,13 +154,12 @@ as530-element {
 /*PM Modif: Frequency and VOR/LOC display */
           font-weight: bold;
 /*PM Modif: End Frequency and VOR/LOC display */
-          background-color: #6ecdee; }
+          background-color: #8297df; }
         as530-element #Electricity #TopDisplay #RadioPart .FrecDecimals {
           font-size: calc(5.1282051282vh); }
         as530-element #Electricity #TopDisplay #RadioPart #VorRad {
 /*PM Modif: Frequency and VOR/LOC display */
-          border: calc(0.4273504274vh) solid #6ecdee; 
-          border-bottom: none;}
+          border: none; }
 /*PM Modif: End Frequency End VOR/LOC display */
           as530-element #Electricity #TopDisplay #RadioPart #VorRad #VOR, as530-element #Electricity #TopDisplay #RadioPart #VorRad #RAD {
             width: 100%;
@@ -126,17 +169,15 @@ as530-element {
 /*PM Modif: End Frequency End VOR/LOC display */
         as530-element #Electricity #TopDisplay #RadioPart #VOR, as530-element #Electricity #TopDisplay #RadioPart #RAD, as530-element #Electricity #TopDisplay #RadioPart #DIS {
           color: white;
+          padding-top: 3px;
+          padding-bottom: 2px;
           font-size: 5vh;
-/*PM Modif: Frequency and VOR/LOC display */
-          height: 7.4vh; }
-/*PM Modif: End Frequency End VOR/LOC display */
+        }
         as530-element #Electricity #TopDisplay #RadioPart #vorTitle, as530-element #Electricity #TopDisplay #RadioPart #radTitle, as530-element #Electricity #TopDisplay #RadioPart #disTitle {
           color: #6ecdee; }
 /*PM Modif: Frequency and VOR/LOC display */
           as530-element #Electricity #TopDisplay #RadioPart #VorRadDisSep {
-          border: calc(0.4273504274vh) solid #6ecdee;
-          border-top: none;
-          border-bottom: none;}
+          border: none; }
         as530-element #Electricity #TopDisplay #RadioPart #VorRadDisSep hr{
           height: 1px;
           border: none;
@@ -145,25 +186,27 @@ as530-element {
           width: 90%; }
  /*PM Modif: End Frequency End VOR/LOC display */
         as530-element #Electricity #TopDisplay #RadioPart #DIS {
-          border: calc(0.4273504274vh) solid #6ecdee;
-/*PM Modif: Frequency and VOR/LOC display */
-          border-top: none;
-          height: 12%;
-          padding-top: 3vh;
-/*PM Modif: End Frequency End VOR/LOC display */
+          border: none;
           display: flex;
           width: 100%; }
           as530-element #Electricity #TopDisplay #RadioPart #DIS div {
             width: 45%; }
           as530-element #Electricity #TopDisplay #RadioPart #DIS .unit {
             width: 9%; }
-        as530-element #Electricity #TopDisplay #RadioPart #BotRadioPartTop, as530-element #Electricity #TopDisplay #RadioPart #BotRadioPartMid, as530-element #Electricity #TopDisplay #RadioPart #BotRadioPartBot {
+        as530-element #Electricity #TopDisplay #RadioPart #RadioBotDisplay #BotRadioPartTop, as530-element #Electricity #TopDisplay #RadioPart #RadioBotDisplay #BotRadioPartMid, as530-element #Electricity #TopDisplay #RadioPart #RadioBotDisplay #BotRadioPartBot {
           background-color: black;
-          border: calc(0.4273504274vh) solid #6ecdee;
+          width: 100%;
+          min-height: 5vh;
           text-align: center;
-          height: 6%;
+          border: none;
           color: #4ce22c;
-          font-size: 4vh; }
+          margin-right: -1px;
+          font-size: 4vh;
+        }
+        as530-element #Electricity #TopDisplay #RadioPart #RadioBotDisplay #BotRadioPartMid {
+          border: 1px solid #6ecdee;
+          border-width: 1px 0 1px 0;
+        }
       as530-element #Electricity #TopDisplay #GpsPart {
         transform: rotateX(0);
         position: absolute;
@@ -173,7 +216,7 @@ as530-element {
         height: 93%;
 /*PM End Modif: Look near original */
         width: 80%; }
-        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav, as530-element #Electricity #TopDisplay #GpsPart #MapNav, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav, as530-element #Electricity #TopDisplay #GpsPart #Map, as530-element #Electricity #TopDisplay #GpsPart #ComNav, as530-element #Electricity #TopDisplay #GpsPart #Position, as530-element #Electricity #TopDisplay #GpsPart #Satellite, as530-element #Electricity #TopDisplay #GpsPart #VNav, as530-element #Electricity #TopDisplay #GpsPart #Terrain, as530-element #Electricity #TopDisplay #GpsPart #DRCT, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as530-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
+        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav, as530-element #Electricity #TopDisplay #GpsPart #MapNav, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav, as530-element #Electricity #TopDisplay #GpsPart #ComNav, as530-element #Electricity #TopDisplay #GpsPart #Position, as530-element #Electricity #TopDisplay #GpsPart #Satellite, as530-element #Electricity #TopDisplay #GpsPart #VNav, as530-element #Electricity #TopDisplay #GpsPart #Terrain, as530-element #Electricity #TopDisplay #GpsPart #DRCT, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as530-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
         as530-element #Electricity #TopDisplay #GpsPart #Procedures, as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection, as530-element #Electricity #TopDisplay #GpsPart #AirportLocation, as530-element #Electricity #TopDisplay #GpsPart #AirportRunway, as530-element #Electricity #TopDisplay #GpsPart #AirportFrequency, as530-element #Electricity #TopDisplay #GpsPart #AirportApproach,
         as530-element #Electricity #TopDisplay #GpsPart #AirportArrival, as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture, as530-element #Electricity #TopDisplay #GpsPart #Intersection, as530-element #Electricity #TopDisplay #GpsPart #NDB, as530-element #Electricity #TopDisplay #GpsPart #VOR, as530-element #Electricity #TopDisplay #GpsPart #UserWaypoint, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirport, as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection,
         as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR, as530-element #Electricity #TopDisplay #GpsPart #NRSTUser, as530-element #Electricity #TopDisplay #GpsPart #NRSTCenter, as530-element #Electricity #TopDisplay #GpsPart #NRSTFlightService, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirspace, as530-element #Electricity #TopDisplay #GpsPart #COMSetup, as530-element #Electricity #TopDisplay #GpsPart #MSG {
@@ -184,7 +227,6 @@ as530-element {
         as530-element #Electricity #TopDisplay #GpsPart[state=DefaultNav] #DefaultNav,
         as530-element #Electricity #TopDisplay #GpsPart[state=MapNav] #MapNav,
         as530-element #Electricity #TopDisplay #GpsPart[state=TerrainNav] #TerrainNav,
-        as530-element #Electricity #TopDisplay #GpsPart[state=Map] #Map,
         as530-element #Electricity #TopDisplay #GpsPart[state=ComNav] #ComNav,
         as530-element #Electricity #TopDisplay #GpsPart[state=Position] #Position,
         as530-element #Electricity #TopDisplay #GpsPart[state=Satellite] #Satellite,

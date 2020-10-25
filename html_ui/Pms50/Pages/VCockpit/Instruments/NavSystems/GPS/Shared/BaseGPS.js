@@ -796,7 +796,6 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
         ]);
         // No data displayed by default
         this.toggleDataDisplay();
-        this.map.instrument.mapConfigId = 1;
         this.map.instrument.bingMapRef = EBingReference.PLANE;
     }
     onEvent(_event){
@@ -1656,8 +1655,8 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         this.selectedTransition = 0;
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.icaoSearchField.getWaypoint().UpdateApproaches();
         }
-        this.icaoSearchField.getWaypoint().UpdateApproaches();
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();

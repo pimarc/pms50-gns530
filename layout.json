@@ -1,6 +1,11 @@
 {
   "content": [
     {
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_PLANE_GNS530.svg",
+      "size": 4530,
+      "date": 132453631615266152
+    },
+    {
       "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.html",
       "size": 123,
       "date": 132453631615266152
@@ -228,11 +233,6 @@
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/north.png",
       "size": 734,
-      "date": 132453631615266152
-    },
-    {
-      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_PLANE.svg",
-      "size": 4530,
       "date": 132453631615266152
     },
     {

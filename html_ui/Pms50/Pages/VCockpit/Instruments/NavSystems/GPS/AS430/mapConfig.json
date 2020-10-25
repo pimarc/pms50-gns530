@@ -26,10 +26,10 @@
   "cityIconSize": 90,
 
   "airplaneIconSize": 160,
-  "airplaneIcon1": "ICON_MAP_PLANE",
-  "airplaneIcon2": "ICON_MAP_PLANE",
+  "airplaneIcon1": "ICON_MAP_PLANE_GNS530",
+  "airplaneIcon2": "ICON_MAP_PLANE_GNS530",
 
-  "imagesDir": "/Pms50/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/",
+  "imagesDir": "/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/",
 
   "runwayFillColor": "white",
   "runwayStrokeColor": "gray",

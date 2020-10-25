@@ -12,7 +12,6 @@ class AS430 extends BaseGPS {
             new NavSystemPageGroup("NAV", this, [
                 defaultNav,
                 mapNav,
-//                new NavSystemPage("Map", "Map", new NavSystemElementGroup([new MapInstrumentElement(), new GPS_MapInfos()])),
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav()),
                 new NavSystemPage("Position", "Position", new GPS_Position()),
             ]),
