@@ -1,16 +1,16 @@
 ﻿{
-  "waypointLabelFontSize": 46,
+  "waypointLabelFontSize": 40,
   "waypointLabelFontFamily": "Consolas",
-  "waypointLabelColor": "#3f4851",
-  "waypointLabelStrokeColor": "#3f3f3f",
-  "waypointLabelStrokeWidth": 0,
+  "waypointLabelColor": "black",
+  "waypointLabelStrokeColor": "#black",
+  "waypointLabelStrokeWidth": 10,
   "waypointLabelUseBackground": true,
   "waypointLabelBackgroundColor": "#ffffff",
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
   "waypointLabelBackgroundPadding": "5 5 5 5",
   "waypointLabelDistance": 12,
-  "waypointIconSize": 200,
+  "waypointIconSize": 120,
 
   "cityLabelFontSize": 24,
   "cityLabelFontFamily": "Consolas",
@@ -25,7 +25,7 @@
   "cityLabelDistance": 0.45,
   "cityIconSize": 90,
 
-  "airplaneIconSize": 160,
+  "airplaneIconSize": 80,
   "airplaneIcon1": "ICON_MAP_PLANE",
   "airplaneIcon2": "ICON_MAP_PLANE",
 
@@ -65,17 +65,23 @@
   "railwayWidth": 2,
   "railwayDashLength": 6,
 
-  "netBingMapTextureResolution": 1024,
+  "netBingTextureResolution": 1024,
+
   "netBingAltitudeColors1": [],
   "netBingWaterColor1": "#1c28c0",
   "netBingHeightColor1": [
     {
       "alt": 0,
-      "color": "#000000"
+      "color": "#dc0f1c"
     },
     {
-      "alt": 9000,
+      "alt": 500,
+      "color": "#b2aa1f"
+    },
+    {
+      "alt": 1000,
       "color": "#000000"
     }
   ]
 }
+

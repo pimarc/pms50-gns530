@@ -287,6 +287,7 @@ class GPS_BaseNavPage extends NavSystemPage {
             this.navCompass.setAttribute("style", "visibility: hidden");
         if(this.trkIndicator)
             this.trkIndicator.setAttribute("style", "visibility: hidden");
+        this.alwaysHideAirspacesAndRoads = false;
         this.setMapOrientation();
 // PM Modif: End Compass and Trackup
     }
@@ -328,10 +329,12 @@ class GPS_BaseNavPage extends NavSystemPage {
                 this.map.showRoads  = false;
             }
             else {
-                this.map.showAirspaces = true;
-                this.map.showRoads  = true;
-                if(this.map.roadNetwork)
-                    this.map.roadNetwork.setVisible(true);
+                if(!this.alwaysHideAirspacesAndRoads){
+                    this.map.showAirspaces = true;
+                    this.map.showRoads  = true;
+                    if(this.map.roadNetwork)
+                        this.map.roadNetwork.setVisible(true);
+                }
             }
             if(this.mrange)
                 Avionics.Utils.diffAndSet(this.mrange, this.mapDisplayRanges[this.map.rangeIndex]);
@@ -768,6 +771,141 @@ class GPS_MapNav extends NavSystemElement {
         this.gps.SwitchToInteractionState(0);
     }
 }
+
+
+
+class GPS_TerrainNavPage extends GPS_BaseNavPage {
+    constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7]) {
+        var cdiElem = new CDIElement();
+        var baseElem = new GPS_TerrainNav(_customValuesNumber, _customValuesDefaults);
+        super("TerrainNav", "TerrainNav", new NavSystemElementGroup([baseElem, cdiElem]));
+        this.cdiElement = cdiElem;
+        this.baseElem = baseElem;
+
+    }
+    init() {
+        super.init(3, true, "110%", "66%", 1.47, 1.53);
+        this.alwaysHideAirspacesAndRoads = true;
+        if(this.map.roadNetwork)
+            this.map.roadNetwork.setVisible(false);
+        this.map.showAirspaces = false;
+        this.map.showRoads  = false;
+        this.displayData = true;
+        this.defaultMenu = new ContextualMenu("PAGE MENU", [
+            new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
+        ]);
+        // No data displayed by default
+        this.toggleDataDisplay();
+        this.map.instrument.mapConfigId = 1;
+        this.map.instrument.bingMapRef = EBingReference.PLANE;
+    }
+    onEvent(_event){
+        super.onEvent(_event);
+        if (_event == "CLR_Push")  {
+            this.gps.closePopUpElement();
+            this.gps.currentContextualMenu = null;
+            this.gps.SwitchToInteractionState(0);
+        }
+        if (_event == "MENU_Push")  {
+            // Unblock declutter when leving menu
+            this.gps.currentContextualMenu = null;
+        }
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+        this.map.instrument.bingMapRef = EBingReference.PLANE;
+    }
+    restoreDefaults() {
+        this.gps.SwitchToInteractionState(0);
+    }
+    toggleMapOrientation() {
+        super.toggleMapOrientation();
+    }
+    toggleDataDisplay(){
+    }
+    changeFieldsStateCB() {
+        return !this.displayData;
+    }
+}
+
+
+
+class GPS_TerrainNav extends NavSystemElement {
+    constructor(_customValuesNumber = 6, _customValuesDefaults = [16, 3, 0, 9, 10, 7]) {
+        super(_customValuesNumber, _customValuesDefaults);
+        this.dnCustoms = [];
+        this.legSymbol = 0;
+        this.name = "TerrainNav";
+        this.customValuesNumber = _customValuesNumber;
+        this.customValuesDefault = _customValuesDefaults;
+    }
+    init() {
+        this.dnCustoms = [];
+        this.dnCustomSelectableArray = [];
+        for (let i = 0; i < this.customValuesNumber; i++) {
+            let num = i + 1;
+            this.dnCustoms.push(new CustomValue(this.gps, "TNName" + num, "TNValue" + num, "TNUnit" + num));
+            this.dnCustomSelectableArray.push(new SelectableElement(this.gps, this.dnCustoms[i].nameDisplay, this.customValueSelect_CB.bind(this, i)));
+        }
+        this.dnCustomFieldSelectorMenu = new ContextualMenu("SELECT&nbsp;FIELD&nbsp;TYPE", [
+            new ContextualMenuElement("BRG&nbsp;&nbsp;-&nbsp;Bearing", this.customValueSet_CB.bind(this, 0)),
+            new ContextualMenuElement("CTS&nbsp;&nbsp;-&nbsp;Course&nbsp;To&nbsp;Steer", this.customValueSet_CB.bind(this, 1)),
+            new ContextualMenuElement("XTK&nbsp;&nbsp;-&nbsp;Cross&nbsp;Track&nbsp;Err", this.customValueSet_CB.bind(this, 2)),
+            new ContextualMenuElement("DTK&nbsp;&nbsp;-&nbsp;Desired&nbsp;Track", this.customValueSet_CB.bind(this, 3)),
+            new ContextualMenuElement("DIS&nbsp;&nbsp;-&nbsp;Distance", this.customValueSet_CB.bind(this, 4)),
+            new ContextualMenuElement("ESA&nbsp;&nbsp;-&nbsp;Enrte&nbsp;Safe&nbsp;Alt", this.customValueSet_CB.bind(this, 5)),
+            new ContextualMenuElement("ETA&nbsp;&nbsp;-&nbsp;Est&nbsp;Time&nbsp;Arvl", this.customValueSet_CB.bind(this, 6)),
+            new ContextualMenuElement("ETE&nbsp;&nbsp;-&nbsp;Est&nbsp;Time&nbsp;Enrte", this.customValueSet_CB.bind(this, 7)),
+            new ContextualMenuElement("FLOW&nbsp;-&nbsp;Fuel&nbsp;Flow", this.customValueSet_CB.bind(this, 8)),
+            new ContextualMenuElement("GS&nbsp;&nbsp;&nbsp;-&nbsp;Ground&nbsp;Speed", this.customValueSet_CB.bind(this, 9)),
+            new ContextualMenuElement("TRK&nbsp;&nbsp;-&nbsp;Ground&nbsp;Track", this.customValueSet_CB.bind(this, 10)),
+            new ContextualMenuElement("MSA&nbsp;&nbsp;-&nbsp;Min&nbsp;Safe&nbsp;Alt", this.customValueSet_CB.bind(this, 11)),
+            new ContextualMenuElement("TKE&nbsp;&nbsp;-&nbsp;Track&nbsp;Angle&nbsp;Err", this.customValueSet_CB.bind(this, 12)),
+            new ContextualMenuElement("VSR&nbsp;-&nbsp;Vert&nbsp;Speed&nbsp;Rqrd", this.customValueSet_CB.bind(this, 13)),
+//PM Modif: Adding ALT, BARO and WPT to custom values
+            new ContextualMenuElement("ALT&nbsp;-&nbsp;Altitude", this.customValueSet_CB.bind(this, 14)),
+            new ContextualMenuElement("BARO&nbsp;-&nbsp;Baro", this.customValueSet_CB.bind(this, 15)),
+            new ContextualMenuElement("WPT&nbsp;-&nbsp;Target&nbsp;Waypoint", this.customValueSet_CB.bind(this, 16)),
+//PM Modif: End Adding ALT, BARO and WPT to custom values
+        ]);
+        this.restoreCustomValues();
+        }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+        for (var i = 0; i < this.dnCustoms.length; i++) {
+            this.dnCustoms[i].Update();
+        }
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+    customValueSelect_CB(_param, _event) {
+        switch (_event) {
+            case "RightSmallKnob_Right":
+            case "RightSmallKnob_Left":
+                this.selectedCustomValueIndex = _param;
+                this.gps.ShowContextualMenu(this.dnCustomFieldSelectorMenu);
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+    customValueSet_CB(_param) {
+        this.dnCustoms[this.selectedCustomValueIndex].valueIndex = _param;
+        this.gps.SwitchToInteractionState(1);
+        this.gps.cursorIndex = this.selectedCustomValueIndex;
+    }
+    restoreCustomValues() {
+        for (let i = 0; i < this.customValuesNumber; i++) {
+            this.dnCustoms[i].valueIndex = this.customValuesDefault[i];
+        }
+        this.gps.SwitchToInteractionState(0);
+    }
+}
+
 
 
 class GPS_ComNav extends NavSystemElement {

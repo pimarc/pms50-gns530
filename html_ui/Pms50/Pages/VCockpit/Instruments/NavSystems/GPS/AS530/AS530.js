@@ -8,10 +8,13 @@ class AS530 extends BaseGPS {
         defaultNav.element.addElement(new MapInstrumentElement());
         var mapNav = new GPS_MapNavPage(5, [16, 3, 10, 4, 9]);
         mapNav.element.addElement(new MapInstrumentElement());
+        var terrainNav = new GPS_TerrainNavPage(0, []);
+        terrainNav.element.addElement(new MapInstrumentElement());
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
                 defaultNav,
                 mapNav,
+                terrainNav,
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav(8)),
             ]),
             new NavSystemPageGroup("WPT", this, [

@@ -48,9 +48,9 @@ class NavSystem extends BaseInstrument {
         }
         this.currFlightPlan = new FlightPlan(this);
 //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
-//        Include.addScript("/JS/debug.js", function () {
-//            g_modDebugMgr.AddConsole(null);
-//        });
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
 //PM Modif: End Add debugging tool WebUI-DevKit (must be on the community folder)
     }
     disconnectedCallback() {

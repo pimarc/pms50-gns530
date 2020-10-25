@@ -57,7 +57,7 @@ as530-element {
     height: 100%; }
   as530-element #Electricity {
     color: #4ce22c;
-    background-color: #11118c;
+    background-color: #1c2878;
 /*PM Modif: Font weight set to normal
     font-weight: bold;
 */
@@ -106,7 +106,7 @@ as530-element {
           width:100%; }
 /*PM Modif: End Frequency and VOR/LOC display */
         as530-element #Electricity #TopDisplay #RadioPart .StandbyFreq[state=Selected] {
-          color: #11118c;
+          color: #1c2878;
 /*PM Modif: Frequency and VOR/LOC display */
           font-weight: bold;
 /*PM Modif: End Frequency and VOR/LOC display */
@@ -173,7 +173,7 @@ as530-element {
         height: 93%;
 /*PM End Modif: Look near original */
         width: 80%; }
-        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav, as530-element #Electricity #TopDisplay #GpsPart #MapNav, as530-element #Electricity #TopDisplay #GpsPart #Map, as530-element #Electricity #TopDisplay #GpsPart #ComNav, as530-element #Electricity #TopDisplay #GpsPart #Position, as530-element #Electricity #TopDisplay #GpsPart #Satellite, as530-element #Electricity #TopDisplay #GpsPart #VNav, as530-element #Electricity #TopDisplay #GpsPart #Terrain, as530-element #Electricity #TopDisplay #GpsPart #DRCT, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as530-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
+        as530-element #Electricity #TopDisplay #GpsPart #DefaultNav, as530-element #Electricity #TopDisplay #GpsPart #MapNav, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav, as530-element #Electricity #TopDisplay #GpsPart #Map, as530-element #Electricity #TopDisplay #GpsPart #ComNav, as530-element #Electricity #TopDisplay #GpsPart #Position, as530-element #Electricity #TopDisplay #GpsPart #Satellite, as530-element #Electricity #TopDisplay #GpsPart #VNav, as530-element #Electricity #TopDisplay #GpsPart #Terrain, as530-element #Electricity #TopDisplay #GpsPart #DRCT, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as530-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
         as530-element #Electricity #TopDisplay #GpsPart #Procedures, as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection, as530-element #Electricity #TopDisplay #GpsPart #AirportLocation, as530-element #Electricity #TopDisplay #GpsPart #AirportRunway, as530-element #Electricity #TopDisplay #GpsPart #AirportFrequency, as530-element #Electricity #TopDisplay #GpsPart #AirportApproach,
         as530-element #Electricity #TopDisplay #GpsPart #AirportArrival, as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture, as530-element #Electricity #TopDisplay #GpsPart #Intersection, as530-element #Electricity #TopDisplay #GpsPart #NDB, as530-element #Electricity #TopDisplay #GpsPart #VOR, as530-element #Electricity #TopDisplay #GpsPart #UserWaypoint, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirport, as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection,
         as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR, as530-element #Electricity #TopDisplay #GpsPart #NRSTUser, as530-element #Electricity #TopDisplay #GpsPart #NRSTCenter, as530-element #Electricity #TopDisplay #GpsPart #NRSTFlightService, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirspace, as530-element #Electricity #TopDisplay #GpsPart #COMSetup, as530-element #Electricity #TopDisplay #GpsPart #MSG {
@@ -183,6 +183,7 @@ as530-element {
           position: absolute; }
         as530-element #Electricity #TopDisplay #GpsPart[state=DefaultNav] #DefaultNav,
         as530-element #Electricity #TopDisplay #GpsPart[state=MapNav] #MapNav,
+        as530-element #Electricity #TopDisplay #GpsPart[state=TerrainNav] #TerrainNav,
         as530-element #Electricity #TopDisplay #GpsPart[state=Map] #Map,
         as530-element #Electricity #TopDisplay #GpsPart[state=ComNav] #ComNav,
         as530-element #Electricity #TopDisplay #GpsPart[state=Position] #Position,
@@ -377,7 +378,7 @@ as530-element {
             top: 27%; }
 /* PM Modif: EndChanging TRK position */
 /* PM Modif: Range display */
-          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 {
+          as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 {
             position: absolute;
             background-color: black;
             bottom: 25%;
@@ -386,14 +387,14 @@ as530-element {
             color: #6ecdee;
             font-size: 4.5vh;
             line-height: 4.5vh; }
-            as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 {
+            as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 {
               bottom: 2%; }
-            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1 #MapRangeUnit1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapRangeUnit2 {
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1 #MapRangeUnit1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapRangeUnit2, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 #MapRangeUnit3 {
               position: relative;
               left: -1vh;
               font-size: 2.2vh;
               line-height: 2.2vh; }
-            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1 #MapDeclutterLevel1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapDeclutterLevel2 {
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1 #MapDeclutterLevel1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapDeclutterLevel2, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 #MapDeclutterLevel3 {
               position: relative;
               left: -1vh;}
 /* PM Modif: End Range display */
@@ -422,7 +423,7 @@ as530-element {
           height: 10%; }
 /* PM Modif: End Trk indicator */
 /* PM Modif: North indicator */
-        as530-element #Electricity #TopDisplay #GpsPart #MapNav #NorthIndicator2 {
+        as530-element #Electricity #TopDisplay #GpsPart #MapNav #NorthIndicator2, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #NorthIndicator3 {
           position: absolute;
           z-index: 1;
           display: flex;
@@ -472,6 +473,20 @@ as530-element {
             height: calc(8.547008547vh);
             color: #4ce22c;
             border: calc(0.4273504274vh) solid #6ecdee; }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #MapInstrument3 {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: black;
+            overflow: hidden; }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #MapInstrument3 bing-map {
+            transform: rotateX(0);
+            position: absolute;
+            left: 0;
+            right: 0; }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #MapInstrument2 #MapSVG {
+            transform: rotateX(0);
+            position: absolute; }
         as530-element #Electricity #TopDisplay #GpsPart #Terrain {
           position: absolute;
           height: 100%;
@@ -705,7 +720,7 @@ as530-element {
           height: 100%;
           top: 0%;
           display: none;
-          background-color: #11118c; }
+          background-color: #1c2878; }
           as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection[state=Active] {
             display: block; }
           as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .Title {
@@ -733,7 +748,7 @@ as530-element {
           width: 100%;
           height: 100%;
           display: none;
-          background-color: #11118c; }
+          background-color: #1c2878; }
           as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection[state=Active] {
             display: block; }
           as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection .topLine {
@@ -761,7 +776,7 @@ as530-element {
             top: 10vh;
             left: 30vh;
             right: 30vh;
-            background-color: #11118c;
+            background-color: #1c2878;
             border: 1vh solid white;
             color: white;
             text-align: left;
@@ -769,7 +784,7 @@ as530-element {
             as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SelectableWhite {
               color: white; }
               as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SelectableWhite[state=Selected] {
-                color: #11118c;
+                color: #1c2878;
                 background-color: white; }
             as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .title {
               color: #6ecdee;
@@ -779,7 +794,7 @@ as530-element {
             as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu[state=Inactive] {
               visibility: hidden; }
             as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .InnerBorder {
-              border: 2vh outset #11118c; }
+              border: 2vh outset #1c2878; }
             as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SliderContainer {
               width: 100%;
               border-top: 1vh solid #6ecdee; }
@@ -804,7 +819,7 @@ as530-element {
           width: 100%;
           height: 100%;
           display: none;
-          background-color: #11118c; }
+          background-color: #1c2878; }
           as530-element #Electricity #TopDisplay #GpsPart #ArrivalSelection[state=Active] {
             display: block; }
           as530-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .topLine {
@@ -832,7 +847,7 @@ as530-element {
             top: 10vh;
             left: 30vh;
             right: 30vh;
-            background-color: #11118c;
+            background-color: #1c2878;
             border: 1vh solid white;
             color: white;
             text-align: left;
@@ -840,7 +855,7 @@ as530-element {
             as530-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SelectableWhite {
               color: white; }
               as530-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SelectableWhite[state=Selected] {
-                color: #11118c;
+                color: #1c2878;
                 background-color: white; }
             as530-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .title {
               color: #6ecdee;
@@ -850,7 +865,7 @@ as530-element {
             as530-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu[state=Inactive] {
               visibility: hidden; }
             as530-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .InnerBorder {
-              border: 2vh outset #11118c; }
+              border: 2vh outset #1c2878; }
             as530-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SliderContainer {
               width: 100%;
               border-top: 1vh solid #6ecdee; }
@@ -875,7 +890,7 @@ as530-element {
           width: 100%;
           height: 100%;
           display: none;
-          background-color: #11118c; }
+          background-color: #1c2878; }
           as530-element #Electricity #TopDisplay #GpsPart #DepartureSelection[state=Active] {
             display: block; }
           as530-element #Electricity #TopDisplay #GpsPart #DepartureSelection .topLine {
@@ -903,7 +918,7 @@ as530-element {
             top: 10vh;
             left: 30vh;
             right: 30vh;
-            background-color: #11118c;
+            background-color: #1c2878;
             border: 1vh solid white;
             color: white;
             text-align: left;
@@ -911,7 +926,7 @@ as530-element {
             as530-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SelectableWhite {
               color: white; }
               as530-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SelectableWhite[state=Selected] {
-                color: #11118c;
+                color: #1c2878;
                 background-color: white; }
             as530-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .title {
               color: #6ecdee;
@@ -921,7 +936,7 @@ as530-element {
             as530-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu[state=Inactive] {
               visibility: hidden; }
             as530-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .InnerBorder {
-              border: 2vh outset #11118c; }
+              border: 2vh outset #1c2878; }
             as530-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SliderContainer {
               width: 100%;
               border-top: 1vh solid #6ecdee; }
@@ -1173,14 +1188,14 @@ as530-element {
           as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu #ContextualMenuWhiteBorder {
             border: calc(0.4273504274vh) solid white; }
           as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu #ContextualMenuContent {
-            border: calc(2.1367521368vh) outset #11118c;
-            background-color: #11118c; }
+            border: calc(2.1367521368vh) outset #1c2878;
+            background-color: #1c2878; }
             as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu #ContextualMenuContent #ContextualMenuTitle {
               color: #6ecdee;
               width: auto;
               max-width: 100%; }
             as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu #ContextualMenuContent #ContextualMenuSeparator {
-              border: calc(0.8547008547vh) inset #11118c; }
+              border: calc(0.8547008547vh) inset #1c2878; }
             as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu #ContextualMenuContent #ContextualMenuMainArea {
               position: relative;
               padding-right: calc(4.2735042735vh);
@@ -1191,7 +1206,7 @@ as530-element {
                 as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu #ContextualMenuContent #ContextualMenuMainArea .ContextualMenuElement[state=Inactive] {
                   color: slategrey; }
                 as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu #ContextualMenuContent #ContextualMenuMainArea .ContextualMenuElement[state=Selected] {
-                  color: #11118c;
+                  color: #1c2878;
                   background-color: white; }
                 as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu #ContextualMenuContent #ContextualMenuMainArea .ContextualMenuElement[state=Unselected] {
                   color: white; }
@@ -1218,11 +1233,11 @@ as530-element {
           right: 10%;
           top: 10%;
           bottom: 10%;
-          background-color: #11118c;
+          background-color: #1c2878;
           border: 0.5vh solid white; }
           as530-element #Electricity #TopDisplay #GpsPart #DuplicateWaypointWindow .internalBorder {
             position: absolute;
-            border: 3vh outset #11118c;
+            border: 3vh outset #1c2878;
             width: 100%;
             height: 100%; }
           as530-element #Electricity #TopDisplay #GpsPart #DuplicateWaypointWindow .title {
@@ -1241,7 +1256,7 @@ as530-element {
             height: 9vh;
             margin-left: 10%; }
             as530-element #Electricity #TopDisplay #GpsPart #DuplicateWaypointWindow .Line[state=Selected] {
-              color: #11118c;
+              color: #1c2878;
               background-color: white; }
             as530-element #Electricity #TopDisplay #GpsPart #DuplicateWaypointWindow .Line img {
               height: 10vh;
@@ -1275,7 +1290,7 @@ as530-element {
           width: 60%;
           left: 25%;
           color: white;
-          background-color: #11118c;
+          background-color: #1c2878;
           text-align: center;
           font-size: 5vh;
           border: 0.4vh solid white; }
@@ -1289,7 +1304,7 @@ as530-element {
           as530-element #Electricity #TopDisplay #GpsPart #ConfirmationWindow #CW_ConfirmationWindowText, as530-element #Electricity #TopDisplay #GpsPart #AlertWindow #CW_AlertWindowText {
             text-align: center;}
           as530-element #Electricity #ConfirmationWindow  .gradientButton[state=Selected], as530-element #Electricity #AlertWindow  .gradientButton[state=Selected] {
-            color: #11118c;
+            color: #1c2878;
             background-color: #6ecdee; }
 /*PM Modif: End Confirmation and alert window*/
       as530-element #Electricity #BotDisplay {
@@ -1332,7 +1347,7 @@ as530-element {
 /*PM Modif: Look near original */
         padding-left: 2vh;
         color: white;
-        background-color: #11118c;
+        background-color: #1c2878;
         border-top: calc(0.4273504274vh) solid #6ecdee; }
       as530-element #Electricity #BotDisplay #LeftBot {
         transform: rotateX(0);
@@ -1380,13 +1395,13 @@ as530-element {
     as530-element #Electricity .AlignLeft {
       text-align: left; }
     as530-element #Electricity .SelectableTitle[state=Selected] {
-      color: #11118c;
+      color: #1c2878;
       background-color: #6ecdee; }
     as530-element #Electricity div[state=Selected] .SelectableElement, as530-element #Electricity tr[state=Selected] .SelectableElement {
       color: black;
       background-color: #4ce22c; }
     as530-element #Electricity div[state=Selected] .SelectableTitle, as530-element #Electricity tr[state=Selected] .SelectableTitle {
-      color: #11118c;
+      color: #1c2878;
       background-color: #6ecdee; }
     as530-element #Electricity .SelectableElement[state=Selected] {
       color: black;
@@ -1395,7 +1410,7 @@ as530-element {
       color: white;
       text-align: center; }
       as530-element #Electricity .SelectableWhiteTitle[state=Selected] {
-        color: #11118c;
+        color: #1c2878;
         background-color: white; }
     as530-element #Electricity .Align {
       display: inline-block; }
@@ -1430,7 +1445,7 @@ as530-element {
     as530-element #Electricity img {
       image-rendering: pixelated; }
     as530-element #Electricity table {
-      background-color: #11118c;
+      background-color: #1c2878;
       font-size: inherit;
       line-height: inherit;
       margin-top: calc(0.8547008547vh);
@@ -1439,11 +1454,11 @@ as530-element {
       as530-element #Electricity table thead {
         border: none; }
       as530-element #Electricity table tr, as530-element #Electricity table thead.tr, as530-element #Electricity table tbody.tr {
-        background-color: #11118c;
+        background-color: #1c2878;
         border: none;
         height: calc(6.4102564103vh); }
         as530-element #Electricity table tr td, as530-element #Electricity table tr th, as530-element #Electricity table thead.tr td, as530-element #Electricity table thead.tr th, as530-element #Electricity table tbody.tr td, as530-element #Electricity table tbody.tr th {
-          background-color: #11118c;
+          background-color: #1c2878;
           height: inherit;
           text-align: left;
           border: none;

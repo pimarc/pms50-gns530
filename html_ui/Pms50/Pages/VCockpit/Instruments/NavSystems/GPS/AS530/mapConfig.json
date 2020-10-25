@@ -25,11 +25,11 @@
   "cityLabelDistance": 0.45,
   "cityIconSize": 90,
 
-  "airplaneIconSize": 120,
+  "airplaneIconSize": 80,
   "airplaneIcon1": "ICON_MAP_PLANE",
   "airplaneIcon2": "ICON_MAP_PLANE",
 
-  "imagesDir": "/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/",
+  "imagesDir": "/Pms50/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/",
 
   "runwayFillColor": "white",
   "runwayStrokeColor": "gray",
@@ -67,7 +67,7 @@
 
   "netBingTextureResolution": 1024,
   "netBingAltitudeColors1": [],
-  "netBingWaterColor1": "#0000ff",
+  "netBingWaterColor1": "#1c28c0",
   "netBingHeightColor1": [
     {
       "alt": 0,
