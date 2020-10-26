@@ -37,7 +37,7 @@ class CustomValue {
             case 2:
                 this.nameDisplay.textContent = "XTK";
                 this.unitDisplay.innerHTML = "n<br/>m";
-                this.valueDisplay.textContent = !flightPlanActive ? "___._" : fastToFixed(SimVar.GetSimVarValue("GPS WP CROSS TRK", "nautical mile"), 1);
+                this.valueDisplay.textContent = !flightPlanActive ? "___._" : (Math.round((SimVar.GetSimVarValue("GPS WP CROSS TRK", "Nautical Miles")*10))/10).toFixed(1);
                 break;
             case 3:
                 this.nameDisplay.textContent = "DTK";
@@ -55,7 +55,7 @@ class CustomValue {
             case 4:
                 this.nameDisplay.textContent = "DIS";
                 this.unitDisplay.innerHTML = "n<br/>m";
-                this.valueDisplay.textContent = !flightPlanActive ? "___._" : fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical mile"), 1);
+                this.valueDisplay.textContent = !flightPlanActive ? "___._" : (Math.round((SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles")*10))/10).toFixed(1);
                 break;
             case 5:
                 this.nameDisplay.textContent = "ESA";
