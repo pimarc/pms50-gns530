@@ -248,6 +248,45 @@ class BaseGPS extends NavSystem {
 
 }
 
+class GPS_CDIElement extends NavSystemElement {
+    init(_root) {
+        this.cdiCursor = this.gps.getChildById("CDICursor");
+        this.toFrom = this.gps.getChildById("CDIToFrom");
+        this.botLeft = this.gps.getChildById("CDIBotLeft");
+        this.botRight = this.gps.getChildById("CDIBotRight");
+        this.mark1 = this.gps.getChildById("CDIMark1");
+        this.mark2 = this.gps.getChildById("CDIMark2");
+        this.mark3 = this.gps.getChildById("CDIMark3");
+        this.mark4 = this.gps.getChildById("CDIMark4");
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+        var dtk = fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"),2);
+        var brg = fastToFixed(SimVar.GetSimVarValue("GPS WP BEARING", "degree"),2);
+        var dtkminusbrg = ((dtk - brg) + 360) %360;
+        var CTD = SimVar.GetSimVarValue("GPS WP CROSS TRK", "Nautical Miles");
+        var displayedCTD = (Math.round(Math.abs(CTD)*10)/10).toFixed(1);
+        var limit = 2.4;
+        // On the original GPS if the distance to next WP is less than 30nm, the limit to display the sursor is 1.2nm
+        if(SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 30)
+            limit = 1.2;
+        this.toFrom.innerHTML = "<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_tofrom.png\"" + ((dtkminusbrg > 90 && dtkminusbrg < 270) ? " style=\"transform: rotate(180deg);margin-top: 3vh;\" />" : " />");
+        this.botLeft.innerHTML = (CTD < -limit) ? "<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png\"/>&nbsp;" + displayedCTD : "";
+        this.botRight.innerHTML = (CTD > limit) ? displayedCTD + "&nbsp;<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png\"/>" : "";
+        this.mark1.setAttribute("style", "visibility: " + ((CTD > limit || (-limit <= CTD && CTD <= limit)) ? "visible;" : "hidden;"));
+        this.mark2.setAttribute("style", "visibility: " + ((CTD > limit || (-limit <= CTD && CTD <= limit)) ? "visible;" : "hidden;"));
+        this.mark3.setAttribute("style", "visibility: " + ((CTD < -limit || (-limit <= CTD && CTD <= limit)) ? "visible;" : "hidden;"));
+        this.mark4.setAttribute("style", "visibility: " + ((CTD < -limit || (-limit <= CTD && CTD <= limit)) ? "visible;" : "hidden;"));
+        this.cdiCursor.setAttribute("style", "visibility: " + ((-limit <= CTD && CTD <= limit) ? "visible;" : "hidden;") + " left:" + ((CTD <= -limit ? -1 : CTD/limit >= limit ? 1 : CTD/limit) * 50 + 50) + "%;");
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+}
+
+
 // PM Modif adding base class for all nav pages with a map
 class GPS_BaseNavPage extends NavSystemPage {
     constructor() {
@@ -410,8 +449,13 @@ class GPS_BaseNavPage extends NavSystemPage {
 }
 
 class GPS_DefaultNavPage extends GPS_BaseNavPage {
-    constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7]) {
-        var cdiElem = new CDIElement();
+    constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7], gpsType = "530") {
+        if(gpsType == "530") {
+            var cdiElem = new GPS_CDIElement();
+        }
+        else {
+            var cdiElem = new CDIElement();
+        }
         var baseElem = new GPS_DefaultNav(_customValuesNumber, _customValuesDefaults);
         super("DefaultNav", "DefaultNav", new NavSystemElementGroup([baseElem, cdiElem]));
         this.cdiElement = cdiElem;

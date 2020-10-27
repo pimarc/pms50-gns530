@@ -17,6 +17,13 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.7
+- The CDI look and behavior conform to the original
+- Added a a terrain map NAV page
+- Always one decimal on DIS and XTK displays
+- Radio part look conform to the original
+- Changed colors
+- Some minor corrections
 ## V 1.0.6
 - First declutter level hides roads and airspaces
 - DME distance correctly rounded

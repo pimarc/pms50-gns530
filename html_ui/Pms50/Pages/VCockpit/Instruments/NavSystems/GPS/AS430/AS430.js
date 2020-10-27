@@ -4,7 +4,7 @@ class AS430 extends BaseGPS {
         this.gpsType = "430";
         super.connectedCallback();
         this.menuMaxElems = 11;
-        var defaultNav = new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7]);
+        var defaultNav = new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7], "430");
         defaultNav.element.addElement(new MapInstrumentElement());
         var mapNav = new GPS_MapNavPage(4, [16, 3, 4, 9]);
         mapNav.element.addElement(new MapInstrumentElement());

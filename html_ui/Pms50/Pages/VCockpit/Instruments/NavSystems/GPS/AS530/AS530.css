@@ -288,7 +288,7 @@ as530-element {
             border: 1px solid #6ecdee;
             height: 10%;
             width: 50%;
-            color: #6ecdee;
+            font-weight: bold;
             font-size: 4vh; }
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIBackground {
               position: absolute;
@@ -297,21 +297,68 @@ as530-element {
               height: 100%;
               width: 100%; }
               as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIBackground img {
-                width: 100%; }
+                width: 100%;
+              }
+              as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIToFrom {
+                position: absolute;
+                left: 50%;
+                margin-left: -5vh;
+                text-align: center;
+                width: 9vh;
+              }
+              as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIToFrom img {
+                width: 10vh;
+              }
+              as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIBotLeft {
+                position: absolute;
+                bottom: 2vh;
+                left: 2vh;
+              }
+              as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIBotLeft img {
+                vertical-align: middle;
+                width: 7vh;
+              }
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIBotLeft {
               position: absolute;
-              bottom: calc(0vh);
-              left: calc(0.8547008547vh); }
+              bottom: 2vh;
+              left: 2vh;
+            }
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIBotRight {
               position: absolute;
-              bottom: calc(0vh);
-              right: calc(0.8547008547vh); }
+              bottom: 2vh;
+              right: 2vh;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIBotRight img{
+              vertical-align: middle;
+              width: 7vh;
+              transform: rotate(180deg);
+            }
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #ToFrom {
               position: absolute;
               width: 10%;
-              left: 45%; }
-              as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #ToFrom img {
-                width: 100%; }
+              left: 45%;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIMark1, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIMark2, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIMark3, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIMark4 {
+              position: absolute;
+              color:white;
+              font-size: 4vh;
+              padding-top: 1.5vh;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIMark1 {
+              left: 10%;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIMark2 {
+              left: 30%;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIMark3 {
+              right: 30%;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDIMark4 {
+              right: 10%;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #ToFrom img {
+              width: 100%;
+            }
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CDI #CDICursor {
               position: absolute;
               border: 1px solid #4ce22c;
@@ -1384,7 +1431,7 @@ as530-element {
       as530-element #Electricity #BotDisplay #RightBot {
         transform: rotateX(0);
         position: absolute;
-        width: 40%;
+        width: 47%;
         right: 0%;
 /*PM Modif: Look near original */
         padding-left: 2vh;
@@ -1395,7 +1442,7 @@ as530-element {
         transform: rotateX(0);
         position: absolute;
         padding-left: 4vh;
-        width: 60%;
+        width: 53%;
         left: 0%;
         background-color: black;
         border: calc(0.4273504274vh) solid #6ecdee;

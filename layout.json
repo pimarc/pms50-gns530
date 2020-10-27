@@ -236,6 +236,16 @@
       "date": 132453631615266152
     },
     {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png",
+      "size": 734,
+      "date": 132453631615266152
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_tofrom.png",
+      "size": 734,
+      "date": 132453631615266152
+    },
+    {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html",
       "size": 5195,
       "date": 132453631615266152
