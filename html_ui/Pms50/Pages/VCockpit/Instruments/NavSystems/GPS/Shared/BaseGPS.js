@@ -206,7 +206,11 @@ class BaseGPS extends NavSystem {
         }
         if ((this.currFlightPlanManager.getActiveWaypointIndex() != -1) && (this.currFlightPlanManager.getActiveWaypointIndex() <= this.currFlightPlanManager.getLastIndexBeforeApproach())) {
             Coherent.call("DEACTIVATE_APPROACH").then(() => {
-                Coherent.call("ACTIVATE_APPROACH");
+//                this.currFlightPlanManager.activateApproach();
+                Coherent.call("ACTIVATE_APPROACH").then(() => {
+                    this.currFlightPlanManager._approachActivated = true;
+                    this.currFlightPlanManager.updateCurrentApproach();
+                });
             });
         }
         else {
@@ -228,18 +232,11 @@ class BaseGPS extends NavSystem {
             };
 
             removeWaypointForApproachMethod(() => {
-                Coherent.call("DEACTIVATE_APPROACH").then(() => {
-                    Coherent.call("ACTIVATE_APPROACH");
-                });
-/*                this.currFlightPlanManager.activateApproach((function(){
-                    if(this.currFlightPlanManager.isActiveApproach()){
-                        console.log("Approach activated");
-                    }
-                    else{
-                        console.log("Approach not activated");
-                    }
-                }).bind(this));*/
-//                this.currFlightPlanManager.activateApproach();
+//                    this.currFlightPlanManager.activateApproach();
+                    Coherent.call("ACTIVATE_APPROACH").then(() => {
+                        this.currFlightPlanManager._approachActivated = true;
+                        this.currFlightPlanManager.updateCurrentApproach();
+                    });
             });
         }
         callback();
@@ -3117,9 +3114,8 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
                     if (elem) {
                         elem.updateWaypoints();
                     }
+                    this.gps.activateApproach();                   
                 }, this.selectedTransition);
-                // In some rare cases the approach is not activated. Don't know why.
-                this.gps.activateApproach();
                 this.gps.closePopUpElement();
                 this.gps.SwitchToPageName("NAV", "DefaultNav");
             }
@@ -3134,6 +3130,7 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
 // PM Modif: End Go back to the flight plan page
         }
     }
+    
 //PM Modif: End Activate and load approach modification
     onEvent(_event) {
         super.onEvent(_event);
