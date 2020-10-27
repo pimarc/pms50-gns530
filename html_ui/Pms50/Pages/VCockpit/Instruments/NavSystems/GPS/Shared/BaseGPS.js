@@ -319,12 +319,16 @@ class GPS_BaseNavPage extends NavSystemPage {
         }
         this.navCompassImg = this.gps.getChildById("NavCompassBackgroundImg" + this.mapnum);
         this.navCompass = this.gps.getChildById("NavCompass" + this.mapnum);
+        this.navBrgImg = this.gps.getChildById("NavBrgBackgroundImg" + this.mapnum);
+        this.navBrg = this.gps.getChildById("NavBrg" + this.mapnum);
         this.trkIndicator = this.gps.getChildById("TrkIndicator" + this.mapnum);
         this.northIndicatorImg = this.gps.getChildById("NorthIndicatorBackgroundImg" + this.mapnum);
         this.northIndicator = this.gps.getChildById("NorthIndicator" + this.mapnum);
         this.lasttrk = -1;
         if(this.navCompass)
             this.navCompass.setAttribute("style", "visibility: hidden");
+        if(this.navBrg)
+            this.navBrg.setAttribute("style", "visibility: hidden");
         if(this.trkIndicator)
             this.trkIndicator.setAttribute("style", "visibility: hidden");
         this.alwaysHideAirspacesAndRoads = false;
@@ -355,6 +359,16 @@ class GPS_BaseNavPage extends NavSystemPage {
                 // Last trk is used to save time in update (no rotation if no change)
                 if(this.navCompassImg)
                     this.navCompassImg.style.transform = "rotate(-" + trk + "deg)";
+                if(this.navBrgImg)
+                {
+                    var brg = fastToFixed(SimVar.GetSimVarValue("GPS WP BEARING", "degree"),1);
+                    var angle = ((brg - trk + 360) % 360);
+                    if(angle > 59 && angle < 180)
+                        angle = 59;
+                    if(angle > 180 && angle < 301)
+                        angle = 301;
+                    this.navBrgImg.style.transform = "rotate(" + angle + "deg)";
+                }
                 if(this.northIndicatorImg)
                     this.northIndicatorImg.style.transform = "rotate(-" + trk + "deg)";
                 this.lasttrk = trk;
@@ -398,6 +412,8 @@ class GPS_BaseNavPage extends NavSystemPage {
                 this.map.rotateWithPlane(true);
                 if(this.navCompass)
                     this.navCompass.setAttribute("style", "visibility: visible");
+                if(this.navBrg)
+                    this.navBrg.setAttribute("style", "visibility: visible");
                 if(this.trkIndicator)
                     this.trkIndicator.setAttribute("style", "visibility: visible");
                 if(this.northIndicator)
@@ -420,6 +436,8 @@ class GPS_BaseNavPage extends NavSystemPage {
                 this.map.rotateWithPlane(false);
                 if(this.navCompass)
                     this.navCompass.setAttribute("style", "visibility: hidden;");
+                if(this.navBrg)
+                    this.navBrg.setAttribute("style", "visibility: hidden;");
                 if(this.trkIndicator)
                     this.trkIndicator.setAttribute("style", "visibility: hidden;");
                 if(this.northIndicator)
@@ -834,6 +852,7 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
     init() {
         super.init(3, true, "110%", "66%", 2.29, 1.53, 100);
         this.navCompassImg = null;
+        this.navBrgImg = null;
         this.declutterLevels = [0, 17];
         this.alwaysHideAirspacesAndRoads = true;
         if(this.map.roadNetwork)
