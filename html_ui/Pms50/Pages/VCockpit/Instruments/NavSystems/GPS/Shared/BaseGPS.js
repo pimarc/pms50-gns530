@@ -292,7 +292,7 @@ class GPS_BaseNavPage extends NavSystemPage {
     constructor() {
         super(...arguments);
     }
-    init(_mapnum, _trkUp, _trkUpHeight, _northUpHeight, _trkUpRangeFactor, _northUpRangeFactor) {
+    init(_mapnum, _trkUp, _trkUpHeight, _northUpHeight, _trkUpRangeFactor, _northUpRangeFactor, _maxrange) {
 // PM Modif: Compass and Trackup
         this.mapnum = _mapnum;
         this.trkUpHeight = _trkUpHeight;
@@ -300,6 +300,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.trkUpRangeFactor = _trkUpRangeFactor;
         this.northUpRangeFactor = _northUpRangeFactor;
         this.trackUp = _trkUp;
+        this.maxrange = _maxrange;
 // PM Modif: End Compass and Trackup
 //PM Modif: Using four levels of declutter as in the original GNS530
         this.declutterLevelIndex = 0;
@@ -440,7 +441,10 @@ class GPS_BaseNavPage extends NavSystemPage {
     }
     setMapRanges() {
         let rangeFactor = this.trackUp ? this.trkUpRangeFactor : this.northUpRangeFactor;
+        this.map._ranges.length = 0;
         for (let i = 0; i < this.mapDisplayRanges.length; i++) {
+            if(this.mapDisplayRanges[i] > this.maxrange)
+                break;
             this.map._ranges[i] = this.mapDisplayRanges[i]*rangeFactor;
         }
     }
@@ -463,7 +467,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
 
     }
     init() {
-        super.init(1, true, "110%", "66%", 1.62, 1);
+        super.init(1, true, "110%", "66%", 1.62, 1, 200);
         if(this.gps.gpsType == "530") {
             this.defaultMenu = new ContextualMenu("PAGE MENU", [
                 new ContextualMenuElement("Crossfill?", null, true),
@@ -675,7 +679,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
 
     }
     init() {
-        super.init(2, false, "110%", "66%", 1.47, 1.53);
+        super.init(2, false, "110%", "66%", 1.47, 1.53, 2000);
         this.displayData = true;
         this.defaultMenu = new ContextualMenu("PAGE MENU", [
             new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this)),
@@ -828,19 +832,18 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
 
     }
     init() {
-        super.init(3, true, "110%", "66%", 1.47, 1.53);
+        super.init(3, true, "110%", "66%", 2.29, 1.53, 100);
+        this.navCompassImg = null;
+        this.declutterLevels = [0, 17];
         this.alwaysHideAirspacesAndRoads = true;
         if(this.map.roadNetwork)
             this.map.roadNetwork.setVisible(false);
         this.map.showAirspaces = false;
         this.map.showRoads  = false;
         this.displayData = true;
-        this.defaultMenu = new ContextualMenu("PAGE MENU", [
-            new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
-        ]);
-        // No data displayed by default
-        this.toggleDataDisplay();
         this.map.instrument.bingMapRef = EBingReference.PLANE;
+        this.mslThousands = this.gps.getChildById("TerrainMslValueTh" + this.mapnum);
+        this.mslHundreds = this.gps.getChildById("TerrainMslValueHu" + this.mapnum);
     }
     onEvent(_event){
         super.onEvent(_event);
@@ -856,18 +859,13 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        this.map.instrument.bingMapRef = EBingReference.PLANE;
-    }
-    restoreDefaults() {
-        this.gps.SwitchToInteractionState(0);
-    }
-    toggleMapOrientation() {
-        super.toggleMapOrientation();
-    }
-    toggleDataDisplay(){
-    }
-    changeFieldsStateCB() {
-        return !this.displayData;
+        var currentAlt = fastToFixed(SimVar.GetSimVarValue("GPS POSITION ALT", "feet"), 0);
+        this.mslThousands.textContent = Math.trunc(currentAlt / 1000);
+        // Add leading 0s
+        var Hundreds = currentAlt % 1000;
+        Hundreds = Hundreds < 100 ? "0" + Hundreds : Hundreds;
+        Hundreds = Hundreds < 10 ? "0" + Hundreds : Hundreds;
+        this.mslHundreds.textContent = Hundreds;
     }
 }
 
@@ -883,69 +881,14 @@ class GPS_TerrainNav extends NavSystemElement {
         this.customValuesDefault = _customValuesDefaults;
     }
     init() {
-        this.dnCustoms = [];
-        this.dnCustomSelectableArray = [];
-        for (let i = 0; i < this.customValuesNumber; i++) {
-            let num = i + 1;
-            this.dnCustoms.push(new CustomValue(this.gps, "TNName" + num, "TNValue" + num, "TNUnit" + num));
-            this.dnCustomSelectableArray.push(new SelectableElement(this.gps, this.dnCustoms[i].nameDisplay, this.customValueSelect_CB.bind(this, i)));
-        }
-        this.dnCustomFieldSelectorMenu = new ContextualMenu("SELECT&nbsp;FIELD&nbsp;TYPE", [
-            new ContextualMenuElement("BRG&nbsp;&nbsp;-&nbsp;Bearing", this.customValueSet_CB.bind(this, 0)),
-            new ContextualMenuElement("CTS&nbsp;&nbsp;-&nbsp;Course&nbsp;To&nbsp;Steer", this.customValueSet_CB.bind(this, 1)),
-            new ContextualMenuElement("XTK&nbsp;&nbsp;-&nbsp;Cross&nbsp;Track&nbsp;Err", this.customValueSet_CB.bind(this, 2)),
-            new ContextualMenuElement("DTK&nbsp;&nbsp;-&nbsp;Desired&nbsp;Track", this.customValueSet_CB.bind(this, 3)),
-            new ContextualMenuElement("DIS&nbsp;&nbsp;-&nbsp;Distance", this.customValueSet_CB.bind(this, 4)),
-            new ContextualMenuElement("ESA&nbsp;&nbsp;-&nbsp;Enrte&nbsp;Safe&nbsp;Alt", this.customValueSet_CB.bind(this, 5)),
-            new ContextualMenuElement("ETA&nbsp;&nbsp;-&nbsp;Est&nbsp;Time&nbsp;Arvl", this.customValueSet_CB.bind(this, 6)),
-            new ContextualMenuElement("ETE&nbsp;&nbsp;-&nbsp;Est&nbsp;Time&nbsp;Enrte", this.customValueSet_CB.bind(this, 7)),
-            new ContextualMenuElement("FLOW&nbsp;-&nbsp;Fuel&nbsp;Flow", this.customValueSet_CB.bind(this, 8)),
-            new ContextualMenuElement("GS&nbsp;&nbsp;&nbsp;-&nbsp;Ground&nbsp;Speed", this.customValueSet_CB.bind(this, 9)),
-            new ContextualMenuElement("TRK&nbsp;&nbsp;-&nbsp;Ground&nbsp;Track", this.customValueSet_CB.bind(this, 10)),
-            new ContextualMenuElement("MSA&nbsp;&nbsp;-&nbsp;Min&nbsp;Safe&nbsp;Alt", this.customValueSet_CB.bind(this, 11)),
-            new ContextualMenuElement("TKE&nbsp;&nbsp;-&nbsp;Track&nbsp;Angle&nbsp;Err", this.customValueSet_CB.bind(this, 12)),
-            new ContextualMenuElement("VSR&nbsp;-&nbsp;Vert&nbsp;Speed&nbsp;Rqrd", this.customValueSet_CB.bind(this, 13)),
-//PM Modif: Adding ALT, BARO and WPT to custom values
-            new ContextualMenuElement("ALT&nbsp;-&nbsp;Altitude", this.customValueSet_CB.bind(this, 14)),
-            new ContextualMenuElement("BARO&nbsp;-&nbsp;Baro", this.customValueSet_CB.bind(this, 15)),
-            new ContextualMenuElement("WPT&nbsp;-&nbsp;Target&nbsp;Waypoint", this.customValueSet_CB.bind(this, 16)),
-//PM Modif: End Adding ALT, BARO and WPT to custom values
-        ]);
-        this.restoreCustomValues();
-        }
+    }
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        for (var i = 0; i < this.dnCustoms.length; i++) {
-            this.dnCustoms[i].Update();
-        }
     }
     onExit() {
     }
     onEvent(_event) {
-    }
-    customValueSelect_CB(_param, _event) {
-        switch (_event) {
-            case "RightSmallKnob_Right":
-            case "RightSmallKnob_Left":
-                this.selectedCustomValueIndex = _param;
-                this.gps.ShowContextualMenu(this.dnCustomFieldSelectorMenu);
-                break;
-            default:
-                return false;
-        }
-        return true;
-    }
-    customValueSet_CB(_param) {
-        this.dnCustoms[this.selectedCustomValueIndex].valueIndex = _param;
-        this.gps.SwitchToInteractionState(1);
-        this.gps.cursorIndex = this.selectedCustomValueIndex;
-    }
-    restoreCustomValues() {
-        for (let i = 0; i < this.customValuesNumber; i++) {
-            this.dnCustoms[i].valueIndex = this.customValuesDefault[i];
-        }
-        this.gps.SwitchToInteractionState(0);
     }
 }
 

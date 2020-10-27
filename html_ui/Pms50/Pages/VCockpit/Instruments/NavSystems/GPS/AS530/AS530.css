@@ -469,6 +469,7 @@ as530-element {
 /* PM Modif: Range display */
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 {
             position: absolute;
+            z-index: 2;
             background-color: black;
             bottom: 25%;
             left: 1%;
@@ -476,8 +477,13 @@ as530-element {
             color: #6ecdee;
             font-size: 4.5vh;
             line-height: 4.5vh; }
-            as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 {
-              bottom: 2%; }
+            as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 {
+              bottom: 2%;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 {
+              left: 15%;
+              bottom: 15%;
+            }
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #Range1 #MapRangeUnit1, as530-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapRangeUnit2, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 #MapRangeUnit3 {
               position: relative;
               left: -1vh;
@@ -575,7 +581,71 @@ as530-element {
             right: 0; }
           as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #MapInstrument2 #MapSVG {
             transform: rotateX(0);
-            position: absolute; }
+            position: absolute;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #NorthIndicator3 {
+            top: 6%;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #NavCompass3 {
+            position: absolute;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            left: 0;
+            top: 1vh;
+            width: 100%;
+            height: 100%;
+           }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #NavCompass3 img {
+            width: 94vh;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainText3, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainTrkText3, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainMsl3 {
+            position: absolute;
+            z-index: 2;
+            background-color: black;
+            padding: 1vh;
+            text-align: center;
+            color: #6ecdee;
+            font-size: 4vh;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainText3 {
+            left: 0;
+            top: 0;
+            line-height: 3vh;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainTrkText3 {
+            left: 55%;
+            top: 1vh;
+            line-height: 3vh;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainMsl3 {
+            right: 0;
+            top: 0;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainMslText3 {
+            text-align: right;
+            line-height: 3vh;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainMslValue3 {
+            color: #4ce22c;
+            text-align: right;
+            font-size: 5vh;
+            margin-bottom: -5px;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainMslValueTh3 {
+            font-size: 7vh;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainMslValueHu3 {
+            position: relative;
+            bottom: 3px;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #TerrainNav #TerrainMslValueUnit3 {
+            position: relative;
+            bottom: 3px;
+            font-size: 2vh;
+          }
+
         as530-element #Electricity #TopDisplay #GpsPart #Terrain {
           position: absolute;
           height: 100%;
