@@ -2882,6 +2882,144 @@ class GPS_Messages extends NavSystemElement {
 // PM Modif: End CLR button management
     }
 }
+
+class GPS_Vnav extends NavSystemElement {
+    constructor() {
+        super();
+        this.name = "VNAV";
+        this.menuname = "";
+    }
+    init() {
+        this.altitude = this.gps.getChildById("VnavTargetAltitudeValue");
+        this.posdis = this.gps.getChildById("VnavTargetDistanceValue");
+        this.posref = this.gps.getChildById("VnavTargetReferenceValue");
+        this.poswp = this.gps.getChildById("VnavTargetWaypoint");
+        this.profile = this.gps.getChildById("VnavProfileValue");
+        this.vsr = this.gps.getChildById("VnavVsrValue");
+        this.status = this.gps.getChildById("VnavStatusValue");
+        this.defaultSelectables = [
+            new SelectableElement(this.gps, this.altitude, this.Altitude_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.posdis, this.PosDistance_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.posref, this.PosReference_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.poswp, this.PosWaypoint_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.profile, this.Profile_SelectionCallback.bind(this))
+        ];
+        this.targetWaypoint = null;
+    }
+    onEnter() {
+        this.gps.closeConfirmWindow();
+        this.gps.closeAlertWindow();
+    }
+    onUpdate(_deltaTime) {
+    }
+    onExit() {
+        this.gps.closeConfirmWindow();
+        this.gps.closeAlertWindow();
+    }
+    onEvent(_event) {
+        if (_event == "CLR_Push") {
+            this.gps.ActiveSelection(this.defaultSelectables);
+            if (this.gps.popUpElement || this.gps.currentContextualMenu) {
+                this.gps.closePopUpElement();
+                this.gps.SwitchToInteractionState(1);
+                this.gps.cursorIndex = 3;
+                this.menuname = "";
+                this.gps.currentContextualMenu = null;
+            }
+            else {
+                this.menuname = "";
+                this.gps.SwitchToInteractionState(0);
+                this.gps.SwitchToPageName("NAV", "DefaultNav");
+                this.gps.currentEventLinkedPageGroup = null;
+                }
+        }
+    }
+    Altitude_SelectionCallback(_event) {
+        if (_event == "RightSmallKnob_Right"){
+            var value = parseInt(this.altitude.textContent);
+            if(value < 5000)
+                value += 100;
+            else
+                value += 500;
+            this.altitude.textContent = value;
+        }
+        if (_event == "RightSmallKnob_Left"){
+            var value = parseInt(this.altitude.textContent);
+            if(value <= 5000)
+                value -= 100;
+            else
+                value -= 500;
+            if(value < 0)
+                value = 0;
+            this.altitude.textContent = value;
+        }
+    }
+    PosDistance_SelectionCallback(_event) {
+        if (_event == "RightSmallKnob_Right"){
+            var value = parseFloat(this.posdis.textContent);
+            if(value < 5)
+                value += 0.2;
+            else if(value < 10)
+                value += 0.5;
+            else
+                value += 1;
+            this.posdis.textContent =  value.toFixed(1);
+        }
+        if (_event == "RightSmallKnob_Left"){
+            var value = parseFloat(this.posdis.textContent);
+            if(value <= 5)
+                value -= 0.2;
+            else if(value <= 10)
+                value -= 0.5;
+            else
+                value -= 1;
+            if(value < 0)
+                value = 0;
+            this.posdis.textContent =  value.toFixed(1);
+        }
+    }
+    PosReference_SelectionCallback(_event) {
+        if (_event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left")
+            this.posref.textContent = this.posref.textContent == "Before" ? "After" : "Before";
+    }
+    PosWaypoint_SelectionCallback(_event) {
+        if (_event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
+            var elements = [];
+            var i = 0;
+            var wayPointList = this.gps.currFlightPlanManager.getWaypoints();
+            wayPointList = wayPointList.concat(this.gps.currFlightPlanManager.getApproachWaypoints());
+            for (; i < wayPointList.length; i++) {
+                elements.push(new ContextualMenuElement(wayPointList[i].GetInfos().ident, function (_index) {
+                    this.targetWaypoint = wayPointList[_index];
+                    this.poswp.textContent = this.targetWaypoint.ident;
+                    this.gps.SwitchToInteractionState(1);
+                    this.gps.cursorIndex = 3;
+                }.bind(this, i)));
+            }
+            if (wayPointList.length > 0) {
+                this.gps.ShowContextualMenu(new ContextualMenu("FPL", elements));
+                this.menuname = "fpl";
+            }
+        }
+    }
+    Profile_SelectionCallback(_event) {
+        if (_event == "RightSmallKnob_Right"){
+            var value = parseInt(this.profile.textContent);
+                value += 100;
+            this.profile.textContent = value;
+        }
+        if (_event == "RightSmallKnob_Left"){
+            var value = parseInt(this.profile.textContent);
+            value -= 100;
+            if(value < 0)
+                value = 0;
+            this.profile.textContent = value;
+        }
+    }
+}
+
+
+
 class GPS_FPLWaypointSelection extends NavSystemElement {
     constructor() {
         super();
@@ -2957,6 +3095,7 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
             || _event == "FPL_Push"
             || _event == "PROC_Push"
             || _event == "MSG_Push"
+            || _event == "VNAV_Push"
             || _event == "CLR_Push_Long"
             || _event == "CLR_Push") {
             this.gps.lastRelevantICAO = null;
@@ -3138,6 +3277,7 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
             || _event == "FPL_Push"
             || _event == "PROC_Push"
             || _event == "MSG_Push"
+            || _event == "VNAV_Push"
             || _event == "CLR_Push_Long"
             || _event == "CLR_Push") {
             this.gps.closePopUpElement();
@@ -3234,6 +3374,7 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
             || _event == "FPL_Push"
             || _event == "PROC_Push"
             || _event == "MSG_Push"
+            || _event == "VNAV_Push"
             || _event == "CLR_Push_Long"
             || _event == "CLR_Push") {
             this.gps.closePopUpElement();
@@ -3374,6 +3515,7 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
             || _event == "FPL_Push"
             || _event == "PROC_Push"
             || _event == "MSG_Push"
+            || _event == "VNAV_Push"
             || _event == "CLR_Push_Long"
             || _event == "CLR_Push") {
             this.gps.closePopUpElement();

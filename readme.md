@@ -24,8 +24,8 @@ First release features:
 - Always one decimal on DIS and XTK displays
 - Radio part look conform to the original
 - Changed colors
-- Bug correction: activate approach not always working
-- Bug correction: FPL leg updated after activating approach
+- Bug fixing: activate approach not always working
+- Bug fixing: FPL leg updated after activating approach
 - Some minor corrections
 ## V 1.0.6
 - First declutter level hides roads and airspaces

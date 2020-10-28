@@ -281,17 +281,6 @@
                     <div id="Satellite">
 
                     </div>
-                    <div id="VNav">
-                        <div class="WhiteTitle">VERTICAL NAVIGATION</div>
-                        <div class="Title">TARGET ALTITUDE</div>
-                        <div class="Value">
-                            <div class="Align" id="TargetAltitudeValue">1000</div><div class="Align unit">f<br />t</div><div class="Align" id="AltitudeReference">Above Wpt</div>
-                        </div>
-                        <div class="Title">TARGET POSITION</div>
-                        <div class="Value">
-                            <div class="Align" id="TargetDistance">4.0</div><div class="Align unit">n<br />m</div><div class="Align" id="TargetReference">Before KOKC</div>
-                        </div>
-                    </div>
                     <div id="DRCT">
                         <div class="WhiteTitle">SELECT <img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to_white.bmp" /> WAYPOINT</div>
                         <div class="Value" id="DRCTMainInfos">
@@ -364,6 +353,50 @@
                             </table>
                             <div id="FPLEditSlider" class="Slider" state="Incative">
                                 <div id="FPLEditSliderCursor" class="SliderCursor"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Vnav">
+                        <div id="VnavBlock">
+                            <div class="WhiteTitle">VERTICAL NAVIGATION</div>
+                            <div class="VnavItem" id="VnavTargetAltitude">
+                                <div class="Title">TARGET ALTITUDE</div>
+                                <div class="Value">
+                                    <div id="VnavTargetAltitudeValueUnit">
+                                        <div class="Align SelectableElement" id="VnavTargetAltitudeValue">1000</div><div class="Align unit">f<br />t</div>
+                                    </div>
+                                    <div id="VnavAltitudeReference">MSL</div>
+                                </div>
+                            </div>
+                            <div class="VnavItem" id="VnavTargetPosition">
+                                <div class="Title">TARGET POSITION</div>
+                                <div class="Value">
+                                    <div>
+                                        <div class="Align SelectableElement" id="VnavTargetDistanceValue">5.0</div><div class="Align unit">n<br />m</div>
+                                    </div>
+                                    <div class="Align SelectableElement" id="VnavTargetReferenceValue">Before</div>
+                                    <div class="Align SelectableElement" id="VnavTargetWaypoint">_____</div>
+                                </div>
+                            </div>
+                            <div class="VnavItem" id="VnavProfileAndVsr">
+                                <div id="VnavProfile">
+                                    <div class="Title">VS PROFILE</div>
+                                    <div class="Value">
+                                        <div class="Align SelectableElement" id="VnavProfileValue">1000</div><div class="Align unit">f<br />m</div>
+                                    </div>
+                                </div>
+                                <div id="VnavVsr">
+                                    <div class="Title">VSR</div>
+                                    <div class="Value">
+                                        <div class="Align" id="VnavVsrValue">_____</div><div class="Align unit">f<br />m</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="VnavItem" id="VnavStatus">
+                                <div class="Title">STATUS</div>
+                                <div class="Value">
+                                    <div id="VnavStatusValue">Status</div>
+                                </div>
                             </div>
                         </div>
                     </div>
