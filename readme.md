@@ -19,10 +19,13 @@ First release features:
 # Change log
 ## V 1.0.7
 - The CDI look and behavior conform to the original
-- Added a a terrain map NAV page
+- Added a BRG mark to the default NAV page compass
+- Added a terrain map NAV page
 - Always one decimal on DIS and XTK displays
 - Radio part look conform to the original
 - Changed colors
+- Bug correction: activate approach not always working
+- Bug correction: FPL leg updated after activating approach
 - Some minor corrections
 ## V 1.0.6
 - First declutter level hides roads and airspaces
