@@ -1372,13 +1372,17 @@ as530-element {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          text-align: center;
         }
         as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr #VnavProfile, as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr #VnavVsr {
+          text-align: center;
           width: 42%;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr #VnavProfile .Title, as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr #VnavVsr .Title {
+          text-align: left;
         }
         as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavStatus #VnavStatusValue {
           padding: 0 2vh 0 2vh;
+          min-height: 8.5vh;
         }
         as530-element #Electricity #TopDisplay #GpsPart #ContextualMenu {
           position: absolute;

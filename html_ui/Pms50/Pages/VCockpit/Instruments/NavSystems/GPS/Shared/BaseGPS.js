@@ -2912,9 +2912,24 @@ class GPS_Vnav extends NavSystemElement {
         this.gps.closeAlertWindow();
     }
     onUpdate(_deltaTime) {
-        var targetInfo = GetTargetInfo();
-        if(!targetInfo.length)
+        var targetInfo = this.GetTargetInfo();
+        if(!targetInfo || !targetInfo.length){
+            this.vsr.textContent = "_____";
+            this.status.textContent = "";
             return;
+        }
+        this.vsr.textContent =  targetInfo[0];
+        var timeToDescent = targetInfo[1];
+        var hours = parseInt( timeToDescent / 3600 ) % 24;
+        var minutes = parseInt( timeToDescent / 60 ) % 60;
+        var seconds = timeToDescent % 60;
+        var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+
+        hours = Math.floor(timeToDescent / 3600);
+        timeToDescent %= 3600;
+        minutes = Math.floor(timeToDescent / 60);
+        seconds = timeToDescent % 60;
+        this.status.textContent = timeToDescent > 10 ? "Begin Descent in " + result : "Descent to target"; 
     }
     onExit() {
         this.gps.closeConfirmWindow();
@@ -2990,15 +3005,19 @@ class GPS_Vnav extends NavSystemElement {
         if (_event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
             var elements = [];
             var i = 0;
+
             var wayPointList = this.gps.currFlightPlanManager.getWaypoints();
             wayPointList = wayPointList.concat(this.gps.currFlightPlanManager.getApproachWaypoints());
             for (; i < wayPointList.length; i++) {
-                elements.push(new ContextualMenuElement(wayPointList[i].GetInfos().ident, function (_index) {
+                // We add only valid waypoints (not the ones of "user" type)
+                if(wayPointList[i].icao.substr(0,2) != 'U '){
+                    elements.push(new ContextualMenuElement(wayPointList[i].GetInfos().ident, function (_index) {
                     this.targetWaypoint = wayPointList[_index];
                     this.poswp.textContent = this.targetWaypoint.ident;
                     this.gps.SwitchToInteractionState(1);
                     this.gps.cursorIndex = 3;
-                }.bind(this, i)));
+                    }.bind(this, i)));
+                }
             }
             if (wayPointList.length > 0) {
                 this.gps.ShowContextualMenu(new ContextualMenu("FPL", elements));
@@ -3024,23 +3043,86 @@ class GPS_Vnav extends NavSystemElement {
         var targetInfos = [];
         if(this.targetWaypoint == null)
             return targetInfos;
+        var groundSpeed = fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0);
+        // Do nothing if ground speed too slow
+        if(groundSpeed < 35)
+            return targetInfos;
+        var currentAltitude = fastToFixed(SimVar.GetSimVarValue("GPS POSITION ALT", "feet"), 0);
+        var targetAltitude = this.altitude.textContent;
+//console.log("currentAltitude:" + currentAltitude);
+        // Don't calculate anything if near the target altitude
+        if(targetAltitude > currentAltitude - 100 && targetAltitude < currentAltitude + 100)
+            return targetInfos;
+
+        var nextWpIdent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
+        if(nextWpIdent == "")
+            return targetInfos;
+//console.log("nextWpIdent:" + nextWpIdent);
+
         // Search target in current flight plan
+        var DistanceToTarget = 0;
         var wayPointList = this.gps.currFlightPlanManager.getWaypoints();
         wayPointList = wayPointList.concat(this.gps.currFlightPlanManager.getApproachWaypoints());
         var index = -1;
         var tinfo = this.targetWaypoint.GetInfos();
-        for (; i < wayPointList.length; i++) {
+        var cumDistanceNext = 0;
+        var nextBeforeTarget = false; // Used to check that the target WP is the next wp or after it
+        for (var i=0; i < wayPointList.length; i++) {
             let info = wayPointList[i].GetInfos();
+            let waypoint = wayPointList[i];
+            if(waypoint.ident == nextWpIdent){
+                var nextBeforeTarget = true;
+                cumDistanceNext = waypoint.cumulativeDistanceInFP;
+//console.log("cumDistanceNext(" + i + "):" + cumDistanceNext);
+            }
             if((info.ident == tinfo.ident) && (info.icao == tinfo.icao) && (info.coordinates == tinfo.coordinates)){
                 index = i;
+//console.log("cumDistanceTarget(" + index + "):" + waypoint.cumulativeDistanceInFP);
+                DistanceToTarget = waypoint.cumulativeDistanceInFP - cumDistanceNext;               
+//console.log("cumDistanceTargetDif:(" + index + "):" + DistanceToTarget);
                 break;
             }
         }
-        if(index == -1){
-            // Target not found
+        if(index == -1 || !nextBeforeTarget){
+            // Target not found or target is before next point (possible with a direct to)
+//console.log("Cannot use vnav here");
             this.targetWaypoint = null;
             return targetInfos;           
         }
+        // Add the distance to next WP
+        DistanceToTarget += SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
+//console.log("cumDistanceNextWP:" + SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles"));
+//console.log("cumDistance:" + DistanceToTarget);
+        // Add or substract the offset distance to have the complete distance to target
+        if(this.posref.textContent == "Before")
+            DistanceToTarget -= parseFloat(this.posdis.textContent);
+        else
+            DistanceToTarget += parseFloat(this.posdis.textContent);
+//console.log("cumDistanceFinal:" + DistanceToTarget);
+
+        // We are ok here.
+        var difAltitude = currentAltitude- targetAltitude;
+//console.log("difAltitude feets:" + difAltitude);
+        var desrate = (Math.atan(difAltitude / (DistanceToTarget * 6076.115486)) * 180 / Math.PI) / 0.6;
+//console.log("desrate percent:" + desrate);
+        var vsr = fastToFixed(-desrate * groundSpeed, 0);
+console.log("vsr:" + vsr);
+
+        var profileVs = parseInt(this.profile.textContent);
+        var profiledesangle = (profileVs / groundSpeed) * 0.6;
+//console.log("profiledesangle:" + profiledesangle);
+        var profileDistanceToTarget = (difAltitude / 100) / profiledesangle;
+//console.log("profileDistanceToTarget:" + profileDistanceToTarget);
+        var profileDistanceToDescent = DistanceToTarget - profileDistanceToTarget;
+        if(profileDistanceToDescent <0)
+            profileDistanceToDescent = 0;
+//console.log("profileDistanceToDescent:" + profileDistanceToDescent);
+        var timeToDescent = fastToFixed((profileDistanceToDescent / groundSpeed) * 3600, 0);
+        if(timeToDescent < 0)
+            timeToDescent = 0;
+//console.log("timeToDescent:" + timeToDescent);
+        targetInfos = [vsr, timeToDescent];
+        return targetInfos;
     }
 }
 
