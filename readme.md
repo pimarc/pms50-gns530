@@ -17,6 +17,8 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.8
+- Compatibility with MSFS update 1.10.7.0
 ## V 1.0.7
 - The CDI look and behavior conform to the original
 - Added a BRG mark to the default NAV page compass

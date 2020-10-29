@@ -67,12 +67,12 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js",
-      "size": 120797,
+      "size": 120885,
       "date": 132453631615266153
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js",
-      "size": 191129,
+      "size": 191490,
       "date": 132453631615266153
     },
     {
@@ -262,12 +262,12 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.js",
-      "size": 63828,
+      "size": 63353,
       "date": 132453631615266153
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.css",
-      "size": 1734,
+      "size": 2087,
       "date": 132453631615266153
     }
   ]

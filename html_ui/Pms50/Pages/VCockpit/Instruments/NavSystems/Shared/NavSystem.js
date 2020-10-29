@@ -34,6 +34,9 @@ class NavSystem extends BaseInstrument {
         this.reversionaryMode = false;
         this.alwaysUpdateList = new Array();
     }
+    get flightPlanManager() {
+        return this.currFlightPlanManager;
+    }
     get instrumentAlias() { return null; }
     connectedCallback() {
         super.connectedCallback();
@@ -42,11 +45,8 @@ class NavSystem extends BaseInstrument {
         this.contextualMenuElements = this.getChildById("ContextualMenuElements");
         this.menuSlider = this.getChildById("SliderMenu");
         this.menuSliderCursor = this.getChildById("SliderMenuCursor");
-        if (!this.currFlightPlanManager) {
-            this.currFlightPlanManager = new FlightPlanManager(this);
-            this.currFlightPlanManager.registerListener();
-        }
-        this.currFlightPlan = new FlightPlan(this);
+        this.currFlightPlanManager = new FlightPlanManager(this);
+        this.currFlightPlan = new FlightPlan(this, this.currFlightPlanManager);
 //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
@@ -325,13 +325,6 @@ class NavSystem extends BaseInstrument {
     }
     Update() {
         super.Update();
-        if (this.currFlightPlanManager.isLoadedApproach() && !this.currFlightPlanManager.isActiveApproach() && (this.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.currFlightPlanManager.getActiveWaypointIndex() > this.currFlightPlanManager.getLastIndexBeforeApproach()))) {
-            if (SimVar.GetSimVarValue("L:FMC_FLIGHT_PLAN_IS_TEMPORARY", "number") != 1) {
-//PM Modif: Auto Activateremoval
-//                    this.currFlightPlanManager.tryAutoActivateApproach();
-//PM Modif: End Auto Activate removal
-            }
-        }
         if (this.CanUpdate()) {
             if (NavSystem._iterations < 10000) {
                 NavSystem._iterations += 1;
@@ -384,6 +377,14 @@ class NavSystem extends BaseInstrument {
                 }
             }
             this.updateAspectRatio();
+            if (this.currFlightPlanManager) {
+                this.currFlightPlanManager.update(this.deltaTime);
+                if (this.currFlightPlanManager.isLoadedApproach() && !this.currFlightPlanManager.isActiveApproach() && (this.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.currFlightPlanManager.getActiveWaypointIndex() > this.currFlightPlanManager.getLastIndexBeforeApproach()))) {
+                    if (SimVar.GetSimVarValue("L:FMC_FLIGHT_PLAN_IS_TEMPORARY", "number") != 1) {
+//                        this.currFlightPlanManager.tryAutoActivateApproach();
+                    }
+                }
+            }
             if (this.popUpElement) {
                 this.popUpElement.onUpdate(this.deltaTime);
             }
@@ -1458,7 +1459,7 @@ class MapInstrumentElement extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
         if (this.instrumentLoaded) {
-            this.instrument.update();
+            this.instrument.update(_deltaTime);
             if (this.weatherTexts) {
                 let range = this.instrument.getWeatherRange();
                 let ratio = 1.0 / this.weatherTexts.length;
