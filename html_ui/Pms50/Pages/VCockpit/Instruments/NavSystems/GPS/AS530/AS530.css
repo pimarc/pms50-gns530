@@ -853,13 +853,13 @@ as530-element {
             text-align: left;
             padding-left: 5vw; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead tr th:nth-child(1), as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr:first-child td:nth-child(1) {
-            width: 34%; }
+            width: 28%; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead tr th:nth-child(2), as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr:first-child td:nth-child(2) {
-            width: 22%; }
+            width: 24%; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead tr th:nth-child(3), as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr:first-child td:nth-child(3) {
-            width: 22%; }
+            width: 24%; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table thead tr th:nth-child(4), as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody tr:first-child td:nth-child(4) {
-            width: 22%; }
+            width: 24%; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table .SizeSetter, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table .SizeSetter td {
             height: 0vh;
             overflow: visible;

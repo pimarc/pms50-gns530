@@ -2584,6 +2584,7 @@ class GPS_DirectTo extends NavSystemElement {
         }
     }
 }
+
 class GPS_WaypointLine extends MFD_WaypointLine {
     getString() {
         if (this.waypoint) {
@@ -2591,8 +2592,8 @@ class GPS_WaypointLine extends MFD_WaypointLine {
             this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>___<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
             return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident : this.waypoint.ident) + '</td><td>'
                 + (isNaN(this.waypoint.bearingInFP) ? "" : fastToFixed(this.waypoint.bearingInFP, 0) + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>') + '</td><td>'
-                + fastToFixed(this.waypoint.distanceInFP, 1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
-                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : fastToFixed(this.waypoint.cumulativeDistanceInFP, 1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>') + '</td>';
+                + this.waypoint.distanceInFP.toFixed(1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
+                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : this.waypoint.cumulativeDistanceInFP.toFixed(1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>') + '</td>';
         }
         else if (this.element.emptyLine != "") {
             return this.element.emptyLine;
@@ -2619,8 +2620,8 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
         if (this.waypoint) {
             return '<td class="SelectableElement Select0">' + this.waypoint.ident + '</td><td>'
                 + (isNaN(this.waypoint.bearingInFP) ? "" : fastToFixed(this.waypoint.bearingInFP, 0) + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>') + '</td><td>'
-                + fastToFixed(this.waypoint.distanceInFP, 1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
-                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : fastToFixed(this.waypoint.cumulativeDistanceInFP, 1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>') + '</td>';
+                + this.waypoint.distanceInFP.toFixed(1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
+                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : this.waypoint.cumulativeDistanceInFP.toFixed(1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>') + '</td>';
         }
         else {
             return '<td class="SelectableElement Select0"></td><td> </td><td> </td><td> </td>';
@@ -2911,6 +2912,9 @@ class GPS_Vnav extends NavSystemElement {
         this.gps.closeAlertWindow();
     }
     onUpdate(_deltaTime) {
+        var targetInfo = GetTargetInfo();
+        if(!targetInfo.length)
+            return;
     }
     onExit() {
         this.gps.closeConfirmWindow();
@@ -3014,6 +3018,28 @@ class GPS_Vnav extends NavSystemElement {
             if(value < 0)
                 value = 0;
             this.profile.textContent = value;
+        }
+    }
+    GetTargetInfo(){
+        var targetInfos = [];
+        if(this.targetWaypoint == null)
+            return targetInfos;
+        // Search target in current flight plan
+        var wayPointList = this.gps.currFlightPlanManager.getWaypoints();
+        wayPointList = wayPointList.concat(this.gps.currFlightPlanManager.getApproachWaypoints());
+        var index = -1;
+        var tinfo = this.targetWaypoint.GetInfos();
+        for (; i < wayPointList.length; i++) {
+            let info = wayPointList[i].GetInfos();
+            if((info.ident == tinfo.ident) && (info.icao == tinfo.icao) && (info.coordinates == tinfo.coordinates)){
+                index = i;
+                break;
+            }
+        }
+        if(index == -1){
+            // Target not found
+            this.targetWaypoint = null;
+            return targetInfos;           
         }
     }
 }
