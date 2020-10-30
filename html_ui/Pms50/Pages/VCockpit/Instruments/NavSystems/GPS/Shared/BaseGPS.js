@@ -479,7 +479,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         super("DefaultNav", "DefaultNav", new NavSystemElementGroup([baseElem, cdiElem]));
         this.cdiElement = cdiElem;
         this.baseElem = baseElem;
-
+        this.nightLighting = false;
     }
     init() {
         super.init(1, true, "110%", "66%", 1.62, 1, 200);
@@ -490,14 +490,16 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
 //PM Modif: Adding map orientation menu
                 new ContextualMenuElement("North up/Trk up?", this.toggleMapOrientation.bind(this)),
 //PM Modif: End Adding map orientation menu
-                new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
+                new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this)),
+                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this))
             ]);
         }
         else {
             this.defaultMenu = new ContextualMenu("PAGE MENU", [
                 new ContextualMenuElement("Crossfill?", null, true),
                 new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
-                new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
+                new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this)),
+                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this))
             ]);
         }
     }
@@ -523,6 +525,13 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
     }
     toggleMapOrientation() {
         super.toggleMapOrientation();
+        this.gps.currentContextualMenu = null;
+        this.gps.SwitchToInteractionState(0);
+    }
+    toggleLighting() {
+        var dark = this.gps.getChildById("dark");
+        this.nightLighting = this.nightLighting ? false : true;
+        dark.setAttribute("style", this.nightLighting ? "display: block;" : "display:none;");
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
     }
