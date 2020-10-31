@@ -53,11 +53,14 @@
   "flightPlanNonActiveLegWidth": 6,
   "flightPlanNonActiveLegStrokeColor": "#3f3f3f",
   "flightPlanNonActiveLegStrokeWidth": 7,
+  "flightPlanDirectLegColor": "MediumOrchid",
+  "flightPlanDirectLegWidth": 7,
+  
 
   "roadMotorWayColor": "#7a7a7a",
-  "roadMotorWayWidth": 2,
+  "roadMotorWayWidth": 1,
   "roadTrunkColor": "#7a7a7a",
-  "roadTrunkWidth": 1.5,
+  "roadTrunkWidth": 1,
   "roadPrimaryColor": "#7a7a7a",
   "roadPrimaryWidth": 1,
 

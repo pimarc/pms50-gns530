@@ -20,6 +20,9 @@ First release features:
 ## V 1.0.9
 - Adding VNAV page
 - Adding night/day lighting in default NAV page menu
+- Dynamic flight plan page
+- DirectTo map leg larger
+- Airspace lines thinner
 ## V 1.0.8
 - Compatibility with MSFS update 1.10.7.0
 ## V 1.0.7

@@ -3086,7 +3086,7 @@ class GPS_Vnav extends NavSystemElement {
         timeToDescent %= 3600;
         minutes = Math.floor(timeToDescent / 60);
         seconds = timeToDescent % 60;
-        this.status.textContent = timeToDescent > 10 ? "Begin Descent in " + result : "Descent to target"; 
+        this.status.textContent = timeToDescent > 0 ? "Begin Descent in " + result : "Descend to target"; 
     }
     onExit() {
         this.gps.closeConfirmWindow();
@@ -3206,9 +3206,13 @@ class GPS_Vnav extends NavSystemElement {
             return targetInfos;
         var currentAltitude = fastToFixed(SimVar.GetSimVarValue("GPS POSITION ALT", "feet"), 0);
         var targetAltitude = this.altitude.textContent;
+
 //console.log("currentAltitude:" + currentAltitude);
         // Don't calculate anything if near the target altitude
         if(targetAltitude > currentAltitude - 100 && targetAltitude < currentAltitude + 100)
+            return targetInfos;
+        // Don't use vnav to climb
+        if(targetAltitude > currentAltitude)
             return targetInfos;
 
         var nextWpIdent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
