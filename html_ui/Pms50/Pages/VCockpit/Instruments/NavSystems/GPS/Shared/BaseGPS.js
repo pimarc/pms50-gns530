@@ -2598,11 +2598,11 @@ class GPS_WaypointLine extends MFD_WaypointLine {
     getString() {
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
-            this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>___<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
+            this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
             return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident : this.waypoint.ident) + '</td><td>'
-                + (isNaN(this.waypoint.bearingInFP) ? "" : fastToFixed(this.waypoint.bearingInFP, 0) + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>') + '</td><td>'
-                + this.waypoint.distanceInFP.toFixed(1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
-                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : this.waypoint.cumulativeDistanceInFP.toFixed(1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>') + '</td>';
+                + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
+                + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
+                + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
         }
         else if (this.element.emptyLine != "") {
             return this.element.emptyLine;
@@ -2623,18 +2623,166 @@ class GPS_WaypointLine extends MFD_WaypointLine {
         }
         return false;
     }
+    getDtk() {
+        var dtk = "___";
+        if(!this.element.gps.currFlightPlanManager.isActiveApproach() && !this.element.gps.currFlightPlanManager.getIsDirectTo()) {
+            var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+            if(this.index > activeIndex) {
+                dtk = this.waypoint.bearingInFP;
+            }
+            if(this.index == activeIndex) {
+                dtk = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+            }
+        }
+        return isNaN(dtk) ? "___" : fastToFixed(dtk, 0);
+    }
+    getDistance() {
+        var distance = "__._";
+        if(!this.element.gps.currFlightPlanManager.isActiveApproach() && !this.element.gps.currFlightPlanManager.getIsDirectTo()){
+            var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+            console.log("active index:" + activeIndex);
+            if(activeIndex >= 0) {
+                if(activeIndex == this.index) {
+                    distance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                }
+                else if(this.index > activeIndex) {
+                    var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
+                    distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
+                }
+            }
+        }
+        console.log("index:" + this.index + ":" + distance);        
+        return isNaN(distance) ? "__._" : distance.toFixed(1);
+    }
+    getCumDistance() {
+        var cumDistance = "__._";
+        if(!this.element.gps.currFlightPlanManager.isActiveApproach() && !this.element.gps.currFlightPlanManager.getIsDirectTo()){
+            var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+            if(activeIndex >= 0) {
+                if(this.index >= activeIndex) {
+                    cumDistance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                    if(this.index > activeIndex) {
+                        var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
+                        for(var i=this.index; i > activeIndex; i--) {
+                            var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
+                            cumDistance += distance;
+                        }
+                    }
+                }
+            }
+        }
+        return isNaN(cumDistance) ? "__._" : cumDistance.toFixed(1);
+    }
 }
 class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
     getString() {
         if (this.waypoint) {
-            return '<td class="SelectableElement Select0">' + this.waypoint.ident + '</td><td>'
-                + (isNaN(this.waypoint.bearingInFP) ? "" : fastToFixed(this.waypoint.bearingInFP, 0) + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>') + '</td><td>'
-                + this.waypoint.distanceInFP.toFixed(1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
-                + (isNaN(this.waypoint.cumulativeDistanceInFP) ? "" : this.waypoint.cumulativeDistanceInFP.toFixed(1) + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>') + '</td>';
+            let infos = this.waypoint.GetInfos();
+            this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
+            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident : this.waypoint.ident) + '</td><td>'
+                + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
+                + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
+                + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
+        }
+        else if (this.element.emptyLine != "") {
+            return this.element.emptyLine;
         }
         else {
             return '<td class="SelectableElement Select0"></td><td> </td><td> </td><td> </td>';
         }
+    }
+    getDtk() {
+        var dtk = "___";
+        if(!this.element.gps.currFlightPlanManager.getIsDirectTo()) {
+            if(this.element.gps.currFlightPlanManager.isActiveApproach()) {
+                var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+                if(this.index > activeIndex) {
+                    dtk = this.waypoint.bearingInFP;
+                }
+                if(this.index == activeIndex) {
+                    dtk = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+                }
+            }
+            else {
+                if(this.index == 0) {
+                    // In this case the DTK is the bearing to first approach WP
+                    let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+                    let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+                    let ll = new LatLong(lat, long);
+                    dtk = Avionics.Utils.computeGreatCircleHeading(ll, this.waypoint.infos.coordinates);
+                }
+                else {
+                    dtk = this.waypoint.bearingInFP;
+                }
+            }
+        }
+        return isNaN(dtk) ? "___" : fastToFixed(dtk, 0);
+    }
+    getDistance() {
+        var distance = "__._";
+        if(!this.element.gps.currFlightPlanManager.getIsDirectTo()){
+            if(this.element.gps.currFlightPlanManager.isActiveApproach()) {
+                var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+                console.log("active index:" + activeIndex);
+                if(activeIndex >= 0) {
+                    if(activeIndex == this.index) {
+                        distance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                    }
+                    else if(this.index > activeIndex) {
+                        var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
+                        distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
+                    }
+                }
+            }
+            else {
+                if(this.index == 0) {
+                    let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+                    let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+                    let ll = new LatLong(lat, long);
+                    distance = Avionics.Utils.computeDistance(ll, this.waypoint.infos.coordinates);
+                }
+                else {
+                    var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
+                    distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
+                }
+            }
+        }
+        console.log("index:" + this.index + ":" + distance);        
+        return isNaN(distance) ? "__._" : distance.toFixed(1);
+    }
+    getCumDistance() {
+        var cumDistance = "__._";
+        if(!this.element.gps.currFlightPlanManager.getIsDirectTo()) {
+            if(this.element.gps.currFlightPlanManager.isActiveApproach()) {
+                var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+                if(activeIndex >= 0) {
+                    if(this.index >= activeIndex) {
+                        cumDistance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                        if(this.index > activeIndex) {
+                            var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
+                            for(var i=this.index; i > activeIndex; i--) {
+                                var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
+                                cumDistance += distance;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+                let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+                let ll = new LatLong(lat, long);
+                var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
+                cumDistance = Avionics.Utils.computeDistance(ll, wayPointList[0].infos.coordinates);
+                if(this.index > 0) {
+                    for(var i=this.index; i > 0; i--) {
+                        var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
+                        cumDistance += distance;
+                    }
+                }
+            }
+        }
+        return isNaN(cumDistance) ? "__._" : cumDistance.toFixed(1);
     }
 }
 class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
