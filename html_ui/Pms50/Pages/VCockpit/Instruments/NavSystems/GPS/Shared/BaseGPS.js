@@ -511,7 +511,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
             this.gps.SwitchToInteractionState(0);
         }
         if (_event == "MENU_Push")  {
-            // Unblock declutter when leving menu
+            // Unblock declutter when leaving menu
             this.gps.currentContextualMenu = null;
         }
     }
@@ -2385,6 +2385,9 @@ class GPS_DirectTo extends NavSystemElement {
         this.icaoSearchField = new SearchFieldWaypointICAO(this.gps, [this.icao], this.gps, 'WANV');
         this.currentFPLWpSelected = 0;
         this.geoCalc = new GeoCalcInfo(this.gps);
+        this.container.defaultMenu = new ContextualMenu("PAGE MENU", [
+            new ContextualMenuElement("Cancel&nbsp;DirectTo&nbsp;?", this.cancelDirectTo.bind(this), this.DirectToCheck.bind(this))
+        ]);
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.icao, this.searchField_SelectionCallback.bind(this)),
             new SelectableElement(this.gps, this.fpl, this.flightPlan_SelectionCallback.bind(this)),
@@ -2406,7 +2409,12 @@ class GPS_DirectTo extends NavSystemElement {
 //PM Modif: End Alert window
         this.currentFPLWpSelected = 0;
         this.gps.currFlightPlan.FillWithCurrentFP();
-        if (this.gps.lastRelevantICAO) {
+        if(this.gps.currFlightPlanManager.getIsDirectTo() && this.gps.currFlightPlanManager.getDirectToTarget()) {
+            var infos = this.gps.currFlightPlanManager.getDirectToTarget().GetInfos();
+            if(infos)
+                this.icaoSearchField.SetWaypoint(infos.getWaypointType(), infos.icao);
+        }
+        else if (this.gps.lastRelevantICAO) {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
         }
     }
@@ -2591,6 +2599,22 @@ class GPS_DirectTo extends NavSystemElement {
             });
 //PM Modif: End DirecTO bug correction when direct to an airport
         }
+    }
+    DirectToCheck() {
+        return !this.gps.currFlightPlanManager.getIsDirectTo();
+    }
+    cancelDirectTo(){
+        this.gps.confirmWindow.element.setTexts("Confirm cancel direct to ?");
+        this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+            if (this.gps.confirmWindow.element.Result == 1) {
+                // Remove any direct to before activating leg
+                if(this.gps.currFlightPlanManager.getIsDirectTo()){
+                    this.gps.currFlightPlanManager.cancelDirectTo();
+                    this.gps.SwitchToInteractionState(0);
+                    this.gps.leaveEventPage();
+                }
+            }
+        });
     }
 }
 
