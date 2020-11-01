@@ -12,27 +12,27 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.html",
-      "size": 67777,
+      "size": 69889,
       "date": 132453631615266153
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.css",
-      "size": 81474,
+      "size": 83610,
       "date": 132453631615266153
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/AS530.js",
-      "size": 6068,
+      "size": 6221,
       "date": 132453631615266153
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/mapConfig.json",
-      "size": 2349,
+      "size": 2432,
       "date": 132453631615266153
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/Terrain/mapConfig.json",
-      "size": 2476,
+      "size": 2555,
       "date": 132453631615266153
     },
     {
@@ -42,12 +42,12 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/AS430.html",
-      "size": 60702,
+      "size": 60733,
       "date": 132453631615266153
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/AS430.css",
-      "size": 67031,
+      "size": 67261,
       "date": 132453631615266153
     },
     {
@@ -57,12 +57,12 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS430/mapConfig.json",
-      "size": 2355,
+      "size": 2436,
       "date": 132453631615266153
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/BaseGPS.js",
-      "size": 177965,
+      "size": 197662,
       "date": 132453631615266153
     },
     {
@@ -257,7 +257,7 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html",
-      "size": 5195,
+      "size": 5201,
       "date": 132453631615266153
     },
     {
@@ -272,7 +272,7 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgRoadNetworkElement.js",
-      "size": 2087,
+      "size": 22438,
       "date": 132453631615266153
     }
   ]

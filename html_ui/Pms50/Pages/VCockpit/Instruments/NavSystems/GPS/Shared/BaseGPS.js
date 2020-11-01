@@ -2664,7 +2664,6 @@ class GPS_WaypointLine extends MFD_WaypointLine {
         var distance = "__._";
         if(!this.element.gps.currFlightPlanManager.isActiveApproach() && !this.element.gps.currFlightPlanManager.getIsDirectTo()){
             var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
-            console.log("active index:" + activeIndex);
             if(activeIndex >= 0) {
                 if(activeIndex == this.index) {
                     distance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
@@ -2675,7 +2674,6 @@ class GPS_WaypointLine extends MFD_WaypointLine {
                 }
             }
         }
-        console.log("index:" + this.index + ":" + distance);        
         return isNaN(distance) ? "__._" : distance.toFixed(1);
     }
     getCumDistance() {
@@ -2747,7 +2745,6 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
         if(!this.element.gps.currFlightPlanManager.getIsDirectTo()){
             if(this.element.gps.currFlightPlanManager.isActiveApproach()) {
                 var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
-                console.log("active index:" + activeIndex);
                 if(activeIndex >= 0) {
                     if(activeIndex == this.index) {
                         distance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
@@ -2771,7 +2768,6 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 }
             }
         }
-        console.log("index:" + this.index + ":" + distance);        
         return isNaN(distance) ? "__._" : distance.toFixed(1);
     }
     getCumDistance() {
@@ -3231,7 +3227,6 @@ class GPS_Vnav extends NavSystemElement {
         var currentAltitude = fastToFixed(SimVar.GetSimVarValue("GPS POSITION ALT", "feet"), 0);
         var targetAltitude = this.altitude.textContent;
 
-//console.log("currentAltitude:" + currentAltitude);
         // Don't calculate anything if near the target altitude
         if(targetAltitude > currentAltitude - 100 && targetAltitude < currentAltitude + 100)
             return targetInfos;
@@ -3242,7 +3237,6 @@ class GPS_Vnav extends NavSystemElement {
         var nextWpIdent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
         if(nextWpIdent == "")
             return targetInfos;
-//console.log("nextWpIdent:" + nextWpIdent);
 
         // Search target in current flight plan
         var DistanceToTarget = 0;
@@ -3258,54 +3252,40 @@ class GPS_Vnav extends NavSystemElement {
             if(waypoint.ident == nextWpIdent){
                 var nextBeforeTarget = true;
                 cumDistanceNext = waypoint.cumulativeDistanceInFP;
-//console.log("cumDistanceNext(" + i + "):" + cumDistanceNext);
             }
             if((info.ident == tinfo.ident) && (info.icao == tinfo.icao) && (info.coordinates == tinfo.coordinates)){
                 index = i;
-//console.log("cumDistanceTarget(" + index + "):" + waypoint.cumulativeDistanceInFP);
                 DistanceToTarget = waypoint.cumulativeDistanceInFP - cumDistanceNext;               
-//console.log("cumDistanceTargetDif:(" + index + "):" + DistanceToTarget);
                 break;
             }
         }
         if(index == -1 || !nextBeforeTarget){
             // Target not found or target is before next point (possible with a direct to)
-//console.log("Cannot use vnav here");
             this.targetWaypoint = null;
             return targetInfos;           
         }
         // Add the distance to next WP
         DistanceToTarget += SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
-//console.log("cumDistanceNextWP:" + SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles"));
-//console.log("cumDistance:" + DistanceToTarget);
         // Add or substract the offset distance to have the complete distance to target
         if(this.posref.textContent == "Before")
             DistanceToTarget -= parseFloat(this.posdis.textContent);
         else
             DistanceToTarget += parseFloat(this.posdis.textContent);
-//console.log("cumDistanceFinal:" + DistanceToTarget);
 
         // We are ok here.
         var difAltitude = currentAltitude- targetAltitude;
-//console.log("difAltitude feets:" + difAltitude);
         var desrate = (Math.atan(difAltitude / (DistanceToTarget * 6076.115486)) * 180 / Math.PI) / 0.6;
-//console.log("desrate percent:" + desrate);
         var vsr = fastToFixed(-desrate * groundSpeed, 0);
-console.log("vsr:" + vsr);
 
         var profileVs = parseInt(this.profile.textContent);
         var profiledesangle = (profileVs / groundSpeed) * 0.6;
-//console.log("profiledesangle:" + profiledesangle);
         var profileDistanceToTarget = (difAltitude / 100) / profiledesangle;
-//console.log("profileDistanceToTarget:" + profileDistanceToTarget);
         var profileDistanceToDescent = DistanceToTarget - profileDistanceToTarget;
         if(profileDistanceToDescent <0)
             profileDistanceToDescent = 0;
-//console.log("profileDistanceToDescent:" + profileDistanceToDescent);
         var timeToDescent = fastToFixed((profileDistanceToDescent / groundSpeed) * 3600, 0);
         if(timeToDescent < 0)
             timeToDescent = 0;
-//console.log("timeToDescent:" + timeToDescent);
         targetInfos = [vsr, timeToDescent];
         return targetInfos;
     }
