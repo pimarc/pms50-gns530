@@ -2757,10 +2757,16 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
             }
             else {
                 if(this.index == 0) {
-                    let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-                    let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-                    let ll = new LatLong(lat, long);
-                    distance = Avionics.Utils.computeDistance(ll, this.waypoint.infos.coordinates);
+                    var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
+                    if(wayPointList.length >=2){
+                        distance = Avionics.Utils.computeDistance(wayPointList[wayPointList.length - 2].infos.coordinates, this.waypoint.infos.coordinates);
+                    }
+                    else{
+                        let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+                        let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+                        let ll = new LatLong(lat, long);
+                        distance = Avionics.Utils.computeDistance(ll, this.waypoint.infos.coordinates);
+                    }
                 }
                 else {
                     var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();

@@ -23,7 +23,7 @@ First release features:
 - Dynamic flight plan page
 - DirectTo map leg larger
 - Airspace lines thinner
-- Adding a "cancel directoTo" item menu in DirectTo page
+- Adding a "cancel directTo" item menu in DirectTo page
 ## V 1.0.8
 - Compatibility with MSFS update 1.10.7.0
 ## V 1.0.7
