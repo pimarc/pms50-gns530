@@ -2759,6 +2759,7 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 if(this.index == 0) {
                     var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
                     if(wayPointList.length >=2){
+                        // The distance of the first non activated app WP is the one from the last enroute WP 
                         distance = Avionics.Utils.computeDistance(wayPointList[wayPointList.length - 2].infos.coordinates, this.waypoint.infos.coordinates);
                     }
                     else{
@@ -3028,6 +3029,57 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.SwitchToInteractionState(0);
     }
 }
+
+
+
+class GPS_FPLCatalog extends NavSystemElement {
+    constructor(_type = "530") {
+        super();
+        this.name = "FPLCatalog";
+        this.nbElemsMax = 7;
+    }
+    init() {
+        this.sliderElement = this.gps.getChildById("SliderFPLCatalog");
+        this.sliderCursorElement = this.gps.getChildById("SliderFPLCatalogCursor");
+//        this.nearestIntersectionList = new NearestIntersectionList(this.gps);
+        this.fplsSliderGroup = new SelectableElementSliderGroup(this.gps, [], this.sliderElement, this.sliderCursorElement);
+        for (let i = 0; i < this.nbElemsMax; i++) {
+            this.fplsSliderGroup.addElement(new SelectableElement(this.gps, this.gps.getChildById("FPL_Catalog_" + i), this.fpl_SelectionCallback.bind(this)));
+        }
+        this.defaultSelectables = [this.fplsSliderGroup];
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+//        this.nearestIntersectionList.Update();
+        var lines = [];
+//        for (var i = 0; i < this.nearestIntersectionList.intersections.length; i++) {
+        for (var i = 0; i < 19; i++) {
+            var line = '<td class="SelectableElement">' + "" + (i + 1) + "</td><td>" + "_____ / _____" + "</td>";
+            lines.push(line);
+        }
+        this.fplsSliderGroup.setStringElements(lines);
+    }
+    onExit() {
+//        if (this.gps.currentInteractionState == 1) {
+//            this.gps.lastRelevantICAO = this.nearestIntersectionList.intersections[this.fplsSliderGroup.getIndex()].icao;
+//            this.gps.lastRelevantICAOType = "W";
+//        }
+    }
+    onEvent(_event) {
+    }
+    fpl_SelectionCallback(_event, _index) {
+        switch (_event) {
+            case "ENT_Push":
+//                this.gps.SwitchToPageName("WPT", "Intersection");
+                this.gps.SwitchToInteractionState(0);
+                return true;
+        }
+    }
+}
+
+
+
 class GPS_Messages extends NavSystemElement {
     constructor() {
         super();

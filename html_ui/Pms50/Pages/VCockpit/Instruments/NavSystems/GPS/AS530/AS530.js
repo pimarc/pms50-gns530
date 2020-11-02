@@ -38,7 +38,10 @@ class AS530 extends BaseGPS {
             ])
         ];
         this.addEventLinkedPageGroup("DirectTo_Push", new NavSystemPageGroup("DRCT", this, [new NavSystemPage("DRCT", "DRCT", new GPS_DirectTo())]));
-        this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("530"))]));
+        this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [
+                new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("530")),
+                new NavSystemPage("FPLCatalog", "FPLCatalog", new GPS_FPLCatalog("530"))
+            ]));
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", new GPS_Messages())]));
         this.addEventLinkedPageGroup("VNAV_Push", new NavSystemPageGroup("VNAV", this, [new NavSystemPage("VNAV", "Vnav", new GPS_Vnav())]));

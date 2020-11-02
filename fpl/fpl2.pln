@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<SimBase.Document Type="AceXML" version="1,0">
+    <Descr>AceXML Document</Descr>
+    <FlightPlan.FlightPlan>
+<Title>LFLXLFLC</Title>
+<FPType>VFR</FPType>
+<RouteType>HighAlt</RouteType>
+<CruisingAlt>7500</CruisingAlt>
+<DepartureID>LFLX</DepartureID>
+<DepartureLLA>N46° 51' 37",E1° 43' 16",+000529.00</DepartureLLA>
+<DestinationID>LFLC</DestinationID>
+<DestinationLLA>N45° 47' 10",E3° 9' 45",+001092.00</DestinationLLA>
+<DeparturePosition>03</DeparturePosition>
+<DepartureName>DEOLS</DepartureName>
+<DestinationName>CLERMONTFERRAND/AUVERGNE</DestinationName>
+<AppVersion>
+<AppVersionMajor>10</AppVersionMajor>
+<AppVersionBuild>61472</AppVersionBuild>
+</AppVersion>
+<ATCWaypoint id="LFLX">
+<ATCWaypointType>Airport</ATCWaypointType>
+<WorldPosition>N46° 51' 37",E1° 43' 16",+000529.00</WorldPosition>
+<ICAO>
+<ICAOIdent>LFLX</ICAOIdent>
+</ICAO>
+</ATCWaypoint>
+<ATCWaypoint id="LPD">
+<ATCWaypointType>NDB</ATCWaypointType>
+<WorldPosition>N46° 18' 8.7",E2° 20' 13.6",+000000.00</WorldPosition>
+<ICAO>
+<ICAOIdent>LPD</ICAOIdent>
+</ICAO>
+</ATCWaypoint>
+<ATCWaypoint id="TIS">
+<ATCWaypointType>VOR</ATCWaypointType>
+<WorldPosition>N45° 52' 54.6",E3° 33' 12.9",+000000.00</WorldPosition>
+<ICAO>
+<ICAOIdent>TIS</ICAOIdent>
+</ICAO>
+</ATCWaypoint>
+<ATCWaypoint id="CFA">
+<ATCWaypointType>VOR</ATCWaypointType>
+<WorldPosition>N45° 47' 14.9",E3° 11' 31.9",+000000.00</WorldPosition>
+<ICAO>
+<ICAOIdent>CFA</ICAOIdent>
+</ICAO>
+</ATCWaypoint>
+<ATCWaypoint id="LFLC">
+<ATCWaypointType>Airport</ATCWaypointType>
+<WorldPosition>N45° 47' 10",E3° 9' 45",+001092.00</WorldPosition>
+<ICAO>
+<ICAOIdent>LFLC</ICAOIdent>
+</ICAO>
+</ATCWaypoint>
+    </FlightPlan.FlightPlan>
+</SimBase.Document>

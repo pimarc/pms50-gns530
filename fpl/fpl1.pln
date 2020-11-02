@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<SimBase.Document Type="AceXML" version="1,0">
+    <Descr>AceXML Document</Descr>
+    <!-- LNMDATA
+         _lnm=Créé par Little Navmap Version 2.4.5 (révision 0bde498) sur 2020 11 01T09:20:53|
+         aircraftperffile=|
+         aircraftperfname=|
+         aircraftperftype=|
+         approach=FI28|
+         approacharinc=I28|
+         approachdistance=9.1|
+         approachrw=28|
+         approachsize=6|
+         approachsuffix=|
+         approachtype=ILS|
+         cycle=2009|
+         navdata=NAVIGRAPH|
+         sidappr=LGL4X|
+         sidapprdistance=45.6|
+         sidapprrw=13|
+         sidapprsize=4|
+         simdata=NAVIGRAPH|
+         star=DIN3A|
+         stardistance=20.0|
+         starrw=28|
+         starsize=2|
+         transition=REN|
+         transitiondistance=25.3|
+         transitionsize=7|
+         transitiontype=D
+-->
+    <FlightPlan.FlightPlan>
+        <Title>LFRK to LFRN</Title>
+        <FPType>IFR</FPType>
+        <CruisingAlt>4000</CruisingAlt>
+        <DepartureID>LFRK</DepartureID>
+        <DepartureLLA>N49° 10' 24.00",W0° 27' 0.00",+000256.00</DepartureLLA>
+        <DestinationID>LFRN</DestinationID>
+        <DestinationLLA>N48° 4' 19.00",W1° 43' 56.00",+000124.00</DestinationLLA>
+        <Descr>LFRK, LFRN</Descr>
+        <DeparturePosition></DeparturePosition>
+        <DepartureName>Carpiquet</DepartureName>
+        <DestinationName>St Jacques</DestinationName>
+        <AppVersion>
+            <AppVersionMajor>10</AppVersionMajor>
+            <AppVersionBuild>61472</AppVersionBuild>
+        </AppVersion>
+        <ATCWaypoint id="LFRK">
+            <ATCWaypointType>Airport</ATCWaypointType>
+            <WorldPosition>N49° 10' 24.00",W0° 27' 0.00",+000256.00</WorldPosition>
+            <ICAO>
+                <ICAOIdent>LFRK</ICAOIdent>
+            </ICAO>
+        </ATCWaypoint>
+        <ATCWaypoint id="TURDU">
+            <ATCWaypointType>Intersection</ATCWaypointType>
+            <WorldPosition>N49° 5' 28.11",W0° 27' 53.00",+000000.00</WorldPosition>
+            <ICAO>
+                <ICAORegion>LF</ICAORegion>
+                <ICAOIdent>TURDU</ICAOIdent>
+            </ICAO>
+        </ATCWaypoint>
+        <ATCWaypoint id="LEMAR">
+            <ATCWaypointType>Intersection</ATCWaypointType>
+            <WorldPosition>N49° 3' 47.01",W0° 37' 22.00",+000000.00</WorldPosition>
+            <ICAO>
+                <ICAORegion>LF</ICAORegion>
+                <ICAOIdent>LEMAR</ICAOIdent>
+            </ICAO>
+        </ATCWaypoint>
+        <ATCWaypoint id="GILRA">
+            <ATCWaypointType>Intersection</ATCWaypointType>
+            <WorldPosition>N48° 51' 48.00",W0° 43' 53.00",+000000.00</WorldPosition>
+            <ICAO>
+                <ICAORegion>LF</ICAORegion>
+                <ICAOIdent>GILRA</ICAOIdent>
+            </ICAO>
+        </ATCWaypoint>
+        <ATCWaypoint id="LFRN">
+            <ATCWaypointType>Airport</ATCWaypointType>
+            <WorldPosition>N48° 4' 19.00",W1° 43' 56.00",+000124.00</WorldPosition>
+            <ICAO>
+                <ICAOIdent>LFRN</ICAOIdent>
+            </ICAO>
+        </ATCWaypoint>
+    </FlightPlan.FlightPlan>
+</SimBase.Document>
