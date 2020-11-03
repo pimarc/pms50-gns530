@@ -2796,11 +2796,25 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 }
             }
             else {
+                // If no approach active, the cumulative distance must be taken form the one of the last enroute WP
                 let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
                 let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
                 let ll = new LatLong(lat, long);
-                var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
+                wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
+                // default base cum distance is form airplane position but should never occur
                 cumDistance = Avionics.Utils.computeDistance(ll, wayPointList[0].infos.coordinates);
+                var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+                if(activeIndex >= 0) {
+                    var wayPointListEnroute = this.element.gps.currFlightPlanManager.getWaypoints();
+                    if(wayPointListEnroute.length >=2) {
+                        // Calculate last enroute WP cum distance
+                        cumDistance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                        for(var i=wayPointListEnroute.length-2; i > activeIndex; i--) {
+                            var distance = Avionics.Utils.computeDistance(wayPointListEnroute[i].infos.coordinates, wayPointListEnroute[i-1].infos.coordinates);
+                            cumDistance += distance;
+                        }
+                    }
+                }
                 if(this.index > 0) {
                     for(var i=this.index; i > 0; i--) {
                         var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
@@ -3037,6 +3051,7 @@ class GPS_FPLCatalog extends NavSystemElement {
         super();
         this.name = "FPLCatalog";
         this.nbElemsMax = 7;
+        this.fplList = new FPLCatalog();
     }
     init() {
         this.sliderElement = this.gps.getChildById("SliderFPLCatalog");
@@ -3049,14 +3064,18 @@ class GPS_FPLCatalog extends NavSystemElement {
         this.defaultSelectables = [this.fplsSliderGroup];
     }
     onEnter() {
+        console.log("Enter GPS_FPLCatalog")
+        this.fplList.load();
     }
     onUpdate(_deltaTime) {
-//        this.nearestIntersectionList.Update();
         var lines = [];
 //        for (var i = 0; i < this.nearestIntersectionList.intersections.length; i++) {
         for (var i = 0; i < 19; i++) {
-            var line = '<td class="SelectableElement">' + "" + (i + 1) + "</td><td>" + "_____ / _____" + "</td>";
-            lines.push(line);
+            let item = this.fplList.fpls[i];
+            if(item.xmlFpl != null && item.departure != "" && item.destination != ""){
+                var line = '<td class="SelectableElement">' + item.index + "</td><td>" + item.departure + " / " + item.destination + "</td>";
+                lines.push(line);
+            }
         }
         this.fplsSliderGroup.setStringElements(lines);
     }
@@ -3078,6 +3097,66 @@ class GPS_FPLCatalog extends NavSystemElement {
     }
 }
 
+
+class FPLCatalog {
+    constructor() {
+        this.fpls = null;
+    }
+    load(){
+        this.fpls = [];
+        for(var i=1; i<20; i++){
+            var item = new FPLCatalogItem(i);
+            item.load();
+            this.fpls.push(item);
+        }
+    }
+}
+
+
+class FPLCatalogItem {
+    constructor(_index) {
+        this.index = _index;
+        this.xmlFpl = null;
+        this.departure = "";
+        this.destination = "";
+    }
+    load(){
+        this.xmlFpl = null;
+        this.loadXml("fpl" + this.index + ".pln").then((xmlFpl) => {
+            console.log("Loading fpl" + this.index);
+            this.xmlFpl = xmlFpl;
+            let fpl = xmlFpl.getElementsByTagName("FlightPlan.FlightPlan");
+            if(fpl.length > 0){
+                this.departure = fpl[0].getElementsByTagName("DepartureID")[0].textContent;
+                this.destination = fpl[0].getElementsByTagName("DestinationID")[0].textContent;
+                console.log(this.departure + "/" + this.destination);
+            }
+        });
+    }
+    loadXml(filename) {
+        return new Promise((resolve) => {
+            var milliseconds = new Date().getTime().toString();
+            this.loadFile("/VFS/fpl530/" + filename + "?id=" + milliseconds, (text) => {
+                let parser = new DOMParser();
+                let out = parser.parseFromString(text, "text/xml");
+                resolve(out);
+            });
+        });
+    }
+    loadFile(file, callbackSuccess) {
+        let httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function (data) {
+            if (this.readyState === XMLHttpRequest.DONE) {
+                let loaded = this.status === 200 || this.status === 0;
+                if (loaded) {
+                    callbackSuccess(this.responseText);
+                }
+            }
+        };
+        httpRequest.open("GET", file);
+        httpRequest.send();
+    }
+}
 
 
 class GPS_Messages extends NavSystemElement {
