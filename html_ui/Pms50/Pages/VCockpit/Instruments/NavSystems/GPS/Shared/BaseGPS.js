@@ -2751,7 +2751,9 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                     }
                     else if(this.index > activeIndex) {
                         var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
-                        distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
+                        distance = 0;
+                        if(this.index < wayPointList.length)
+                            distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
                     }
                 }
             }
@@ -2771,7 +2773,9 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 }
                 else {
                     var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
-                    distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
+                    distance = 0;
+                    if(this.index < wayPointList.length)
+                        distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
                 }
             }
         }
@@ -2788,7 +2792,9 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                         if(this.index > activeIndex) {
                             var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
                             for(var i=this.index; i > activeIndex; i--) {
-                                var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
+                                distance = 0;
+                                if(i < wayPointList.length)
+                                    var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
                                 cumDistance += distance;
                             }
                         }
@@ -2817,7 +2823,9 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 }
                 if(this.index > 0) {
                     for(var i=this.index; i > 0; i--) {
-                        var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
+                        distance = 0;
+                        if(i < wayPointList.length)
+                            var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
                         cumDistance += distance;
                     }
                 }
@@ -2918,17 +2926,17 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
                 return;
             }
         }
-        else{
-            // Activating a leg outside the approach deactive it
-            if(this.gps.currFlightPlanManager.isActiveApproach()){
-                Coherent.call("DEACTIVATE_APPROACH").then(() => {
-                    // Do nothing
-                });
-            }
-        }
         this.gps.confirmWindow.element.setTexts("Confirm activate leg ?");
         this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
             if (this.gps.confirmWindow.element.Result == 1) {
+                if(!is_approach_index){
+                    // Activating a leg outside the approach deactive it
+                    if(this.gps.currFlightPlanManager.isActiveApproach()){
+                        Coherent.call("DEACTIVATE_APPROACH").then(() => {
+                            // Do nothing
+                        });
+                    }
+                }
                 // Remove any direct to before activating leg
                 if(this.gps.currFlightPlanManager.getIsDirectTo()){
                     this.gps.currFlightPlanManager.cancelDirectTo();
