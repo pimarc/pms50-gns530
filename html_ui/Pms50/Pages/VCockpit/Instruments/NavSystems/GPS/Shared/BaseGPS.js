@@ -204,16 +204,18 @@ class BaseGPS extends NavSystem {
         if(this.currFlightPlanManager.getIsDirectTo()){
             this.currFlightPlanManager.cancelDirectTo();
         }
-        if ((this.currFlightPlanManager.getActiveWaypointIndex() != -1) && (this.currFlightPlanManager.getActiveWaypointIndex() <= this.currFlightPlanManager.getLastIndexBeforeApproach())) {
-            Coherent.call("DEACTIVATE_APPROACH").then(() => {
-//                this.currFlightPlanManager.activateApproach();
-                Coherent.call("ACTIVATE_APPROACH").then(() => {
-                    this.currFlightPlanManager._approachActivated = true;
-                    this.currFlightPlanManager.updateCurrentApproach();
-                });
-            });
-        }
-        else {
+// Removed that because if you select the approach before the last enroute wp, the distance displayed on the default nav page
+// are not correct and the aircraft continues to follow the enroute WP. SO I prefer to remove enroute WP in any case when activating approach.       
+//         if ((this.currFlightPlanManager.getActiveWaypointIndex() != -1) && (this.currFlightPlanManager.getActiveWaypointIndex() <= this.currFlightPlanManager.getLastIndexBeforeApproach())) {
+//             Coherent.call("DEACTIVATE_APPROACH").then(() => {
+// //                this.currFlightPlanManager.activateApproach();
+//                 Coherent.call("ACTIVATE_APPROACH").then(() => {
+//                     this.currFlightPlanManager._approachActivated = true;
+//                     this.currFlightPlanManager.updateCurrentApproach();
+//                 });
+//             });
+//         }
+//         else {
             let removeWaypointForApproachMethod = (callback_here = EmptyCallback.Void) => {
                 let i = 1;
                 let destinationIndex = this.currFlightPlanManager.getWaypoints().findIndex(w => {
@@ -238,7 +240,7 @@ class BaseGPS extends NavSystem {
                         this.currFlightPlanManager.updateCurrentApproach();
                     });
             });
-        }
+        // }
         callback();
     }
 //PM Modif: End Activate approach modification
@@ -2807,14 +2809,18 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
                 let ll = new LatLong(lat, long);
                 wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
-                // default base cum distance is form airplane position but should never occur
-                cumDistance = Avionics.Utils.computeDistance(ll, wayPointList[0].infos.coordinates);
+                // default base cum distance is form airplane position but should occur only if enroute is max 2 WP
+                if(wayPointList.length)
+                    cumDistance = Avionics.Utils.computeDistance(ll, wayPointList[0].infos.coordinates);
                 var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
                 if(activeIndex >= 0) {
                     var wayPointListEnroute = this.element.gps.currFlightPlanManager.getWaypoints();
-                    if(wayPointListEnroute.length >=2) {
+                    if(wayPointListEnroute.length > 2) {
                         // Calculate last enroute WP cum distance
+                        // Start from active WP
                         cumDistance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                        // Add distance fromlast enroute to first approach WP
+                        cumDistance += Avionics.Utils.computeDistance(wayPointListEnroute[wayPointListEnroute.length - 2].infos.coordinates, wayPointList[0].infos.coordinates);
                         for(var i=wayPointListEnroute.length-2; i > activeIndex; i--) {
                             var distance = Avionics.Utils.computeDistance(wayPointListEnroute[i].infos.coordinates, wayPointListEnroute[i-1].infos.coordinates);
                             cumDistance += distance;
@@ -2841,7 +2847,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         else
             super(GPS_WaypointLine, GPS_ApproachWaypointLine, 5, 4);
         this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>___<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
-        this.name = "ActiveFPL";
+//        this.name = "ActiveFPL";
     }
     init(_root) {
         super.init(_root);
@@ -3070,37 +3076,205 @@ class GPS_FPLCatalog extends NavSystemElement {
             this.fplsSliderGroup.addElement(new SelectableElement(this.gps, this.gps.getChildById("FPL_Catalog_" + i), this.fpl_SelectionCallback.bind(this)));
         }
         this.defaultSelectables = [this.fplsSliderGroup];
+        this.realindex = -1;
     }
     onEnter() {
-        console.log("Enter GPS_FPLCatalog")
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
         this.fplList.load();
     }
     onUpdate(_deltaTime) {
         var lines = [];
-//        for (var i = 0; i < this.nearestIntersectionList.intersections.length; i++) {
-        for (var i = 0; i < 19; i++) {
+        var numItems = 0;
+        var i = 0;
+        for (i = 0; i < 19; i++) {
             let item = this.fplList.fpls[i];
             if(item.xmlFpl != null && item.departure != "" && item.destination != ""){
                 var line = '<td class="SelectableElement">' + item.index + "</td><td>" + item.departure + " / " + item.destination + "</td>";
+                numItems ++;
                 lines.push(line);
             }
+        }
+        // Write the blank lines
+        for (i = numItems; i < 19; i++) {
+            var line = '<td class="SelectableElement">__</td><td>_____ / _____</td>';
+            lines.push(line);
         }
         this.fplsSliderGroup.setStringElements(lines);
     }
     onExit() {
-//        if (this.gps.currentInteractionState == 1) {
-//            this.gps.lastRelevantICAO = this.nearestIntersectionList.intersections[this.fplsSliderGroup.getIndex()].icao;
-//            this.gps.lastRelevantICAOType = "W";
-//        }
+//PM Modif: Confirmation window
+        this.gps.closeConfirmWindow();
+//PM Modif: End Confirmation window
+//PM Modif: Alert window
+        this.gps.closeAlertWindow();
+//PM Modif: End Alert window
     }
     onEvent(_event) {
     }
     fpl_SelectionCallback(_event, _index) {
+        let fpl = this.fplList.fpls[this.realindex];
         switch (_event) {
             case "ENT_Push":
-//                this.gps.SwitchToPageName("WPT", "Intersection");
-                this.gps.SwitchToInteractionState(0);
+                this.gps.confirmWindow.element.setTexts("Load flight plan ?");
+                this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+                    if (this.gps.confirmWindow.element.Result == 1) {
+                        this.realindex = this.fplList.getIndexFromDisplay(_index);
+                        if(this.realindex != -1)
+                            this.clearFlightPlan(this.onClearFlightPlan.bind(this));
+                    }
+                    else {
+                        this.gps.SwitchToInteractionState(1);
+                    }
+                });
                 return true;
+        }
+    }
+    clearFlightPlan(callback = EmptyCallback.Void) {
+        this.gps.currFlightPlanManager.setApproachIndex(-1);
+        Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN").then(() => {
+            this.gps.currFlightPlanManager.updateFlightPlan(() => {
+                this.gps.currFlightPlanManager.updateCurrentApproach(() => {
+                    this.gps.currFlightPlanManager.instrument.requestCall(callback);
+                });
+            });
+        });
+    }
+    onClearFlightPlan() {
+        let fpl = this.fplList.fpls[this.realindex];
+        this.addWaypoints(this.onAfterAddWaypoints.bind(this));
+    }
+    addWaypoints(callback = EmptyCallback.Void) {
+        let fpl = this.fplList.fpls[this.realindex];
+        for(var i=0; i<fpl.icaoWaypoints.length; i++){
+            Coherent.call("ADD_WAYPOINT", fpl.icaoWaypoints[i], i, true).then(() => {
+            });
+        }
+        this.gps.currFlightPlanManager.instrument.requestCall(callback);
+    }
+    onAddWaypoint() {
+    }
+    onAfterAddWaypoints() {
+        this.gps.currFlightPlanManager.updateFlightPlan(this.onFinalProcess.bind(this));
+    }
+    onFinalProcess() {
+        this.setDeparture();
+        this.setArrival();
+        this.setApproach();
+//        this.setDeparture(this.setApproach.bind(this));
+        // We must go back to the FPL page
+        var pageGroup = null;
+        for (let i = 0; i < this.gps.eventLinkedPageGroups.length; i++) {
+            var pageGroup = this.gps.eventLinkedPageGroups[i].pageGroup;
+            if(this.gps.eventLinkedPageGroups[i].pageGroup.name == "FPL") {
+                pageGroup = this.gps.eventLinkedPageGroups[i].pageGroup;
+                break;
+            }
+        }
+        if(pageGroup != null) {
+            for (let i = 0; i < pageGroup.pages.length; i++) {
+                if (pageGroup.pages[i].name == "ActiveFPL") {
+                    pageGroup.pageIndex = i;
+                    break;
+               }
+            }
+            this.gps.currentEventLinkedPageGroup = null;
+            this.gps.SwitchToInteractionState(0);
+            this.gps.computeEvent("FPL_Push");
+        }
+    }
+
+    setDeparture() {
+        var origin = this.gps.currFlightPlanManager.getOrigin();
+        let infos = origin.GetInfos();
+        if(infos instanceof AirportInfo)
+        {
+            let fpl = this.fplList.fpls[this.realindex];
+            let indexdeparture = -1;
+            for (let i = 0; i < infos.departures.length; i++) {
+                console.log(infos.departures[i].name + ":" + stringToAscii(infos.departures[i].name));
+                if(infos.departures[i].name == fpl.sid) {
+                    console.log("Departure found: " + infos.departures[i].name);
+                    indexdeparture = i;
+                    break;
+                }
+            }
+            if(indexdeparture >= 0) {
+                this.gps.currFlightPlanManager.setDepartureProcIndex(indexdeparture);
+                this.gps.currFlightPlanManager.setDepartureRunwayIndex(0);
+                this.gps.currFlightPlanManager.setDepartureEnRouteTransitionIndex(0, () => {
+                    let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                    if (elem) {
+                        elem.updateWaypoints();
+                    }
+                });
+            }
+        }
+    }
+    setArrival() {
+        var destination = this.gps.currFlightPlanManager.getDestination();
+        let infos = destination.GetInfos();
+        if(infos instanceof AirportInfo)
+        {
+            let fpl = this.fplList.fpls[this.realindex];
+            let indexarrival = -1;
+            for (let i = 0; i < infos.arrivals.length; i++) {
+                console.log(infos.arrivals[i].name + ":" + stringToAscii(infos.arrivals[i].name));
+                if(infos.arrivals[i].name == fpl.star) {
+                    console.log("Star found: " + infos.arrivals[i].name);
+                    indexarrival = i;
+                    break;
+                }
+            }
+            if(indexarrival >= 0) {
+                this.gps.currFlightPlanManager.setArrivalProcIndex(indexarrival);
+                this.gps.currFlightPlanManager.setArrivalRunwayIndex(0);
+                this.gps.currFlightPlanManager.setArrivalEnRouteTransitionIndex(0, () => {
+                    let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                    if (elem) {
+                        elem.updateWaypoints();
+                    }
+                });
+            }
+        }
+    }
+
+    setApproach() {
+        var destination = this.gps.currFlightPlanManager.getDestination();
+        let infos = destination.GetInfos();
+        if(infos instanceof AirportInfo)
+        {
+            let fpl = this.fplList.fpls[this.realindex];
+            let searchapproach = fpl.approach + " " + fpl.approachrw + " ";
+            let indexapproach = -1;
+            for (let i = 0; i < infos.approaches.length; i++) {
+                if(infos.approaches[i].name == searchapproach) {
+                    indexapproach = i;
+                    break;
+                }
+            }
+            if(indexapproach >= 0) {
+                let approach = infos.approaches[indexapproach];
+                let indextransition = -1;
+                for (let i = 0; i < approach.transitions.length; i++) {
+                    if(approach.transitions[i].name == fpl.approachtr) {
+                        indextransition = i;
+                        break;
+                    }
+                }
+                if(indextransition >= 0) {
+                    this.gps.currFlightPlanManager.setApproachIndex(indexapproach, () => {
+                        let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                        if (elem) {
+                            elem.updateWaypoints();
+                        }
+                    }, indextransition);
+                }
+            }
         }
     }
 }
@@ -3118,6 +3292,21 @@ class FPLCatalog {
             this.fpls.push(item);
         }
     }
+    getIndexFromDisplay(displayIndex){
+        let index = 0;
+        var i;
+        for(var i=0; i<19; i++){
+            var item = this.fpls[i];
+            if(item.xmlFpl != null && item.departure != "" && item.destination != ""){
+                if(index == displayIndex)
+                    break;
+                index++;
+            }
+        }
+        if(i == 19)
+            return -1;
+        return i;
+    }
 }
 
 
@@ -3127,17 +3316,87 @@ class FPLCatalogItem {
         this.xmlFpl = null;
         this.departure = "";
         this.destination = "";
+        this.sid = "";
+        this.sidrw = "";
+        this.star = "";
+        this.approach = "";
+        this.approachrw = "";
+        this.approachtr = "";
+        this.icaoWaypoints = [];
+        this.previousIcao = "";
     }
     load(){
         this.xmlFpl = null;
+        this.icaoWaypoints = [];
+        this.departure = "";
+        this.destination = "";
+        this.sid = "";
+        this.sidrw = "";
+        this.star = "";
+        this.approach = "";
+        this.approachrw = "";
+        this.approachtr = "";
+        this.icaoWaypoints = [];
+        this.ident = "";
         this.loadXml("fpl" + this.index + ".pln").then((xmlFpl) => {
-            console.log("Loading fpl" + this.index);
             this.xmlFpl = xmlFpl;
             let fpl = xmlFpl.getElementsByTagName("FlightPlan.FlightPlan");
             if(fpl.length > 0){
-                this.departure = fpl[0].getElementsByTagName("DepartureID")[0].textContent;
-                this.destination = fpl[0].getElementsByTagName("DestinationID")[0].textContent;
-                console.log(this.departure + "/" + this.destination);
+                this.departure = fpl[0].getElementsByTagName("DepartureID")[0] ? fpl[0].getElementsByTagName("DepartureID")[0].textContent : "";
+                this.destination = fpl[0].getElementsByTagName("DestinationID")[0] ? fpl[0].getElementsByTagName("DestinationID")[0].textContent : "";
+                let waypoints = fpl[0].getElementsByTagName("ATCWaypoint");
+                for (let i = 0; i < waypoints.length; i++) {
+                    let waypointroot = waypoints[i];
+                    let type = waypointroot.getElementsByTagName("ATCWaypointType")[0] ? waypointroot.getElementsByTagName("ATCWaypointType")[0].textContent : "";
+                    let sid = waypointroot.getElementsByTagName("DepartureFP")[0] ? waypointroot.getElementsByTagName("DepartureFP")[0].textContent : "";
+                    if(this.sid == "" && sid != "") {
+                        this.sid = sid;
+                        let sidrw = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
+                        if(sid != "")
+                            this.sidrw = sidrw;
+                    }
+                    let star = waypointroot.getElementsByTagName("ArrivalFP")[0] ? waypointroot.getElementsByTagName("ArrivalFP")[0].textContent : "";
+                    if(this.star == "" && star != "") {
+                        this.star = star;
+                    }
+                    if(i==waypoints.length-1) {
+                        // Chack for approach
+                        let approach = waypointroot.getElementsByTagName("ApproachTypeFP")[0] ? waypointroot.getElementsByTagName("ApproachTypeFP")[0].textContent : "";
+                        if(approach != "")
+                            this.approach = approach;
+                            let approachrw = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
+                            if(approachrw != "")
+                                this.approachrw = approachrw;
+                            // Transition is the last enroute ident
+                            this.approachtr = this.ident;
+                    }
+                    let icao = waypointroot.getElementsByTagName("ICAO")[0];
+                    if(icao){
+                        let ident = icao.getElementsByTagName("ICAOIdent")[0] ? icao.getElementsByTagName("ICAOIdent")[0].textContent : "";
+                        this.ident = ident;
+                        // Prepare icao format TRRRRRRIIIII each part with right leading 0s (T=Type, R=Region, I=Ident)
+                        while(ident.length < 5)
+                            ident += " ";
+                        let region = icao.getElementsByTagName("ICAORegion")[0] ? icao.getElementsByTagName("ICAORegion")[0].textContent : "";
+                        while(region.length < 6)
+                            region += " ";
+                        let typeletter = "W";
+                        type = type.toUpperCase();
+                        if(type == "AIRPORT")
+                            typeletter = "A";
+                        else if(type == "VOR")
+                            typeletter = "V";
+                        else if(type == "NDB")
+                            typeletter = "N";
+                        let icaoString = typeletter + region + ident;
+                        if((sid == "") && (star == "")) {
+                            // Do not add waypoints that are part of sid or star
+                            this.icaoWaypoints.push(icaoString);
+                        }
+                    }
+                    if(icao)
+                        this.previousIcao = icao;
+                }
             }
         });
     }
@@ -3165,6 +3424,18 @@ class FPLCatalogItem {
         httpRequest.send();
     }
 }
+
+function stringToAscii(str) {
+    var bytes = []; // char codes
+    var bytesv2 = []; // char codes
+
+    for (var i = 0; i < str.length; ++i) {
+        var code = str.charCodeAt(i);
+        bytes = bytes.concat([code]);
+    }
+    return bytes.join(', ');
+}
+
 
 
 class GPS_Messages extends NavSystemElement {
