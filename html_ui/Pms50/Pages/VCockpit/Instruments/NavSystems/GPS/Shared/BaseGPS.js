@@ -16,6 +16,7 @@ class BaseGPS extends NavSystem {
         this.currentlySelectedFreq = 0;
         this.navIndex = 1;
         this.comIndex = 1;
+        this.fplNumber = 0;
         this.airportWaypointsIcaoSearchField = new SearchFieldWaypointICAO(this, [], this, "A");
         this.addEventAlias("RightSmallKnob_Right", "NavigationSmallInc");
         this.addEventAlias("RightSmallKnob_Left", "NavigationSmallDec");
@@ -2903,6 +2904,8 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         if (this.gps.currentInteractionState != 2) {
             this.selectedLine = null;
         }
+        this.fplNumber = this.gps.getChildById("FlightPlanNumber");
+        this.fplNumber.textContent = this.gps.fplNumber < 10 ? "0" + this.gps.fplNumber : this.gps.fplNumber;
     }
 
     activateStateCB() {
@@ -2985,9 +2988,16 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.SwitchToInteractionState(0);
     }
     FPLDeleteFlightPlan_CB() {
-        this.gps.currFlightPlanManager.clearFlightPlan();
-        this.gps.SwitchToInteractionState(0);
-        this.fplSliderGroup.updateDisplay();
+        this.gps.confirmWindow.element.setTexts("Delete flight plan ?");
+        this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+            if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getApproach() != null)) {
+                this.gps.currFlightPlanManager.clearFlightPlan();
+                this.gps.SwitchToInteractionState(0);
+                if(this.fplSliderGroup)
+                    this.fplSliderGroup.updateDisplay();
+                this.gps.fplNumber = 0;
+            }
+        });
     }
     FPLSelectApproach_CB(_param) {
         this.gps.switchToPopUpPage(this.gps.selectApproachPage);
@@ -3093,8 +3103,9 @@ class GPS_FPLCatalog extends NavSystemElement {
         var i = 0;
         for (i = 0; i < 19; i++) {
             let item = this.fplList.fpls[i];
+            let itemIndex = item.index < 10 ? "0" + item.index : item.index;
             if(item.xmlFpl != null && item.departure != "" && item.destination != ""){
-                var line = '<td class="SelectableElement">' + item.index + "</td><td>" + item.departure + " / " + item.destination + "</td>";
+                var line = '<td class="SelectableElement">' + itemIndex + "</td><td>" + item.departure + " / " + item.destination + "</td>";
                 numItems ++;
                 lines.push(line);
             }
@@ -3120,22 +3131,26 @@ class GPS_FPLCatalog extends NavSystemElement {
         let fpl = this.fplList.fpls[this.realindex];
         switch (_event) {
             case "ENT_Push":
-                this.gps.confirmWindow.element.setTexts("Load flight plan ?");
-                this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
-                    if (this.gps.confirmWindow.element.Result == 1) {
-                        this.realindex = this.fplList.getIndexFromDisplay(_index);
-                        if(this.realindex != -1)
+                this.realindex = this.fplList.getIndexFromDisplay(_index);
+                if(this.realindex != -1)
+                {
+                    this.gps.confirmWindow.element.setTexts("Load flight plan ?");
+                    this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+                        if (this.gps.confirmWindow.element.Result == 1) {
+                            this.gps.fplNumber = 0;
                             this.clearFlightPlan(this.onClearFlightPlan.bind(this));
-                    }
-                    else {
-                        this.gps.SwitchToInteractionState(1);
-                    }
-                });
+                        }
+                    });
+                }
+                else {
+                    this.gps.SwitchToInteractionState(1);
+                }
                 return true;
         }
     }
     clearFlightPlan(callback = EmptyCallback.Void) {
-        this.gps.currFlightPlanManager.setApproachIndex(-1);
+        if(this.gps.currFlightPlanManager.getDestination())
+            this.gps.currFlightPlanManager.setApproachIndex(-1);
         Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN").then(() => {
             this.gps.currFlightPlanManager.updateFlightPlan(() => {
                 this.gps.currFlightPlanManager.updateCurrentApproach(() => {
@@ -3165,7 +3180,7 @@ class GPS_FPLCatalog extends NavSystemElement {
         this.setDeparture();
         this.setArrival();
         this.setApproach();
-//        this.setDeparture(this.setApproach.bind(this));
+        this.gps.fplNumber = this.realindex + 1;
         // We must go back to the FPL page
         var pageGroup = null;
         for (let i = 0; i < this.gps.eventLinkedPageGroups.length; i++) {
