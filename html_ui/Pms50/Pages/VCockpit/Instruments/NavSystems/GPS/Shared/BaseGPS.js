@@ -324,7 +324,10 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.trkIndicator = this.gps.getChildById("TrkIndicator" + this.mapnum);
         this.northIndicatorImg = this.gps.getChildById("NorthIndicatorBackgroundImg" + this.mapnum);
         this.northIndicator = this.gps.getChildById("NorthIndicator" + this.mapnum);
+        this.windDirection = this.gps.getChildById("MapWindArrow" + this.mapnum);
+        this.windVelocity = this.gps.getChildById("MapWindValue" + this.mapnum);
         this.lasttrk = -1;
+        this.lastwinddir = -1;
         if(this.navCompass)
             this.navCompass.setAttribute("style", "visibility: hidden");
         if(this.navBrg)
@@ -353,6 +356,23 @@ class GPS_BaseNavPage extends NavSystemPage {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        if(this.windDirection && this.windVelocity){
+            this.windVelocity.textContent = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
+            let direction = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"), 0);
+            let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
+            if(trk != this.lasttrk || direction != this.lastwinddir) {
+                console.log("direction:" + direction + "(" + this.lastwinddir + ":" + this.lasttrk + ")");
+                this.lastwinddir = direction;
+                direction = ((direction - 180 + 360) % 360);
+                console.log("direction2:" + direction);
+                if(this.trackUp){
+                    direction = ((trk - direction + 360) % 360);
+                    this.windDirection.style.transform = this.gps.gpsType == "530" ? "rotate(-" + direction + "deg)" : "rotate(-" + direction + "deg) scale(0.7)";
+                }
+                else
+                    this.windDirection.style.transform = this.gps.gpsType == "530" ? "rotate(" + direction + "deg)" : "rotate(" + direction + "deg) scale(0.7)";
+            }
+        }
         if(this.trackUp && (this.navCompassImg || this.northIndicatorImg)){
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
             if(trk != this.lasttrk){
@@ -371,9 +391,10 @@ class GPS_BaseNavPage extends NavSystemPage {
                 }
                 if(this.northIndicatorImg)
                     this.northIndicatorImg.style.transform = "rotate(-" + trk + "deg)";
-                this.lasttrk = trk;
             }
+            this.lasttrk = trk;
         }
+
 //PM Modif: Declutter
         if (this.map) {
             if(this.declutterLevelIndex || this.map.getDisplayRange() > 90) {

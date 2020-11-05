@@ -19,6 +19,7 @@ First release features:
 # Change log
 ## V 1.0.10
 - Adding flight plan loading (see details)
+- Adding wind indicator
 - Correcting some flight plan distances
 ## V 1.0.9
 - Adding VNAV page (experimental)

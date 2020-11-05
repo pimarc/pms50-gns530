@@ -296,6 +296,39 @@ as430-element {
             position: relative;
             left: -1vh;}
 /* PM Modif: End Range display */
+/* PM Modif: Wind display */
+        as430-element #Electricity #TopDisplay #GpsPart #DefaultNav #Wind1, as430-element #Electricity #TopDisplay #GpsPart #MapNav #Wind2 {
+          position: absolute;
+          z-index: 2;
+          background-color: black;
+          bottom: 25%;
+          right: 1%;
+          padding: 1vh 2vh 1vh 2vh;
+          color: #6ecdee;
+          font-size: 4.5vh;
+          line-height: 4.5vh; }
+          as430-element #Electricity #TopDisplay #GpsPart #MapNav #Wind2 {
+            bottom: 2%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #DefaultNav #Wind1 #MapWindUnit1, as430-element #Electricity #TopDisplay #GpsPart #MapNav #Wind2 #MapWindUnit2 {
+            position: relative;
+            left: -1vh;
+            font-size: 2.2vh;
+            line-height: 2.2vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #DefaultNav #Wind1 #MapWindArrow1, as430-element #Electricity #TopDisplay #GpsPart #MapNav #Wind2 #MapWindArrow2 {
+            position: relative;
+            width: 5vw;
+            left: -1vh;
+            top: 2vh;
+            stroke-width: 1;
+            stroke: #6ecdee;
+            fill: #6ecdee;
+            margin: 0 auto;
+            transform-box: fill-box;
+            transform-origin: center;
+          }
+/* PM Modif: End Wind display */
 /* PM Modif: North indicator */
         as430-element #Electricity #TopDisplay #GpsPart #MapNav #NorthIndicator2 {
           position: absolute;
