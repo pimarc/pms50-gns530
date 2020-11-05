@@ -17,6 +17,9 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.10
+- Adding flight plan loading (see details)
+- Correcting some flight plan distances
 ## V 1.0.9
 - Adding VNAV page (experimental)
 - Adding night/day lighting in default NAV page menu
@@ -90,7 +93,7 @@ If you choose an approach and just load it, it's then added to the flight plan b
 
 Activating
 
-If you activate the approach before the last enroute waypoint, the autopilot goes directly to the first approach waypoint. This may remove your enroute waypoints.
+If you activate the approach before the last enroute waypoint, the autopilot goes directly to the first approach waypoint. This removes your enroute waypoints.
 
 If you activate the approach after the last enroute waypoint, the autopilot goes directly to the first approach waypoint (without U-turn!!!). This removes all the enroute waypoints.
 
@@ -117,8 +120,14 @@ This feature was not working in the original fs2020 GNS530. Now it does.
 ## Graphical enhancements
 The display screen is more readable. The font weight has been turned to "normal" instead of "bold".
 
+There is a menu option for day / night brightness
+
 The nearest airport list doesn't flick any more and a separation line has been added between airports for better reading like in the real GNS530.
 
-A third declutter level has been added (declutter works by clicking the CLR button while in map view). I'm not sure to understand how the declutter works in fs2020 but it seems that there are 3 declutter levels depending on the zoom level. Sometimes it works, sometimes not.
-
 Activate approach is not selectable if not relevant (ex already activated or no approach).
+
+## Maps
+There are 3 maps available (1 for GNS430). You can use the CLR button to declutter map information. The first declutter level hides roads and airspaces. The third map is a terrain map using 4 colors:  red below 500AGL, yellow between 500AGL and 1000AGL, green between 1000AGL and 1500AGL, black above 1500AGL.
+
+## Flight plan loading
+19 flight plans can be loaded. The flight plan files must be named "fln.pln" where n is a number between 1 and 19. The files must reside in the folder named fpl530 at the root of the MOD folder. Only the PLN format is accepted. If the PLN file comes MSFS2020 (save option in world map) the MOD will recognize SID, STARS and APPR. If your PLN file comes from another software, the result may differ from the original flight plan because the producer software may not use the same database and SID, STARS or APPROCH may be not recognized (for example little navmap doesn't save procedures).
