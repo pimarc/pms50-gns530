@@ -2282,6 +2282,9 @@ class MFD_DuplicateWaypoint extends NavSystemElement {
             this.type = this.icaoSearchField.duplicates[_index].type;
             this.gps.closePopUpElement();
         }
+        if (_event == "CLR_Push") {
+            this.gps.closePopUpElement();
+        }
     }
 }
 class DRCT_SelectionWindow extends NavSystemElement {
