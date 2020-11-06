@@ -2561,7 +2561,7 @@ class GPS_DirectTo extends NavSystemElement {
             this.menuname = "search";
 //PM Modif: End DirecTO CLR button management
 //PM Modif: End DirecTO Managing enter button
-}
+        }
     }
     onSearchEnd() {
         if (this.icaoSearchField.duplicates.length > 0) {
@@ -3073,7 +3073,12 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
     }
     onWaypointSelectionEnd() {
         if (this.gps.lastRelevantICAO) {
-            this.gps.currFlightPlanManager.addWaypoint(this.gps.lastRelevantICAO, this.selectedIndex);
+            this.gps.confirmWindow.element.setTexts("Add waypoint ?");
+            this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+                if (this.gps.confirmWindow.element.Result == 1) {
+                    this.gps.currFlightPlanManager.addWaypoint(this.gps.lastRelevantICAO, this.selectedIndex);
+                }
+            });
         }
         if (!this.gps.popUpElement) {
             this.gps.ActiveSelection(this.defaultSelectables);
