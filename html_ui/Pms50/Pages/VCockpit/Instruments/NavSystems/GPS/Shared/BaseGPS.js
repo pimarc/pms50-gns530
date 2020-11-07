@@ -3146,6 +3146,9 @@ class GPS_FPLCatalog extends NavSystemElement {
     init() {
         this.sliderElement = this.gps.getChildById("SliderFPLCatalog");
         this.sliderCursorElement = this.gps.getChildById("SliderFPLCatalogCursor");
+        this.used = this.gps.getChildById("FPLCatalogUsed");
+        this.empty = this.gps.getChildById("FPLCatalogEmpty");
+
 //        this.nearestIntersectionList = new NearestIntersectionList(this.gps);
         this.fplsSliderGroup = new SelectableElementSliderGroup(this.gps, [], this.sliderElement, this.sliderCursorElement);
         for (let i = 0; i < this.nbElemsMax; i++) {
@@ -3172,7 +3175,7 @@ class GPS_FPLCatalog extends NavSystemElement {
             let itemIndex = item.index < 10 ? "0" + item.index : item.index;
             if(item.xmlFpl != null && item.departure != "" && item.destination != ""){
                 var line = '<td class="SelectableElement">' + itemIndex + "</td><td>" + item.departure + " / " + item.destination + "</td>";
-                numItems ++;
+                numItems++;
                 lines.push(line);
             }
         }
@@ -3182,6 +3185,9 @@ class GPS_FPLCatalog extends NavSystemElement {
             lines.push(line);
         }
         this.fplsSliderGroup.setStringElements(lines);
+        this.used.textContent = numItems;
+        this.empty.textContent = 19-numItems;
+
     }
     onExit() {
 //PM Modif: Confirmation window
