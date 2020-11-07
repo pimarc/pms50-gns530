@@ -51,6 +51,8 @@ class BaseGPS extends NavSystem {
         this.alertWindow = new NavSystemElementContainer("AlertWindow", "AlertWindow", new GPS_AlertWindow());
         this.alertWindow.setGPS(this);
 //PM Modif: End Alert window
+        this._t = 0;
+        this.waypointDirectTo = null;
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -181,7 +183,35 @@ class BaseGPS extends NavSystem {
         }
         this.pagePos.innerHTML = pagesMenu;
         this.menuTitle.textContent = this.getCurrentPageGroup().name;
+        this.checkAfterDirectTo();
     }
+
+    checkAfterDirectTo() {
+        // Check if we are at the end of a directTo (less than 1nm to the destination WP)
+        this._t++;
+        if(this._t > 30 && this.currFlightPlanManager.getIsDirectTo() && this.currFlightPlanManager.isLoadedApproach() && this.waypointDirectTo != null && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 1) {
+            this._t = 0;
+            // Check if the directTO is part of the approach
+            let wayPointList = this.currFlightPlanManager.getApproachWaypoints();
+            let index = -1;
+            // We check until the wp before the last wp because we'll active the leg to next WP (not usefull if last WP)
+            for (var i=0; i < wayPointList.length-1; i++) {
+                if(wayPointList[i].GetInfos().icao == this.waypointDirectTo.GetInfos().icao) {
+                    index = i + 1;
+                    break;
+                }
+            }
+            this.waypointDirectTo = null;
+            if(index != -1) {
+                // We must reactivate the approach and set the leg to index (next waypoint)
+                this.currFlightPlanManager.cancelDirectTo();
+                this.activateApproach(() => {
+                    this.currFlightPlanManager.setActiveWaypointIndex(index);
+                });
+            }
+        }
+    }
+
 //PM Modif: Confirmation window
     closeConfirmWindow() {
         if(this.confirmWindow.element.Active) {
@@ -361,10 +391,8 @@ class GPS_BaseNavPage extends NavSystemPage {
             let direction = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"), 0);
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
             if(trk != this.lasttrk || direction != this.lastwinddir) {
-                console.log("direction:" + direction + "(" + this.lastwinddir + ":" + this.lasttrk + ")");
                 this.lastwinddir = direction;
                 direction = ((direction - 180 + 360) % 360);
-                console.log("direction2:" + direction);
                 if(this.trackUp){
                     direction = ((trk - direction + 360) % 360);
                     this.windDirection.style.transform = this.gps.gpsType == "530" ? "rotate(-" + direction + "deg)" : "rotate(-" + direction + "deg) scale(0.7)";
@@ -2614,6 +2642,18 @@ class GPS_DirectTo extends NavSystemElement {
 // The direct then works but its not possible any more to select an approach for the new destination airport
 // The correction consists of re-inserting the origin airport at the start of the flight plan
             let waypoint_origin = this.gps.currFlightPlanManager.getWaypoint(0);
+            if(this.gps.currFlightPlanManager.isActiveApproach())
+            {
+                // Check if WP is part of approach
+                this.gps.waypointDirectTo = null;
+                let wayPointList = this.gps.currFlightPlanManager.getApproachWaypoints();
+                for (var i=0; i < wayPointList.length; i++) {
+                    if(wayPointList[i].GetInfos().icao == this.icaoSearchField.getWaypoint().GetInfos().icao) {
+                        this.gps.waypointDirectTo = this.icaoSearchField.getWaypoint();
+                        break;
+                    }
+                }
+            }
             this.gps.currFlightPlanManager.activateDirectTo(this.icaoSearchField.getWaypoint().infos.icao, () => {
                 if(waypoint_origin && this.icaoSearchField.getWaypoint().infos instanceof AirportInfo){
                     this.gps.currFlightPlanManager.addWaypoint(waypoint_origin.icao, 0);
