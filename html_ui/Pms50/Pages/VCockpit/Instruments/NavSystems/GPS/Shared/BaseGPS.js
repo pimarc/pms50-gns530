@@ -2973,6 +2973,16 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.fplNumber.textContent = this.gps.fplNumber < 10 ? "0" + this.gps.fplNumber : this.gps.fplNumber;
     }
 
+    onEvent(_event) {
+        if (_event == "CLR_Push") {
+            // Undisplay the menu
+            if(this.gps.currentContextualMenu){
+                this.gps.SwitchToInteractionState(0);
+                this.gps.currentContextualMenu = null;
+            }
+        }
+    }
+
     activateStateCB() {
         return this.selectedLine == null;
     }
