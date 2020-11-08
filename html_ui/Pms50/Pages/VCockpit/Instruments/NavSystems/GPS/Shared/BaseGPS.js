@@ -189,7 +189,8 @@ class BaseGPS extends NavSystem {
     checkAfterDirectTo() {
         // Check if we are at the end of a directTo (less than 1nm to the destination WP)
         this._t++;
-        if(this._t > 30 && this.currFlightPlanManager.getIsDirectTo() && this.currFlightPlanManager.isLoadedApproach() && this.waypointDirectTo != null && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 1) {
+        // We arm 1 nm before the target approach directTo
+        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.currFlightPlanManager.isLoadedApproach() && this.waypointDirectTo != null && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 1) {
             this._t = 0;
             // Check if the directTO is part of the approach
             let wayPointList = this.currFlightPlanManager.getApproachWaypoints();
@@ -2824,8 +2825,10 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
             else {
                 if(this.index == 0) {
                     var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
-                    if(wayPointList.length >=2){
-                        // The distance of the first non activated app WP is the one from the last enroute WP 
+                    var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+                    if(wayPointList.length >2 && (activeIndex != wayPointList.length-1)) {
+                        // The distance of the first non activated app WP is the one from the last enroute WP
+                        // except if the active index is the destination
                         distance = Avionics.Utils.computeDistance(wayPointList[wayPointList.length - 2].infos.coordinates, this.waypoint.infos.coordinates);
                     }
                     else{
@@ -2872,12 +2875,13 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 let ll = new LatLong(lat, long);
                 wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
                 // default base cum distance is form airplane position but should occur only if enroute is max 2 WP
+                // or if active index is the destination
                 if(wayPointList.length)
                     cumDistance = Avionics.Utils.computeDistance(ll, wayPointList[0].infos.coordinates);
                 var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
                 if(activeIndex >= 0) {
                     var wayPointListEnroute = this.element.gps.currFlightPlanManager.getWaypoints();
-                    if(wayPointListEnroute.length > 2) {
+                    if(wayPointListEnroute.length > 2 && (activeIndex != wayPointListEnroute.length-1)) {
                         // Calculate last enroute WP cum distance
                         // Start from active WP
                         cumDistance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();

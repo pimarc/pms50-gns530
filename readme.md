@@ -17,6 +17,9 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.11
+- Better management of direct to an approach WP (manual approach reactivation not needed any more)
+- Correcting some flight plan distances
 ## V 1.0.10
 - Adding flight plan loading (see details)
 - Adding wind indicator
