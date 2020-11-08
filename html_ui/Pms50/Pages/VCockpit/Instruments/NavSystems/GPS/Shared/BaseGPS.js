@@ -3130,7 +3130,13 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
             this.gps.confirmWindow.element.setTexts("Add waypoint ?");
             this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
                 if (this.gps.confirmWindow.element.Result == 1) {
-                    this.gps.currFlightPlanManager.addWaypoint(this.gps.lastRelevantICAO, this.selectedIndex);
+                    this.gps.currFlightPlanManager.addWaypoint(this.gps.lastRelevantICAO, this.selectedIndex, () => {
+                        if (!this.gps.popUpElement) {
+                            this.updateWaypoints();
+                            this.gps.ActiveSelection(this.defaultSelectables);
+                            this.fplSelectable.incrementIndex();
+                        }
+                    });
                 }
             });
         }
