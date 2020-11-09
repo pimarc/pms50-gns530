@@ -277,6 +277,29 @@ class BaseGPS extends NavSystem {
     }
 //PM Modif: End Activate approach modification
 
+    SwitchToPageName(_menu, _page, _keepicao = false) {
+        if(!_keepicao) {
+            this.lastRelevantICAO = null;
+            this.lastRelevantICAOType = null;
+        }
+        if (this.overridePage) {
+            this.closeOverridePage();
+        }
+        if (this.currentEventLinkedPageGroup) {
+            this.currentEventLinkedPageGroup.pageGroup.onExit();
+            this.currentEventLinkedPageGroup = null;
+        }
+        this.pageGroups[this.currentPageGroupIndex].onExit();
+        if (this.currentContextualMenu) {
+            this.SwitchToInteractionState(0);
+        }
+        for (let i = 0; i < this.pageGroups.length; i++) {
+            if (this.pageGroups[i].name == _menu) {
+                this.currentPageGroupIndex = i;
+            }
+        }
+        this.pageGroups[this.currentPageGroupIndex].goToPage(_page, true);
+    }
 }
 
 class GPS_CDIElement extends NavSystemElement {
@@ -1319,6 +1342,7 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.initialIcao = this.gps.lastRelevantICAO;
         }
     }
     onUpdate(_deltaTime) {
@@ -1390,8 +1414,10 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
         }
     }
     onExit() {
-        this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
-        this.gps.lastRelevantICAOType = "A";
+        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+            this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
+            this.gps.lastRelevantICAOType = "A";
+        }
     }
     onEvent(_event) {
     }
@@ -1432,6 +1458,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         this.selectedRunway = 0;
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.initialIcao = this.gps.lastRelevantICAO;
         }
     }
     onUpdate(_deltaTime) {
@@ -1563,8 +1590,10 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         }
     }
     onExit() {
-        this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
-        this.gps.lastRelevantICAOType = "A";
+        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+            this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
+            this.gps.lastRelevantICAOType = "A";
+        }
     }
     onEvent(_event) {
     }
@@ -1622,6 +1651,7 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.initialIcao = this.gps.lastRelevantICAO;
         }
     }
     onUpdate(_deltaTime) {
@@ -1666,8 +1696,10 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
         }
     }
     onExit() {
-        this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
-        this.gps.lastRelevantICAOType = "A";
+        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+            this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
+            this.gps.lastRelevantICAOType = "A";
+        }
     }
     onEvent(_event) {
     }
@@ -1722,6 +1754,7 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         this.selectedTransition = 0;
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.initialIcao = this.gps.lastRelevantICAO;
             this.icaoSearchField.getWaypoint().UpdateApproaches();
         }
     }
@@ -1763,8 +1796,10 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         }
     }
     onExit() {
-        this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
-        this.gps.lastRelevantICAOType = "A";
+        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+            this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
+            this.gps.lastRelevantICAOType = "A";
+        }
     }
     onEvent(_event) {
     }
@@ -1889,6 +1924,7 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "W") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.initialIcao = this.gps.lastRelevantICAO;
         }
     }
     onUpdate(_deltaTime) {
@@ -1920,8 +1956,10 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
         }
     }
     onExit() {
-        this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
-        this.gps.lastRelevantICAOType = "W";
+        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+            this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
+            this.gps.lastRelevantICAOType = "W";
+        }
     }
     onEvent(_event) {
     }
@@ -1956,6 +1994,7 @@ class GPS_NDBWaypoint extends NavSystemElement {
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "N") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.initialIcao = this.gps.lastRelevantICAO;
         }
     }
     onUpdate(_deltaTime) {
@@ -1997,8 +2036,10 @@ class GPS_NDBWaypoint extends NavSystemElement {
         }
     }
     onExit() {
-        this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
-        this.gps.lastRelevantICAOType = "N";
+        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+            this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
+            this.gps.lastRelevantICAOType = "N";
+        }
     }
     onEvent(_event) {
     }
@@ -2034,6 +2075,7 @@ class GPS_VORWaypoint extends NavSystemElement {
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "V") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.initialIcao = this.gps.lastRelevantICAO;
         }
     }
     onUpdate(_deltaTime) {
@@ -2083,8 +2125,10 @@ class GPS_VORWaypoint extends NavSystemElement {
         }
     }
     onExit() {
-        this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
-        this.gps.lastRelevantICAOType = "V";
+        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+            this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
+            this.gps.lastRelevantICAOType = "V";
+        }
     }
     onEvent(_event) {
     }
@@ -2711,6 +2755,36 @@ class GPS_WaypointLine extends MFD_WaypointLine {
             case "ActivateWaypoint":
                 SimVar.SetSimVarValue("C:fs9gps:FlightPlanActiveWaypoint", "number", this.index);
                 break;
+            case "ENT_Push":
+                if(this.waypoint) {
+                    switch (this.waypoint.icao[0]) {
+                        case "A":
+                            this.element.gps.lastRelevantICAO =this. waypoint.icao;
+                            this.element.gps.lastRelevantICAOType = "A";
+                            this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
+                            this.element.gps.SwitchToInteractionState(0);
+                            break;
+                        case "V":
+                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                            this.element.gps.lastRelevantICAOType = "V";
+                            this.element.gps.SwitchToPageName("WPT", "VOR", true);
+                            this.element.gps.SwitchToInteractionState(0);
+                            break;
+                        case "N":
+                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                            this.element.gps.lastRelevantICAOType = "N";
+                            this.element.gps.SwitchToPageName("WPT", "NDB", true);
+                            this.element.gps.SwitchToInteractionState(0);
+                            break;
+                        case "W":
+                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                            this.element.gps.lastRelevantICAOType = "W";
+                            this.element.gps.SwitchToPageName("WPT", "Intersection", true);
+                            this.element.gps.SwitchToInteractionState(0);
+                            break;
+                    }
+                }
+            break;
         }
         return false;
     }
@@ -2779,6 +2853,42 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
         else {
             return '<td class="SelectableElement Select0"></td><td> </td><td> </td><td> </td>';
         }
+    }
+    onEvent(_subindex, _event) {
+        super.onEvent(_subindex, _event);
+        switch (_event) {
+            case "ENT_Push":
+                if(this.waypoint) {
+                    switch (this.waypoint.icao[0]) {
+                        case "A":
+                            this.element.gps.lastRelevantICAO =this. waypoint.icao;
+                            this.element.gps.lastRelevantICAOType = "A";
+                            this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
+                            this.element.gps.SwitchToInteractionState(0);
+                            break;
+                        case "V":
+                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                            this.element.gps.lastRelevantICAOType = "V";
+                            this.element.gps.SwitchToPageName("WPT", "VOR", true);
+                            this.element.gps.SwitchToInteractionState(0);
+                            break;
+                        case "N":
+                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                            this.element.gps.lastRelevantICAOType = "N";
+                            this.element.gps.SwitchToPageName("WPT", "NDB", true);
+                            this.element.gps.SwitchToInteractionState(0);
+                            break;
+                        case "W":
+                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                            this.element.gps.lastRelevantICAOType = "W";
+                            this.element.gps.SwitchToPageName("WPT", "Intersection", true);
+                            this.element.gps.SwitchToInteractionState(0);
+                            break;
+                    }
+                }
+            break;
+        }
+        return false;
     }
     getDtk() {
         var dtk = "___";

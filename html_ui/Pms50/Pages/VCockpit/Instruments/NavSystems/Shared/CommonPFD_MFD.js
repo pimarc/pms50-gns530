@@ -1709,8 +1709,10 @@ class MFD_WaypointLine extends MFD_FlightPlanLine {
                         this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
                             if (this.element.gps.confirmWindow.element.Result == 1) {
                                 this.element.removeWaypoint(this.index);
+                                this.element.gps.SwitchToInteractionState(0);
                             }
-                            this.element.gps.SwitchToInteractionState(0);
+                            else
+                                this.element.gps.SwitchToInteractionState(1);
                         });
                     }
                     else{
