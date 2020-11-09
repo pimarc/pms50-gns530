@@ -806,10 +806,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         if(this.displayData) {
             this.gps.getChildById("MapRightDisplay").setAttribute("style", "display: block;");
             this.gps.getChildById("MapInstrument2").setAttribute("style", "width: 70%;");
+            this.gps.getChildById("Wind2").setAttribute("style", "right: 30%;");
         }
         else {
             this.gps.getChildById("MapRightDisplay").setAttribute("style", "display: none");
             this.gps.getChildById("MapInstrument2").setAttribute("style", "width: 100%;");
+            this.gps.getChildById("Wind2").setAttribute("style", "right: 2%;");
         }
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
