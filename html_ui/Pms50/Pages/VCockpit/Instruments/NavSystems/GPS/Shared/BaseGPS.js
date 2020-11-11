@@ -3764,7 +3764,7 @@ class GPS_Vnav extends NavSystemElement {
         timeToDescent %= 3600;
         minutes = Math.floor(timeToDescent / 60);
         seconds = timeToDescent % 60;
-        this.status.textContent = timeToDescent > 0 ? "Begin Descent in " + result : "Descend to target"; 
+        this.status.textContent = timeToDescent > 20 ? "Begin Descent in " + result : "Descend to target"; 
     }
     onExit() {
         this.gps.closeConfirmWindow();
