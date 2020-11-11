@@ -11,26 +11,16 @@ class CustomValue {
             case 0:
                 this.nameDisplay.textContent = "BRG";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                if(flightPlanActive){
-                    let value = fastToFixed(SimVar.GetSimVarValue("GPS WP BEARING", "degree"), 0);
-                    // Add leading 0s
-                    value = value < 100 ? "0" + value : value;
-                    value = value < 10 ? "0" + value : value;
-                    this.valueDisplay.textContent = value;
-                }
+                if(flightPlanActive)
+                    this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS WP BEARING", "degree"), 0), 3);
                 else
                     this.valueDisplay.textContent = "___";
                 break;
             case 1:
                 this.nameDisplay.textContent = "CTS";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                if(flightPlanActive){
-                    let value = fastToFixed(SimVar.GetSimVarValue("GPS COURSE TO STEER", "degree"), 0);
-                    // Add leading 0s
-                    value = value < 100 ? "0" + value : value;
-                    value = value < 10 ? "0" + value : value;
-                    this.valueDisplay.textContent = value;
-                }
+                if(flightPlanActive)
+                    this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS COURSE TO STEER", "degree"), 0), 3);
                 else
                     this.valueDisplay.textContent = "___";
                 break;
@@ -42,13 +32,8 @@ class CustomValue {
             case 3:
                 this.nameDisplay.textContent = "DTK";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                if(flightPlanActive){
-                    let value = fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0);
-                    // Add leading 0s
-                    value = value < 100 ? "0" + value : value;
-                    value = value < 10 ? "0" + value : value;
-                    this.valueDisplay.textContent = value;
-                }
+                if(flightPlanActive)
+                    this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0), 3);
                 else
                     this.valueDisplay.textContent = "___";
                 break;
@@ -93,11 +78,7 @@ class CustomValue {
             case 10:
                 this.nameDisplay.textContent = "TRK";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                let value = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 0);
-                // Add leading 0s
-                value = value < 100 ? "0" + value : value;
-                value = value < 10 ? "0" + value : value;
-                this.valueDisplay.textContent = value;
+                this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 0), 3);
                 break;
             case 11:
                 this.nameDisplay.textContent = "MSA";
@@ -107,13 +88,8 @@ class CustomValue {
             case 12:
                 this.nameDisplay.textContent = "TKE";
                 this.unitDisplay.innerHTML = "o<br/>M";
-                if(flightPlanActive){
-                    let value = fastToFixed(SimVar.GetSimVarValue("GPS WP TRACK ANGLE ERROR", "degrees"), 0);
-                    // Add leading 0s
-                    value = value < 100 ? "0" + value : value;
-                    value = value < 10 ? "0" + value : value;
-                    this.valueDisplay.textContent = value;
-                }
+                if(flightPlanActive)
+                    this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS WP TRACK ANGLE ERROR", "degree"), 0), 3);
                 else
                     this.valueDisplay.textContent = "___";
                 break;

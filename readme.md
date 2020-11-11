@@ -20,6 +20,7 @@ First release features:
 ## V 1.0.12
 - wind indicator in map page not displayed at the correct place when data was displayed
 - Pushing ENT button on selected FPL waypoint displays the corresponding waypoint page
+- Coordinates displayed with leading and trailing zeros
 ## V 1.0.11
 - Better management of direct to an approach WP (manual approach reactivation not needed any more)
 - Correcting some flight plan distances

@@ -300,6 +300,40 @@ class BaseGPS extends NavSystem {
         }
         this.pageGroups[this.currentPageGroupIndex].goToPage(_page, true);
     }
+    longitudeFormat(_longitude) {
+        var format = "";
+        if (_longitude < 0) {
+            format += "W";
+            _longitude = Math.abs(_longitude);
+        }
+        else {
+            format += "E";
+        }
+        var degrees = Math.floor(_longitude);
+        var minutes = ((_longitude - degrees) * 60);
+        format +=  Utils.leadingZeros(fastToFixed(degrees, 0), 3);
+        format += "°";
+        format +=  Utils.leadingZeros(minutes.toFixed(2), 2);
+        format += "'";
+        return format;
+    }
+    latitudeFormat(_latitude) {
+        var format = "";
+        if (_latitude < 0) {
+            format += "S";
+            _latitude = Math.abs(_latitude);
+        }
+        else {
+            format += "N";
+        }
+        var degrees = Math.floor(_latitude);
+        var minutes = ((_latitude - degrees) * 60);
+        format +=  Utils.leadingZeros(fastToFixed(degrees, 0), 2);
+        format += "°";
+        format +=  Utils.leadingZeros(minutes.toFixed(2), 2);
+        format += "'";
+        return format;
+    }
 }
 
 class GPS_CDIElement extends NavSystemElement {
