@@ -1413,8 +1413,19 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
             }
             this.positionNS.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
             this.positionEW.textContent = this.gps.longitudeFormat(infos.coordinates.long);
-            if (infos.coordinates.alt) {
-                this.elev.textContent = fastToFixed(infos.coordinates.alt, 0);
+            let altitude = infos.coordinates.alt;
+            if(!altitude) {
+                // Get altitude of the average runway elevation
+                if (infos.runways && infos.runways.length) {
+                    for(var i=0; i<infos.runways.length; i++) {
+                        altitude += infos.runways[0].elevation;
+                    }
+                    // Average and convert from meters to feets
+                    altitude = (altitude / infos.runways.length) * 3.28084;
+                }
+            }
+            if (altitude) {
+                this.elev.textContent = fastToFixed(altitude, 0);
             }
             this.fuel.textContent = infos.fuel;
             this.bestApproach.textContent = infos.bestApproach;
