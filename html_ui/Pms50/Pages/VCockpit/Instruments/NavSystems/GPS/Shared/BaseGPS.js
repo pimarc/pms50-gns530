@@ -1429,6 +1429,8 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
             }
             this.fuel.textContent = infos.fuel;
             var approach = infos.bestApproach;
+            // If approach type in not known or empty
+            // We try to get it from approach list
             if(approach == "" || approach == "Unknown")
             {
                 approach = "";
@@ -1451,6 +1453,8 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
                         hasNDB = true;
                     console.log(infos.approaches[i].name);
                 }
+                // We have the place to display 2 approach types, not more
+                // So by priority; ILS, RNAV, VORDME, VOR and NDB
                 var numstrings = 0;
                 if(hasILS){
                     approach = "ILS";
@@ -1493,7 +1497,10 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
                     this.radar.textContent = "Yes";
                     break;
             }
-            this.airspaceType.textContent = infos.airspaceType;
+            if(infos.airspaceType > 0)
+                this.airspaceType.textContent = infos.airspaceType;
+            else
+                this.airspaceType.textContent = "";
         }
         else {
             this.private.textContent = "Unknown";
@@ -1562,7 +1569,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
-        if (infos && infos.icao) {
+        if (infos && infos.icao && infos instanceof AirportInfo) {
             var size = infos.GetSize();
             var nmPixelSize = Math.min(130 / size.x, 110 / size.y);
             var context = this.mapElement.getContext("2d");
@@ -1593,18 +1600,22 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             if (infos.runways && this.selectedRunway >= 0 && this.selectedRunway < infos.runways.length) {
                 let runway = infos.runways[this.selectedRunway];
                 if (runway) {
-                    this.nameElement.textContent = runway.designation;
-                    this.lengthElement.textContent = fastToFixed(runway.length, 0);
-                    this.widthElement.textContent = fastToFixed(runway.width, 0);
+                    this.nameElement.textContent = this.getRunwayDesignation(runway);
+                    this.lengthElement.textContent = fastToFixed(runway.length * 3.28084, 0);
+                    this.widthElement.textContent = fastToFixed(runway.width * 3.28084, 0);
                     switch (runway.surface) {
                         case 0:
-                            this.surfaceElement.textContent = "Unknown";
+//                            this.surfaceElement.textContent = "Unknown";
+                            this.surfaceElement.textContent = "";
                             break;
                         case 1:
                             this.surfaceElement.textContent = "Concrete";
                             break;
                         case 2:
                             this.surfaceElement.textContent = "Asphalt";
+                            break;
+                        case 4:
+                            this.surfaceElement.textContent = "Hard surface";
                             break;
                         case 101:
                             this.surfaceElement.textContent = "Grass";
@@ -1663,7 +1674,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
                     }
                     switch (runway.lighting) {
                         case 0:
-                            this.lightingElement.textContent = "Unknown";
+                            this.lightingElement.textContent = "";
+//                            this.lightingElement.textContent = "Unknown";
                             break;
                         case 1:
                             this.lightingElement.textContent = "None";
@@ -1699,6 +1711,14 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         }
     }
     onEvent(_event) {
+        if ((_event == "CLR_Push") || (_event == "MENU_Push"))  {
+            if (this.gps.popUpElement || this.gps.currentContextualMenu) {
+                this.gps.closePopUpElement();
+                this.gps.currentContextualMenu = null;
+                this.gps.SwitchToInteractionState(1);
+                this.gps.cursorIndex = 1;
+            }
+        }
     }
     searchField_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
@@ -1717,14 +1737,35 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
                 var menu = new ContextualMenu("RUNWAY", []);
                 var callback = function (_index) {
                     this.selectedRunway = _index;
-                    this.gps.SwitchToInteractionState(0);
+                    this.gps.SwitchToInteractionState(1);
+                    this.gps.cursorIndex = 1;
                 };
                 for (var i = 0; i < infos.runways.length; i++) {
-                    menu.elements.push(new ContextualMenuElement(infos.runways[i].designation, callback.bind(this, i)));
+                    menu.elements.push(new ContextualMenuElement(this.getRunwayDesignation(infos.runways[i]), callback.bind(this, i)));
                 }
                 this.gps.ShowContextualMenu(menu);
             }
         }
+    }
+    getRunwayDesignation(runway){
+        let designations = runway.designation.split("-");
+        let r1 = designations[0];
+        let r2 = designations[1];
+        let cp = runway.designatorCharPrimary;
+        let cs = runway.designatorCharSecondary;
+        if (cp=== 1)
+            r1 += "L";
+        if (cp === 2)
+            r1 += "R";
+        if (cp === 3)
+            r1 += "C";
+        if (cs=== 1)
+            r2 += "L";
+        if (cs === 2)
+            r2 += "R";
+        if (cs === 3)
+            r2 += "C";
+        return r1 + "-" + r2;
     }
 }
 class GPS_AirportWaypointFrequencies extends NavSystemElement {
