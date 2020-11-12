@@ -1428,7 +1428,60 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
                 this.elev.textContent = fastToFixed(altitude, 0);
             }
             this.fuel.textContent = infos.fuel;
-            this.bestApproach.textContent = infos.bestApproach;
+            var approach = infos.bestApproach;
+            if(approach == "" || approach == "Unknown")
+            {
+                approach = "";
+                console.log("Approaches");
+                var hasILS = false;
+                var hasRNAV = false;
+                var hasVORDME = false;
+                var hasVOR = false;
+                var hasNDB = false;
+                for (let i = 0; i < infos.approaches.length; i++) {
+                    if(infos.approaches[i].name.search("ILS ") == 0)
+                        hasILS = true;
+                    else if(infos.approaches[i].name.search("RNAV ") == 0)
+                        hasRNAV = true;
+                    else if(infos.approaches[i].name.search("VORDME ") == 0)
+                        hasVORDME = true;
+                    else if(infos.approaches[i].name.search("VOR ") == 0)
+                        hasVOR = true;
+                    else if(infos.approaches[i].name.search("NDB ") == 0)
+                        hasNDB = true;
+                    console.log(infos.approaches[i].name);
+                }
+                var numstrings = 0;
+                if(hasILS){
+                    approach = "ILS";
+                    numstrings++;
+                }
+                if(hasRNAV && numstrings < 2){
+                    if(numstrings)
+                        approach += " - ";
+                    approach += "RNAV";
+                    numstrings++;
+                }
+                if(hasVORDME && numstrings < 2){
+                    if(numstrings)
+                        approach += " - ";
+                    approach += "VORDME";
+                    numstrings++;
+                }
+                if(hasVOR && numstrings < 2){
+                    if(numstrings)
+                        approach += " - ";
+                    approach += "VOR";
+                    numstrings++;
+                }
+                if(hasNDB && numstrings < 2){
+                    if(numstrings)
+                        approach += " - ";
+                    approach += "NDB";
+                    numstrings++;
+                }
+            }
+            this.bestApproach.textContent = approach;
             switch (infos.radarCoverage) {
                 case 0:
                     this.radar.textContent = "";
