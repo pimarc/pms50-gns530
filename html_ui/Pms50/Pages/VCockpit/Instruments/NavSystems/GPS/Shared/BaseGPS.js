@@ -1434,7 +1434,6 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
             if(approach == "" || approach == "Unknown")
             {
                 approach = "";
-                console.log("Approaches");
                 var hasILS = false;
                 var hasRNAV = false;
                 var hasVORDME = false;
@@ -1451,7 +1450,6 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
                         hasVOR = true;
                     else if(infos.approaches[i].name.search("NDB ") == 0)
                         hasNDB = true;
-                    console.log(infos.approaches[i].name);
                 }
                 // We have the place to display 2 approach types, not more
                 // So by priority; ILS, RNAV, VORDME, VOR and NDB
@@ -1883,8 +1881,8 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         this.selectedApproach = 0;
         this.selectedTransition = 0;
         this.container.defaultMenu = new ContextualMenu("PAGE MENU", [
-            new ContextualMenuElement("Load&nbsp;into&nbsp;Active&nbsp;FPL?", this.loadApproachIntoFPL.bind(this)),
-            new ContextualMenuElement("Load&nbsp;and&nbsp;Activate?", this.loadApproachAndActivate.bind(this)),
+            new ContextualMenuElement("Load&nbsp;into&nbsp;Active&nbsp;FPL?", this.loadApproachIntoFPL.bind(this), this.enableLoadApproach.bind(this)),
+            new ContextualMenuElement("Load&nbsp;and&nbsp;Activate?", this.loadApproachAndActivate.bind(this), this.enableLoadApproach.bind(this)),
         ]);
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.identElement, this.ident_SelectionCallback.bind(this)),
@@ -1901,6 +1899,9 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
             this.initialIcao = this.gps.lastRelevantICAO;
             this.icaoSearchField.getWaypoint().UpdateApproaches();
         }
+        this.gps.SwitchToInteractionState(1);
+        this.gps.cursorIndex = 0;
+        this.gps.SwitchToInteractionState(0);
     }
     getSelectedApproach(airport) {
         if (airport && airport.approaches && this.selectedApproach >= 0 && this.selectedApproach < airport.approaches.length) {
@@ -1964,6 +1965,21 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         }
     }
     onEvent(_event) {
+        if (_event == "CLR_Push")  {
+            if (this.gps.popUpElement || this.gps.currentContextualMenu) {
+                this.gps.closePopUpElement();
+                this.gps.currentContextualMenu = null;
+            }
+        }
+    }
+    enableLoadApproach() {
+        let infos = this.icaoSearchField.getUpdatedInfos();
+        var destination = this.gps.currFlightPlanManager.getDestination();
+        let dinfos = destination.GetInfos();
+        if (infos && infos.icao && infos.icao == dinfos.icao)
+            return false;
+        else
+            return true;
     }
     loadApproachIntoFPL() {
 //PM Modif: Load approach from airport
@@ -1976,20 +1992,30 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
 
         // Do load approach
         let infos = this.icaoSearchField.getUpdatedInfos();
-        if (infos && infos.icao) {
+        var destination = this.gps.currFlightPlanManager.getDestination();
+        let dinfos = destination.GetInfos();
+        if (infos && infos.icao && infos.icao == dinfos.icao && infos.approaches.length) {
             this.gps.currFlightPlanManager.setApproachIndex(this.selectedApproach, () => {
                 let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
                 if (elem) {
                     elem.updateWaypoints();
                 }
             }, this.selectedTransition);
+            this.gps.closePopUpElement();
+            this.gps.SwitchToInteractionState(0);
+            if(this.gps.currentEventLinkedPageGroup)
+                this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
+            this.gps.currentEventLinkedPageGroup = null;
+            this.gps.computeEvent("FPL_Push");
         }
-        this.gps.closePopUpElement();
+        else{
+            this.gps.closePopUpElement();
+        }
 //PM Modif: End Load approach from airport
-        this.gps.SwitchToMenuName("FPL");
-        this.gps.SwitchToInteractionState(0);
-        }
-        loadApproachAndActivate() {
+        // This the way I've found to go to the flight plan page
+    }
+    
+    loadApproachAndActivate() {
 //PM Modif: Activate approach from airport
 //Auto activation and U-turn bug
 
@@ -2001,14 +2027,20 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
 
         // Do activate approach
         let infos = this.icaoSearchField.getUpdatedInfos();
-        if (infos && infos.icao) {
+        var destination = this.gps.currFlightPlanManager.getDestination();
+        let dinfos = destination.GetInfos();
+        if (infos && infos.icao && infos.icao == dinfos.icao && infos.approaches.length) {
             this.gps.currFlightPlanManager.setApproachIndex(this.selectedApproach, () => {
                 let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
                 if (elem) {
                     elem.updateWaypoints();
                 }
+                this.gps.activateApproach();
             }, this.selectedTransition);
-            this.gps.activateApproach();
+            this.gps.closePopUpElement();
+            this.gps.SwitchToPageName("NAV", "DefaultNav");
+        }
+        else{
             this.gps.closePopUpElement();
         }
         
@@ -2037,7 +2069,8 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
                 var callback = function (_index) {
                     this.selectedApproach = _index;
                     this.selectedTransition = 0;
-                    this.gps.SwitchToInteractionState(0);
+                    this.gps.SwitchToInteractionState(1);
+                    this.gps.cursorIndex = 2;
                 };
                 for (var i = 0; i < infos.approaches.length; i++) {
                     menu.elements.push(new ContextualMenuElement(infos.approaches[i].name, callback.bind(this, i)));
@@ -2924,28 +2957,28 @@ class GPS_WaypointLine extends MFD_WaypointLine {
                 if(this.waypoint) {
                     switch (this.waypoint.icao[0]) {
                         case "A":
-                            this.element.gps.lastRelevantICAO =this. waypoint.icao;
+                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
                             this.element.gps.lastRelevantICAOType = "A";
-                            this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
                             this.element.gps.SwitchToInteractionState(0);
+                            this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
                             break;
                         case "V":
                             this.element.gps.lastRelevantICAO = this.waypoint.icao;
                             this.element.gps.lastRelevantICAOType = "V";
-                            this.element.gps.SwitchToPageName("WPT", "VOR", true);
                             this.element.gps.SwitchToInteractionState(0);
+                            this.element.gps.SwitchToPageName("WPT", "VOR", true);
                             break;
                         case "N":
                             this.element.gps.lastRelevantICAO = this.waypoint.icao;
                             this.element.gps.lastRelevantICAOType = "N";
-                            this.element.gps.SwitchToPageName("WPT", "NDB", true);
                             this.element.gps.SwitchToInteractionState(0);
+                            this.element.gps.SwitchToPageName("WPT", "NDB", true);
                             break;
                         case "W":
                             this.element.gps.lastRelevantICAO = this.waypoint.icao;
                             this.element.gps.lastRelevantICAOType = "W";
-                            this.element.gps.SwitchToPageName("WPT", "Intersection", true);
                             this.element.gps.SwitchToInteractionState(0);
+                            this.element.gps.SwitchToPageName("WPT", "Intersection", true);
                             break;
                     }
                 }
@@ -3026,28 +3059,28 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 if(this.waypoint) {
                     switch (this.waypoint.icao[0]) {
                         case "A":
-                            this.element.gps.lastRelevantICAO =this. waypoint.icao;
+                            this.element.gps.lastRelevantICAO =this.waypoint.icao;
                             this.element.gps.lastRelevantICAOType = "A";
-                            this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
                             this.element.gps.SwitchToInteractionState(0);
+                            this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
                             break;
                         case "V":
                             this.element.gps.lastRelevantICAO = this.waypoint.icao;
                             this.element.gps.lastRelevantICAOType = "V";
-                            this.element.gps.SwitchToPageName("WPT", "VOR", true);
                             this.element.gps.SwitchToInteractionState(0);
+                            this.element.gps.SwitchToPageName("WPT", "VOR", true);
                             break;
                         case "N":
                             this.element.gps.lastRelevantICAO = this.waypoint.icao;
                             this.element.gps.lastRelevantICAOType = "N";
-                            this.element.gps.SwitchToPageName("WPT", "NDB", true);
                             this.element.gps.SwitchToInteractionState(0);
+                            this.element.gps.SwitchToPageName("WPT", "NDB", true);
                             break;
                         case "W":
                             this.element.gps.lastRelevantICAO = this.waypoint.icao;
                             this.element.gps.lastRelevantICAOType = "W";
-                            this.element.gps.SwitchToPageName("WPT", "Intersection", true);
                             this.element.gps.SwitchToInteractionState(0);
+                            this.element.gps.SwitchToPageName("WPT", "Intersection", true);
                             break;
                     }
                 }

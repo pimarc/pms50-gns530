@@ -1345,7 +1345,7 @@ as530-element {
             height: 20%;
             width: 100%; }
           as530-element #Electricity #TopDisplay #GpsPart #AirportApproach #RightPart #APTApproachTransition {
-            height: 10%;
+            height: 12%;
             width: 100%; }
         as530-element #Electricity #TopDisplay #GpsPart #Intersection SizedS {
           height: calc(8.547008547vh); }
