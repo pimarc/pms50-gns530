@@ -18,7 +18,7 @@ class AS430 extends BaseGPS {
             new NavSystemPageGroup("WPT", this, [
                 new NavSystemPage("AirportLocation", "AirportLocation", new GPS_AirportWaypointLocation(this.airportWaypointsIcaoSearchField)),
                 new NavSystemPage("AirportRunway", "AirportRunway", new GPS_AirportWaypointRunways(this.airportWaypointsIcaoSearchField)),
-                new NavSystemPage("AirportFrequency", "AirportFrequency", new GPS_AirportWaypointFrequencies(this.airportWaypointsIcaoSearchField)),
+                new NavSystemPage("AirportFrequency", "AirportFrequency", new GPS_AirportWaypointFrequencies(this.airportWaypointsIcaoSearchField, 6)),
                 new NavSystemPage("AirportApproach", "AirportApproach", new GPS_AirportWaypointApproaches(this.airportWaypointsIcaoSearchField)),
                 new NavSystemPage("Intersection", "Intersection", new GPS_IntersectionWaypoint()),
                 new NavSystemPage("NDB", "NDB", new GPS_NDBWaypoint()),

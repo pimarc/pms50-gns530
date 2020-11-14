@@ -1378,6 +1378,12 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
         }
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if(!infos || !infos.icao) {
+            let destination = this.gps.currFlightPlanManager.getDestination();
+            if(destination)
+                this.icaoSearchField.SetWaypoint("A", destination.icao);
+        }
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
@@ -1451,32 +1457,35 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
                     else if(infos.approaches[i].name.search("NDB ") == 0)
                         hasNDB = true;
                 }
-                // We have the place to display 2 approach types, not more
+                // We have the place to display 2 approach types (1 on gns430), not more
                 // So by priority; ILS, RNAV, VORDME, VOR and NDB
+                var maxstrings = 2;
+                if(this.gps.gpsType == "430")
+                    maxstrings = 1;
                 var numstrings = 0;
                 if(hasILS){
                     approach = "ILS";
                     numstrings++;
                 }
-                if(hasRNAV && numstrings < 2){
+                if(hasRNAV && numstrings < maxstrings){
                     if(numstrings)
                         approach += " - ";
                     approach += "RNAV";
                     numstrings++;
                 }
-                if(hasVORDME && numstrings < 2){
+                if(hasVORDME && numstrings < maxstrings){
                     if(numstrings)
                         approach += " - ";
                     approach += "VORDME";
                     numstrings++;
                 }
-                if(hasVOR && numstrings < 2){
+                if(hasVOR && numstrings < maxstrings){
                     if(numstrings)
                         approach += " - ";
                     approach += "VOR";
                     numstrings++;
                 }
-                if(hasNDB && numstrings < 2){
+                if(hasNDB && numstrings < maxstrings){
                     if(numstrings)
                         approach += " - ";
                     approach += "NDB";
@@ -1562,6 +1571,12 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
+        }
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if(!infos || !infos.icao) {
+            let destination = this.gps.currFlightPlanManager.getDestination();
+            if(destination)
+                this.icaoSearchField.SetWaypoint("A", destination.icao);
         }
     }
     onUpdate(_deltaTime) {
@@ -1795,6 +1810,12 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
         }
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if(!infos || !infos.icao) {
+            let destination = this.gps.currFlightPlanManager.getDestination();
+            if(destination)
+                this.icaoSearchField.SetWaypoint("A", destination.icao);
+        }
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
@@ -1898,6 +1919,12 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
             this.icaoSearchField.getWaypoint().UpdateApproaches();
+        }
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if(!infos || !infos.icao) {
+            let destination = this.gps.currFlightPlanManager.getDestination();
+            if(destination)
+                this.icaoSearchField.SetWaypoint("A", destination.icao);
         }
         if(this.icaoSearchField) {
             // Check if current airport is the destination one
@@ -2156,6 +2183,7 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
             this.distanceFromNearVORElement.textContent = fastToFixed(infos.nearestVORDistance / 1852, 1);
         }
         else {
+            this.regionElement.textContent = "_____";
             this.posNSElement.textContent = "_ __°__.__'";
             this.posEWElement.textContent = "____°__.__'";
             this.nearestVORElement.textContent = "_____";
@@ -2277,7 +2305,8 @@ class GPS_VORWaypoint extends NavSystemElement {
         this.magneticDeviationElement = this.gps.getChildById("VORMagneticDeviation");
         this.icaoSearchField = new SearchFieldWaypointICAO(this.gps, [this.identElement], this.gps, 'V');
         this.defaultSelectables = [
-            new SelectableElement(this.gps, this.identElement, this.ident_SelectionCallback.bind(this))
+            new SelectableElement(this.gps, this.identElement, this.ident_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.frequencyElement, this.frequency_SelectionCallback.bind(this))
         ];
     }
     onEnter() {
@@ -2313,10 +2342,10 @@ class GPS_VORWaypoint extends NavSystemElement {
             }
             var magVar = infos.magneticVariation;
             if (infos.magneticVariation > 0) {
-                this.magneticDeviationElement.textContent = 'W' + fastToFixed(magVar, 0) + "°";
+                this.magneticDeviationElement.textContent = 'W' + Utils.leadingZeros(fastToFixed(magVar, 0), 3) + "°";
             }
             else {
-                this.magneticDeviationElement.textContent = "E" + fastToFixed((0 - magVar), 0) + "°";
+                this.magneticDeviationElement.textContent = "E" + Utils.leadingZeros(fastToFixed((0 - magVar), 0), 3) + "°";
             }
         }
         else {
@@ -2345,6 +2374,14 @@ class GPS_VORWaypoint extends NavSystemElement {
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
             this.icaoSearchField.StartSearch();
             this.gps.SwitchToInteractionState(3);
+        }
+    }
+    frequency_SelectionCallback(_event) {
+        if (_event == "ENT_Push") {
+            this.icaoSearchField.Update();
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            if (infos && infos.icao)
+                SimVar.SetSimVarValue("K:NAV" + this.gps.navIndex + "_STBY_SET", "Frequency BCD16", infos.frequencyBcd16);
         }
     }
 }

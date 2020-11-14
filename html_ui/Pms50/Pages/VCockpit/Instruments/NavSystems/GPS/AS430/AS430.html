@@ -587,9 +587,9 @@
                             <canvas class="Align" id="APTRwyMap"></canvas>
                             <div class="Align" id="RightInfos">
                                 <div class="Title">RUNWAY</div>
-                                <div class="Value SelectableElement SizedM" id="APTRwyName">08R-26L</div>
+                                <div class="Value SelectableElement" id="APTRwyName">08R-26L</div>
                                 <div class="Title">INFO</div>
-                                <div class="Value SizedL">
+                                <div class="Value">
                                     <div>
                                         <div class="Align" id="APTRwyLength">11000</div>
                                         <div class="Align unit">f<br />t</div>
@@ -621,6 +621,7 @@
                                 <div id="APTFrequency_2"></div>
                                 <div id="APTFrequency_3"></div>
                                 <div id="APTFrequency_4"></div>
+                                <div id="APTFrequency_5"></div>
                             </div>
                             <div id="APTFreqSlider" state="active">
                                 <div id="APTFreqSliderCursor"></div>
@@ -637,12 +638,10 @@
                             </div>
                         </div>
                         <div>
-                            <div class="Align">
-                                <div id="APTApproachMap">
+                            <div id="APTApproachMap">
 
-                                </div>
                             </div>
-                            <div class="Align" id="RightPart">
+                            <div id="RightPart">
                                 <div class="Title">APR</div>
                                 <div class="Value SelectableElement" id="APTApproachApproach">ILS 02</div>
                                 <div class="Title">TRANS</div>
@@ -657,41 +656,43 @@
                                 <div class="Align SelectableElement" id="INTIdent">OTTER</div>
                                 <div class="Align" id="INTSymbol"></div>
                             </div>
-                            <div class="Align Half VTop">
-                                <div class="Title">REGION</div>
-                                <div class="Value SizedS" id="INTRegion">N CEN USA</div>
-                                <div class="Title">POSITION</div>
-                                <div class="Value SizedL">
-                                    <div id="INTPosNS">N 38°51.50'</div>
-                                    <div id="INTPosEW">W095°32.01'</div>
+                            <div id="IntersectionContent">
+                                <div id="IntersectionRegionPosition">
+                                    <div class="Title">REGION</div>
+                                    <div class="Value" id="INTRegion">N CEN USA</div>
+                                    <div class="Title">POSITION</div>
+                                    <div class="Value">
+                                        <div id="INTPosNS">N 38°51.50'</div>
+                                        <div id="INTPosEW">W095°32.01'</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="Align Half VTop">
-                                <div class="Title">NEAREST VOR</div>
-                                <table>
-                                    <tr>
-                                        <td colspan="2" class="Value">
-                                            <div class="Align" id="INTNearestVOR">TOP</div>
-                                            <div class="Align" id="INTNearestVORSymbol"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="Value">
-                                            <div class="Title">RAD</div>
-                                            <div>
-                                                <div class="Align" id="INTRadialFromNearVOR">173</div>
-                                                <div class="Align unit">o<br />M</div>
-                                            </div>
-                                        </td>
-                                        <td class="Value">
-                                            <div class="Title">DIS</div>
-                                            <div>
-                                                <div class="Align" id="INTDistanceFromNearVOR">16.7</div>
-                                                <div class="Align unit">n<br />m</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div id="IntersectionVor">
+                                    <div class="Title">NEAREST VOR</div>
+                                    <table>
+                                        <tr>
+                                            <td colspan="2" class="Value">
+                                                <div class="Align" id="INTNearestVOR">TOP</div>
+                                                <div class="Align" id="INTNearestVORSymbol"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="Value VorValue">
+                                                <div class="Title">RAD</div>
+                                                <div>
+                                                    <div class="Align" id="INTRadialFromNearVOR">173</div>
+                                                    <div class="Align unit">o<br />M</div>
+                                                </div>
+                                            </td>
+                                            <td class="Value VorValue">
+                                                <div class="Title">DIS</div>
+                                                <div>
+                                                    <div class="Align" id="INTDistanceFromNearVOR">16.7</div>
+                                                    <div class="Align unit">n<br />m</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -751,7 +752,7 @@
                             <div class="Align Half">
                                 <div class="Title">FREQ</div>
                                 <div class="Value SizedM">
-                                    <div id="VORFrequency">110.40</div>
+                                    <div class=" SelectableElement" id="VORFrequency">110.40</div>
                                     <div id="VORWeatherBroadcast">Wx Brdcst</div>
                                 </div>
                             </div>
