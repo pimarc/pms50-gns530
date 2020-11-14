@@ -1899,8 +1899,18 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
             this.initialIcao = this.gps.lastRelevantICAO;
             this.icaoSearchField.getWaypoint().UpdateApproaches();
         }
-        this.gps.SwitchToInteractionState(1);
-        this.gps.cursorIndex = 0;
+        if(this.icaoSearchField) {
+            // Check if current airport is the destination one
+            // and eventually select the current approach
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            if(this.gps.currFlightPlanManager.getDestination() && infos.icao == this.gps.currFlightPlanManager.getDestination().icao) {
+                if(this.gps.currFlightPlanManager.getApproachIndex() != -1) {
+                    this.selectedApproach = this.gps.currFlightPlanManager.getApproachIndex();
+                    if(this.gps.currFlightPlanManager.getApproachTransitionIndex() != -1)
+                        this.selectedTransition = this.gps.currFlightPlanManager.getApproachTransitionIndex();
+                }
+            }
+        }
         this.gps.SwitchToInteractionState(0);
     }
     getSelectedApproach(airport) {

@@ -1629,6 +1629,14 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
                 });
 //PM Modif: End Add confirmation window
             break;
+            case "ENT_Push":
+                if(this.element.gps.currFlightPlanManager.getApproach() != null) {
+                    this.element.gps.lastRelevantICAO =this.element.gps.currFlightPlanManager.getDestination().icao;
+                    this.element.gps.lastRelevantICAOType = "A";
+                    this.element.gps.SwitchToInteractionState(0);
+                    this.element.gps.SwitchToPageName("WPT", "AirportApproach", true);
+                    break;
+                }
         }
         return false;
     }
