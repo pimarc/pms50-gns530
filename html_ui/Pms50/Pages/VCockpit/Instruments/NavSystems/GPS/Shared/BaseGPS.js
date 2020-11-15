@@ -2392,6 +2392,259 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
 
 }
 
+class GPS_AirportWaypointDepartures extends NavSystemElement {
+    constructor(_icaoSearchField) {
+        super();
+        this.name = "AirportDeparture";
+        this.icaoSearchField = _icaoSearchField;
+    }
+    init() {
+        this.identElement = this.gps.getChildById("APTDepartureIdent");
+        this.privateLogoElement = this.gps.getChildById("APTDeparturePrivateLogo");
+        this.privateElement = this.gps.getChildById("APTDeparturePrivate");
+        this.departureElement = this.gps.getChildById("APTDepartureDeparture");
+        this.transitionElement = this.gps.getChildById("APTDepartureTransition");
+        this.runwayElement = this.gps.getChildById("APTDepartureRunway");
+        this.selectedDeparture = 0;
+        this.selectedTransition = 0;
+        this.selectedRunway = 0;
+        this.container.defaultMenu = new ContextualMenu("PAGE MENU", [
+            new ContextualMenuElement("Load&nbsp;into&nbsp;Active&nbsp;FPL?", this.loadDepartureIntoFPL.bind(this), this.enableLoadDeparture.bind(this)),
+        ]);
+        this.defaultSelectables = [
+            new SelectableElement(this.gps, this.identElement, this.ident_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.departureElement, this.departure_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.transitionElement, this.transition_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.runwayElement, this.runway_SelectionCallback.bind(this))
+        ];
+        this.icaoSearchField.elements.push(this.identElement);
+    }
+    onEnter() {
+        this.selectedDeparture = 0;
+        this.selectedTransition = 0;
+        this.selectedRunway = 0;
+        if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
+            this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+            this.initialIcao = this.gps.lastRelevantICAO;
+        }
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if(!infos || !infos.icao) {
+            let origin = this.gps.currFlightPlanManager.getOrigin();
+            if(origin)
+                this.icaoSearchField.SetWaypoint("A", origin.icao);
+        }
+        if(this.icaoSearchField) {
+            // Check if current airport is the origin one
+            // and eventually select the current departure
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            if(this.gps.currFlightPlanManager.getOrigin() && infos.icao == this.gps.currFlightPlanManager.getOrigin().icao) {
+                if(this.gps.currFlightPlanManager.getDepartureProcIndex() != -1) {
+                    this.selectedDeparture = this.gps.currFlightPlanManager.getDepartureProcIndex();
+                    if(this.gps.currFlightPlanManager.getDepartureEnRouteTransitionIndex() != -1)
+                        this.selectedTransition = this.gps.currFlightPlanManager.getDepartureEnRouteTransitionIndex();
+                        if(this.gps.currFlightPlanManager.getDepartureRunwayIndex() != -1)
+                           this.selectedRunway = this.gps.currFlightPlanManager.getDepartureRunwayIndex();
+                }
+            }
+        }
+        this.gps.SwitchToInteractionState(0);
+    }
+    getSelectedDeparture(airport) {
+        if (airport && airport.departures && this.selectedDeparture >= 0 && this.selectedDeparture < airport.departures.length) {
+            return airport.departures[this.selectedDeparture];
+        }
+        return null;
+    }
+    onUpdate(_deltaTime) {
+        this.icaoSearchField.Update();
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if (infos && infos.icao) {
+            var logo = infos.imageFileName();
+            if (logo != "") {
+                this.privateLogoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+            }
+            else {
+                this.privateLogoElement.innerHTML = '';
+            }
+            switch (infos.privateType) {
+                case 0:
+                    this.privateElement.textContent = "Unknown";
+                    break;
+                case 1:
+                    this.privateElement.textContent = "Public";
+                    break;
+                case 2:
+                    this.privateElement.textContent = "Military";
+                    break;
+                case 3:
+                    this.privateElement.textContent = "Private";
+                    break;
+            }
+            let departure = this.getSelectedDeparture(infos);
+            if (departure) {
+                this.departureElement.textContent = departure.name;
+                if (departure.enRouteTransitions && this.selectedTransition >= 0 && departure.enRouteTransitions.length > this.selectedTransition) {
+                    this.transitionElement.textContent = departure.enRouteTransitions[this.selectedTransition].name;
+                }
+                else {
+                    this.transitionElement.textContent = "NONE";
+                }
+                if (departure.runwayTransitions && this.selectedRunway >= 0 && departure.runwayTransitions.length > this.selectedRunway) {
+                    this.runwayElement.textContent = departure.runwayTransitions[this.selectedRunway].name;
+                }
+                else {
+                    this.runwayElement.textContent = "NONE";
+                }
+            }
+            else {
+                this.departureElement.textContent = "NONE";
+                this.transitionElement.textContent = "NONE";
+                this.runwayElement.textContent = "NONE";
+            }
+        }
+        else {
+            this.identElement.textContent = "_____";
+            this.privateElement.textContent = "Unknown";
+            this.departureElement.textContent = "";
+            this.transitionElement.textContent = "";
+            this.runwayElement.textContent = "";
+        }
+    }
+    onExit() {
+        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+            this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
+            this.gps.lastRelevantICAOType = "A";
+        }
+    }
+    onEvent(_event) {
+        if (_event == "CLR_Push")  {
+            if (this.gps.popUpElement || this.gps.currentContextualMenu) {
+                this.gps.closePopUpElement();
+                this.gps.currentContextualMenu = null;
+            }
+        }
+    }
+    enableLoadDeparture() {
+        let infos = this.icaoSearchField.getUpdatedInfos();
+        var origin = this.gps.currFlightPlanManager.getOrigin();
+        let dinfos = origin.GetInfos();
+        if (infos && infos.icao && infos.icao == dinfos.icao)
+            return false;
+        else
+            return true;
+    }
+
+    loadDepartureIntoFPL() {
+        // Do load departure
+        let infos = this.icaoSearchField.getUpdatedInfos();
+        var origin = this.gps.currFlightPlanManager.getOrigin();
+        let dinfos = origin.GetInfos();
+        if (infos && infos.icao && infos.icao == dinfos.icao && infos.departures.length) {
+            this.gps.currFlightPlanManager.setDepartureProcIndex(this.selectedDeparture, () => {
+                let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                if (elem) {
+                    elem.updateWaypoints();
+                }
+            });
+            this.gps.currFlightPlanManager.setDepartureRunwayIndex(this.selectedRunway);
+            this.gps.currFlightPlanManager.setDepartureEnRouteTransitionIndex(this.selectedTransition);
+            this.gps.closePopUpElement();
+            this.gps.SwitchToInteractionState(0);
+            if(this.gps.currentEventLinkedPageGroup)
+                this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
+            this.gps.currentEventLinkedPageGroup = null;
+            this.gps.computeEvent("FPL_Push");
+        }
+        else{
+            this.gps.closePopUpElement();
+        }
+    }
+    
+    ident_SelectionCallback(_event) {
+        if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
+            this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
+            this.selectedDeparture = 0;
+            this.selectedTransition = 0;
+            this.selectedRunway = 0;
+            this.icaoSearchField.StartSearch(function () {
+                this.selectedRunway = 0;
+            }.bind(this));
+            this.gps.SwitchToInteractionState(3);
+        }
+    }
+    departure_SelectionCallback(_event) {
+        if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            if (infos && infos.icao) {
+                var menu = new ContextualMenu("APR", []);
+                var callback = function (_index) {
+                    this.selectedDeparture = _index;
+                    this.selectedTransition = 0;
+                    this.selectedRunway = 0;
+                    this.gps.SwitchToInteractionState(1);
+                    if(infos.departures[_index].enRouteTransitions.length)
+                        this.gps.cursorIndex = 2;
+                    else if(infos.departures[_index].runwayTransitions.length)
+                        this.gps.cursorIndex = 3;
+                    else
+                        this.gps.cursorIndex = 1;
+                };
+                for (var i = 0; i < infos.departures.length; i++) {
+                    menu.elements.push(new ContextualMenuElement(infos.departures[i].name, callback.bind(this, i)));
+                }
+                if(infos.departures.length)
+                    this.gps.ShowContextualMenu(menu);
+            }
+        }
+    }
+    transition_SelectionCallback(_event) {
+        if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            if (infos && infos.icao) {
+                var menu = new ContextualMenu("TRANS", []);
+                var callback = function (_index) {
+                    this.selectedTransition = _index;
+                    this.gps.SwitchToInteractionState(1);
+                    if(infos.departures[_index].runwayTransitions.length)
+                        this.gps.cursorIndex = 3;
+                    else
+                        this.gps.cursorIndex = 2;
+                };
+                let departure = this.getSelectedDeparture(infos);
+                if (departure) {
+                    for (var i = 0; i < departure.enRouteTransitions.length; i++) {
+                        menu.elements.push(new ContextualMenuElement(departure.enRouteTransitions[i].name, callback.bind(this, i)));
+                    }
+                    if(departure.enRouteTransitions.length)
+                        this.gps.ShowContextualMenu(menu);
+                }
+            }
+        }
+    }
+    runway_SelectionCallback(_event) {
+        if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            if (infos && infos.icao) {
+                var menu = new ContextualMenu("RUNWAY", []);
+                var callback = function (_index) {
+                    this.selectedRunway = _index;
+                    this.gps.SwitchToInteractionState(0);
+                };
+                let departure = this.getSelectedDeparture(infos);
+                if (departure) {
+                    for (var i = 0; i < departure.runwayTransitions.length; i++) {
+                        menu.elements.push(new ContextualMenuElement(departure.runwayTransitions[i].name, callback.bind(this, i)));
+                    }
+                    if(departure.runwayTransitions.length)
+                        this.gps.ShowContextualMenu(menu);
+                }
+            }
+        }
+    }
+
+}
+
+
 class GPS_IntersectionWaypoint extends NavSystemElement {
     constructor() {
         super();

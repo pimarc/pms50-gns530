@@ -990,6 +990,31 @@ as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection {
             width: 100%;
           }
 
+          as430-element #Electricity #TopDisplay #GpsPart #AirportDeparture .WhiteTitle {
+            padding-left: 2%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #AirportDeparture .AirportDisplay {
+            width: 58.75%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #AirportDeparture #APTDepartureMap {
+            position: absolute;
+            width: 70%;
+            height: 80%;
+            top: 18%;
+            left: 2%;
+            background-color: black;
+            border: calc(0.4273504274vh) solid #6ecdee; }
+            as430-element #Electricity #TopDisplay #GpsPart #AirportDeparture #RightPart {
+            position: absolute;
+            width: 25%;
+            height: 80%;
+            top: 18%;
+            right: 2%; }
+            as430-element #Electricity #TopDisplay #GpsPart #AirportDeparture #RightPart .Value {
+            margin-bottom: 8%;
+            height: 15%;
+            width: 100%;
+          }
 
         as430-element #Electricity #TopDisplay #GpsPart #Intersection .WhiteTitle {
           padding-left: 2%;

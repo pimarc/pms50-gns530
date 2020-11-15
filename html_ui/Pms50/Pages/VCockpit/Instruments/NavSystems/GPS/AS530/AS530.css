@@ -1405,7 +1405,42 @@ as530-element {
             height: 12%;
             width: 100%; 
           }
-    
+
+          as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture .WhiteTitle {
+            padding-left: 2%;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture .AirportDisplay {
+            width: 58%;
+          }
+        as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture #APTDepartureMap {
+          position: absolute;
+          width: 70%;
+          height: 85%;
+          top: 12.5%;
+          left: 2%;
+          background-color: black;
+          border: calc(0.4273504274vh) solid #6ecdee; }
+        as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture #RightPart {
+          position: absolute;
+          width: 25%;
+          height: 85%;
+          top: 12.5%;
+          right: 2%; }
+          as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture #RightPart .Value {
+            margin-bottom: 8%;
+          }
+            as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture #RightPart #APTDepartureDeparture {
+            height: 12%;
+            width: 100%; }
+            as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture #RightPart #APTDepartureTransition {
+              height: 12%;
+              width: 100%; 
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture #RightPart #APTDepartureRunway {
+            height: 12%;
+            width: 100%; 
+          }
+          
           as530-element #Electricity #TopDisplay #GpsPart #Intersection .WhiteTitle {
             padding-left: 2%;
           }
