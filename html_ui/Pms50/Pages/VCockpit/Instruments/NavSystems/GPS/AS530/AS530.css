@@ -1360,6 +1360,9 @@ as530-element {
           height: 85%;
           top: 12.5%;
           right: 2%; }
+          as530-element #Electricity #TopDisplay #GpsPart #AirportApproach #RightPart .Value {
+            margin-bottom: 8%;
+          }
           as530-element #Electricity #TopDisplay #GpsPart #AirportApproach #RightPart #APTApproachApproach {
             height: 22%;
             width: 100%; }
@@ -1367,6 +1370,42 @@ as530-element {
             height: 12%;
             width: 100%; 
           }
+
+          as530-element #Electricity #TopDisplay #GpsPart #AirportArrival .WhiteTitle {
+            padding-left: 2%;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #AirportArrival .AirportDisplay {
+            width: 58%;
+          }
+        as530-element #Electricity #TopDisplay #GpsPart #AirportArrival #APTArrivalMap {
+          position: absolute;
+          width: 70%;
+          height: 85%;
+          top: 12.5%;
+          left: 2%;
+          background-color: black;
+          border: calc(0.4273504274vh) solid #6ecdee; }
+        as530-element #Electricity #TopDisplay #GpsPart #AirportArrival #RightPart {
+          position: absolute;
+          width: 25%;
+          height: 85%;
+          top: 12.5%;
+          right: 2%; }
+          as530-element #Electricity #TopDisplay #GpsPart #AirportArrival #RightPart .Value {
+            margin-bottom: 8%;
+          }
+            as530-element #Electricity #TopDisplay #GpsPart #AirportArrival #RightPart #APTArrivalArrival {
+            height: 12%;
+            width: 100%; }
+            as530-element #Electricity #TopDisplay #GpsPart #AirportArrival #RightPart #APTArrivalTransition {
+              height: 12%;
+              width: 100%; 
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #AirportArrival #RightPart #APTArrivalRunway {
+            height: 12%;
+            width: 100%; 
+          }
+    
           as530-element #Electricity #TopDisplay #GpsPart #Intersection .WhiteTitle {
             padding-left: 2%;
           }

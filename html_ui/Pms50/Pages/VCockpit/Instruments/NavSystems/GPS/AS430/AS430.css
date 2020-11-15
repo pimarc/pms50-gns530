@@ -952,6 +952,9 @@ as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection {
             top: 18%;
             right: 2%;
           }
+          as430-element #Electricity #TopDisplay #GpsPart #AirportApproach #RightPart .Value {
+            margin-bottom: 8%;
+          }
           as430-element #Electricity #TopDisplay #GpsPart #AirportApproach #RightPart #APTApproachApproach {
             height: 30%;
             width: 100%; 
@@ -960,6 +963,33 @@ as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection {
             height: 15%;
             width: 100%; 
           }
+
+          as430-element #Electricity #TopDisplay #GpsPart #AirportArrival .WhiteTitle {
+            padding-left: 2%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #AirportArrival .AirportDisplay {
+            width: 58.75%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #AirportArrival #APTArrivalMap {
+            position: absolute;
+            width: 70%;
+            height: 80%;
+            top: 18%;
+            left: 2%;
+            background-color: black;
+            border: calc(0.4273504274vh) solid #6ecdee; }
+            as430-element #Electricity #TopDisplay #GpsPart #AirportArrival #RightPart {
+            position: absolute;
+            width: 25%;
+            height: 80%;
+            top: 18%;
+            right: 2%; }
+            as430-element #Electricity #TopDisplay #GpsPart #AirportArrival #RightPart .Value {
+            margin-bottom: 8%;
+            height: 15%;
+            width: 100%;
+          }
+
 
         as430-element #Electricity #TopDisplay #GpsPart #Intersection .WhiteTitle {
           padding-left: 2%;

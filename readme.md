@@ -21,6 +21,8 @@ First release features:
 - wind indicator in map page not displayed at the correct place when data was displayed
 - Pushing ENT button on selected FPL waypoint displays the corresponding waypoint page
 - Coordinates displayed with leading and trailing zeros
+- While in direct To mode, another direct To target can be selected from FPL
+- Waypoint pages more conform to original GNS530
 ## V 1.0.11
 - Better management of direct to an approach WP (manual approach reactivation not needed any more)
 - Correcting some flight plan distances
