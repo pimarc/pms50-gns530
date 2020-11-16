@@ -460,6 +460,7 @@ class GPS_BaseNavPage extends NavSystemPage {
             }
         }
         if(this.trackUp && (this.navCompassImg || this.northIndicatorImg)){
+            // magnetic north
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
             if(trk != this.lasttrk){
                 // Last trk is used to save time in update (no rotation if no change)
@@ -1543,6 +1544,30 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
         }
     }
 }
+
+class GPS_WaypointMap extends MapInstrumentElement {
+    constructor() {
+        super(...arguments);
+    }
+    init(_root) {
+        super.init(_root);
+//        this.mapContainer = this.gps.getChildById("WaypointMap");
+//        this.show(false);
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+    }
+    onEvent(_event) {
+        super.onEvent(_event);
+    }
+    show(_show){
+        if(_show)
+            this.mapContainer.style.display = "Block";
+        else
+            this.mapContainer.style.display = "None";
+    }
+}
+
 class GPS_AirportWaypointRunways extends NavSystemElement {
     constructor(_icaoSearchField) {
         super();
@@ -1558,16 +1583,26 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         this.widthElement = this.gps.getChildById("APTRwyWidth");
         this.surfaceElement = this.gps.getChildById("APTRwySurface");
         this.lightingElement = this.gps.getChildById("APTRwyLighting");
-        this.mapElement = this.gps.getChildById("APTRwyMap");
         this.selectedRunway = 0;
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.identElement, this.searchField_SelectionCallback.bind(this)),
             new SelectableElement(this.gps, this.nameElement, this.runway_SelectionCallback.bind(this))
         ];
         this.icaoSearchField.elements.push(this.identElement);
+
     }
     onEnter() {
         this.selectedRunway = 0;
+        this.mapContainer = this.gps.getChildById("APTRwyMap");
+        this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
+        this.mapElement.mapContainer = this.mapContainer;
+        if (this.mapContainer && this.mapElement) {
+            this.mapContainer.appendChild(this.mapElement.instrument);
+            this.mapElement.setDisplayMode(EMapDisplayMode.GPS);
+            this.mapElement.instrument.setCenteredOnPlane();
+            this.mapElement.instrument.setZoom(1);
+            this.mapElement.show(true);
+        }
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
@@ -1585,8 +1620,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         if (infos && infos.icao && infos instanceof AirportInfo) {
             var size = infos.GetSize();
             var nmPixelSize = Math.min(130 / size.x, 110 / size.y);
-            var context = this.mapElement.getContext("2d");
-            context.clearRect(0, 0, 200, 200);
+//            var context = this.mapElement.getContext("2d");
+//            context.clearRect(0, 0, 200, 200);
 //PM Modif: Directly get image file name instead of get symbol
             var logo = infos.imageFileName();
             if (logo != "") {
@@ -1705,6 +1740,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
                     }
                 }
             }
+//            this.mapElement.setCenter(infos.coordinates);
         }
         else {
             this.identElement.textContent = "_____";
@@ -1718,6 +1754,10 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         }
     }
     onExit() {
+        if (this.mapContainer && this.mapElement) {
+            this.mapElement.show(false);
+            this.mapContainer.removeChild(this.mapElement.instrument);
+        }
         if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
@@ -1916,6 +1956,16 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
     onEnter() {
         this.selectedApproach = 0;
         this.selectedTransition = 0;
+        this.mapContainer = this.gps.getChildById("APTApproachMap");
+        this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
+        this.mapElement.mapContainer = this.mapContainer;
+        if (this.mapContainer && this.mapElement) {
+            this.mapContainer.appendChild(this.mapElement.instrument);
+            this.mapElement.setDisplayMode(EMapDisplayMode.GPS);
+            this.mapElement.instrument.setCenteredOnPlane();
+            this.mapElement.instrument.setZoom(7);
+            this.mapElement.show(true);
+        }
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
@@ -2000,6 +2050,10 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
+        }
+        if (this.mapContainer && this.mapElement) {
+            this.mapElement.show(false);
+            this.mapContainer.removeChild(this.mapElement.instrument);
         }
     }
     onEvent(_event) {

@@ -1214,6 +1214,10 @@ as530-element {
                 position: absolute;
                 width: 100%;
                 background-color: #6ecdee; }
+
+        as530-element #Electricity #TopDisplay #GpsPart #WaypointMap {
+          display: none;
+        }
         as530-element #Electricity #TopDisplay #GpsPart #AirportLocation .WhiteTitle {
           padding-left: 2%;
         }
@@ -1250,7 +1254,6 @@ as530-element {
           height: 84%;
           width: 66%;
           left: 2%;
-          background-color: black;
           border: calc(0.4273504274vh) solid #6ecdee; }
         as530-element #Electricity #TopDisplay #GpsPart #AirportRunway #RightInfos {
           position: absolute;
