@@ -1549,10 +1549,21 @@ class GPS_WaypointMap extends MapInstrumentElement {
     constructor() {
         super(...arguments);
     }
-    init(_root) {
-        super.init(_root);
-//        this.mapContainer = this.gps.getChildById("WaypointMap");
-//        this.show(false);
+    init(root) {
+        this.instrument = root.querySelector("map-instrument");
+        console.log("zut0");
+        if (this.instrument) {
+            TemplateElement.callNoBinding(this.instrument, () => {
+                this.onTemplateLoaded();
+            });
+        }
+    }
+    onTemplateLoaded() {
+        // We create a special map instrument not associated to the current GPS flight plan
+console.log("zut1");
+        this.instrument.init("SPECIAL_INSTRUMENT");
+        this.instrumentLoaded = true;
+        this.instrument.flightPlanManager.removeArrival();
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -1596,6 +1607,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         this.mapContainer = this.gps.getChildById("APTRwyMap");
         this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
         this.mapElement.mapContainer = this.mapContainer;
+        this.mapElement.instrument.flightPlanManager._waypoints = [[], []];
+        this.mapElement.instrument.flightPlanManager._approachWaypoints = [];
         if (this.mapContainer && this.mapElement) {
             this.mapContainer.appendChild(this.mapElement.instrument);
             this.mapElement.setDisplayMode(EMapDisplayMode.GPS);
@@ -1756,7 +1769,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
     onExit() {
         if (this.mapContainer && this.mapElement) {
             this.mapElement.show(false);
-            this.mapContainer.removeChild(this.mapElement.instrument);
+            //Remove childs
+            this.mapContainer.textContent = '';
         }
         if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
@@ -2047,13 +2061,14 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         }
     }
     onExit() {
+        if (this.mapContainer && this.mapElement) {
+            this.mapElement.show(false);
+            //Remove childs
+            this.mapContainer.textContent = '';
+        }
         if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
-        }
-        if (this.mapContainer && this.mapElement) {
-            this.mapElement.show(false);
-            this.mapContainer.removeChild(this.mapElement.instrument);
         }
     }
     onEvent(_event) {

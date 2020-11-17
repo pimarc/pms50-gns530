@@ -348,8 +348,8 @@ class MapInstrument extends ISvgMapRootElement {
             this.instrument.addEventListener("FlightStart", this.onFlightStart.bind(this));
         }
         else {
-                this._flightPlanManager = new FlightPlanManager(this.instrument);
-            }
+            this._flightPlanManager = new FlightPlanManager(this.instrument);
+        }
         let bingMapId = this.bingId;
         if (this.instrument.urlConfig.index)
             bingMapId += "_GPS" + this.instrument.urlConfig.index;
@@ -516,10 +516,12 @@ class MapInstrument extends ISvgMapRootElement {
             this.flightPlanManager.updateWaypointIndex();
             if (this.drawCounter === 25) {
                 this.updateFlightPlanVisibility();
-                this.flightPlanManager.updateFlightPlan();
+                if(!this.selfManagedInstrument)
+                    this.flightPlanManager.updateFlightPlan();
             }
             if (this.drawCounter === 75) {
-                this.flightPlanManager.updateCurrentApproach();
+                if(!this.selfManagedInstrument)
+                    this.flightPlanManager.updateCurrentApproach();
                 if (this.debugApproachFlightPlanElement) {
                     Coherent.call("GET_APPROACH_FLIGHTPLAN").then(data => {
                         this.debugApproachFlightPlanElement.source = data;
