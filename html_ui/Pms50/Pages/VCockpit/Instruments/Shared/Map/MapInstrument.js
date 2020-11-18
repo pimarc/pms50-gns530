@@ -516,12 +516,16 @@ class MapInstrument extends ISvgMapRootElement {
             this.flightPlanManager.updateWaypointIndex();
             if (this.drawCounter === 25) {
                 this.updateFlightPlanVisibility();
+//PM Modif: special instrument                
                 if(!this.selfManagedInstrument)
                     this.flightPlanManager.updateFlightPlan();
+//PM Modif: special instrument                
             }
             if (this.drawCounter === 75) {
+//PM Modif: special instrument                
                 if(!this.selfManagedInstrument)
                     this.flightPlanManager.updateCurrentApproach();
+//PM Modif: special instrument                
                 if (this.debugApproachFlightPlanElement) {
                     Coherent.call("GET_APPROACH_FLIGHTPLAN").then(data => {
                         this.debugApproachFlightPlanElement.source = data;
@@ -1169,10 +1173,14 @@ class MapInstrument extends ISvgMapRootElement {
         return false;
     }
     centerOnPlane() {
-        this.setNavMapCenter(this.navMap.planeCoordinates);
-        if (this.eBingMode == EBingMode.PLANE) {
-            this.airplaneIconElement.forceCoordinates(this.navMap.centerCoordinates.lat, this.navMap.centerCoordinates.long);
+//PM Modif: do not center at all
+        if(!this.noCenterOnPlane){
+            this.setNavMapCenter(this.navMap.planeCoordinates);
+            if (this.eBingMode == EBingMode.PLANE) {
+                this.airplaneIconElement.forceCoordinates(this.navMap.centerCoordinates.lat, this.navMap.centerCoordinates.long);
+            }
         }
+//PM Modif: End do not center at all
     }
     centerOnActiveWaypoint(_val) {
         this.bEnableCenterOnFplnWaypoint = _val;
