@@ -531,6 +531,13 @@
                     <div id="FPLCatalog">
 
                     </div>
+                    <div id="WaypointMap">
+                        <map-instrument id="MapInstrument4" bing-id="AS430_Map4" bing-mode="vfr" show-constraints="false" show-traffic="false" show-airports="false" show-obstacles="false" show-ndbs="false" show-intersections="false" show-vors="false" show-flightplan="true" show-airplane="false" show-airspaces="false" show-airways="false" show-roads="false" show-overlay="false" hide-flightplan-if-bushtrip="true" config-path="/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/AS530/Waypoints/"></map-instrument>
+                        <div class="Range4" id="Range4">
+                            <div class="Align value MapRangeValue4" id="MapRangeValue4">500</div>
+                            <div class="Align unit MapRangeUnit4" id="MapRangeUnit4">n<br/>m</div>
+                        </div>
+                    </div>
                     <div id="AirportLocation">
                         <div>
                             <div class="Align WhiteTitle">APT</div>
@@ -583,13 +590,16 @@
                                 <div class="Align AirportPrivate" id="APTRwyPrivate">Public</div>
                             </div>
                         </div>
-                        <div style="position:relative; width:77vw;">
-                            <canvas class="Align" id="APTRwyMap"></canvas>
-                            <div class="Align" id="RightInfos">
-                                <div class="Title">RUNWAY</div>
+
+                        <div>
+                            <div id="APTRwyMap">
+
+                            </div>
+                            <div class="Align" id="RightPart">
+                                <div class="Title" id="RwyTitle">RUNWAY</div>
                                 <div class="Value SelectableElement" id="APTRwyName">08R-26L</div>
-                                <div class="Title">INFO</div>
-                                <div class="Value">
+                                <div class="Title" id="InfoTitle">INFO</div>
+                                <div class="Value" id="RwyLength">
                                     <div>
                                         <div class="Align" id="APTRwyLength">11000</div>
                                         <div class="Align unit">f<br />t</div>
@@ -599,9 +609,8 @@
                                         <div class="Align" id="APTRwyWidth">150</div>
                                         <div class="Align unit">f<br />t</div>
                                     </div>
-                                    <div id="APTRwySurface">Hard Srfc</div>
-                                    <div id="APTRwyLighting">Full Time</div>
                                 </div>
+                                <div class="Value" id="APTRwySurface">Hard Srfc</div>
                             </div>
                         </div>
                     </div>

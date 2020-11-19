@@ -1556,20 +1556,118 @@ class GPS_WaypointMap extends MapInstrumentElement {
                 this.onTemplateLoaded();
             });
         }
+        this.range = root.querySelector("#Range4");
     }
     onTemplateLoaded() {
         // We create a special map instrument not associated to the current GPS flight plan
         this.instrument.init("SPECIAL_INSTRUMENT");
         this.instrument._flightPlanManager = new FlightPlanManager(this.instrument);
+        this.instrument.flightPlanElement.source = this.instrument.flightPlanManager;
         this.instrumentLoaded = true;
         this.instrument.eBingMode = EBingMode.VFR;
         this.instrument.noCenterOnPlane = true;
+        this.instrument.flightPlanElement.hideReachedWaypoints = false;
+        this.instrument.flightPlanElement.highlightActiveLeg = false;
+        this.instrument._ranges = [1, 2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 50, 75, 100, 150, 200];
+    }
+    onEnter(_mapContainer, _zoomLevel) {
+        this.mapContainer = _mapContainer;
+        this.instrument.flightPlanManager._waypoints = [[], []];
+        this.instrument.flightPlanManager._approachWaypoints = [];
+        if (this.mapContainer) {
+            this.mapContainer.appendChild(this.range);
+            this.mrange = this.range.querySelector("#MapRangeValue4");
+            this.mapContainer.appendChild(this.instrument);
+            this.setDisplayMode(EMapDisplayMode.GPS);
+            this.instrument.setCenteredOnPlane();
+            this.instrument.setZoom(_zoomLevel);
+            this.show(true);
+        }
+    }
+    onExit() {
+        if (this.mapContainer) {
+            this.show(false);
+            //Remove childs
+            this.mapContainer.textContent = '';
+        }
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        // Must be always refreshed
+        this.instrument.flightPlanElement.hideReachedWaypoints = false;
+        this.instrument.flightPlanElement.highlightActiveLeg = false;
+        if(this.mrange)
+            Avionics.Utils.diffAndSet(this.mrange, this.instrument.getDisplayRange());
     }
     onEvent(_event) {
         super.onEvent(_event);
+    }
+
+    updateMap(waypoints, initial_coordinates) {
+        this.instrument.flightPlanManager._waypoints[0] = waypoints;
+        this.instrument.flightPlanManager._lastIndexBeforeApproach = waypoints.length;
+        // Calculate center position and scale factor (check est, west, north and south max positions)
+        if(waypoints.length){
+        // First center on searchfield
+            this.instrument.setCenter(initial_coordinates);
+            this.instrument.navMap.computeCoordinates();
+            let wMostIndex = 0;
+            let eMostIndex = 0;
+            let nMostIndex = 0;
+            let sMostIndex = 0;
+            let wMostXY = 0;
+            let eMostXY = 0;
+            let nMostXY = 0;
+            let sMostXY = 0;
+            for(var i=0; i< waypoints.length; i++) {
+                let xy = this.instrument.navMap.coordinatesToXY(waypoints[i].infos.coordinates);
+                if(i==0) {
+                    wMostXY = xy.x;
+                    eMostXY = xy.x;
+                    nMostXY = xy.y;
+                    sMostXY = xy.y;
+                }
+                else {
+                    if(xy.x < wMostXY)
+                    {
+                        wMostIndex = i;
+                        wMostXY = xy.x;                         
+                    }
+                    if(xy.x > eMostXY)
+                    {
+                        eMostIndex = i;
+                        eMostXY = xy.x;                         
+                    }
+                    if(xy.y < nMostXY)
+                    {
+                        nMostIndex = i;
+                        nMostXY = xy.y;                         
+                    }
+                    if(xy.y > sMostXY)
+                    {
+                        sMostIndex = i;
+                        sMostXY = xy.y;                         
+                    }
+                }
+            }
+            let cxy = new Vec2();
+            cxy.x = ((eMostXY - wMostXY)/2) + wMostXY;
+            cxy.y = ((sMostXY - nMostXY)/2) + nMostXY;
+            let ll = this.instrument.navMap.XYToCoordinates(cxy);
+            this.instrument.navMap.setCenterCoordinates(ll.lat, ll.long, 1);
+
+            // Check scale factor now
+            // we calculate the distance bewteen extremes
+            let hDistance = Avionics.Utils.computeDistance(waypoints[wMostIndex].infos.coordinates, waypoints[eMostIndex].infos.coordinates);
+            let vDistance = Avionics.Utils.computeDistance(waypoints[sMostIndex].infos.coordinates, waypoints[nMostIndex].infos.coordinates);
+            let distance = Math.max(hDistance, vDistance);
+            distance *= 1.05;
+            for(var i=0; i<this.instrument._ranges.length; i++) {
+                if(this.instrument._ranges[i] >= distance)
+                    break;
+            }
+            this.instrument.rangeIndex = i;
+        }
     }
     show(_show){
         if(_show)
@@ -1606,16 +1704,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         this.selectedRunway = 0;
         this.mapContainer = this.gps.getChildById("APTRwyMap");
         this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
-        this.mapElement.mapContainer = this.mapContainer;
-        this.mapElement.instrument.flightPlanManager._waypoints = [[], []];
-        this.mapElement.instrument.flightPlanManager._approachWaypoints = [];
-        if (this.mapContainer && this.mapElement) {
-            this.mapContainer.appendChild(this.mapElement.instrument);
-            this.mapElement.setDisplayMode(EMapDisplayMode.GPS);
-            this.mapElement.instrument.setCenteredOnPlane();
-            this.mapElement.instrument.setZoom(1);
-            this.mapElement.show(true);
-        }
+        if(this.mapElement)
+            this.mapElement.onEnter(this.mapContainer, 1);
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
@@ -1664,92 +1754,99 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
                     this.nameElement.textContent = this.getRunwayDesignation(runway);
                     this.lengthElement.textContent = fastToFixed(runway.length * 3.28084, 0);
                     this.widthElement.textContent = fastToFixed(runway.width * 3.28084, 0);
-                    switch (runway.surface) {
-                        case 0:
-//                            this.surfaceElement.textContent = "Unknown";
-                            this.surfaceElement.textContent = "";
-                            break;
-                        case 1:
-                            this.surfaceElement.textContent = "Concrete";
-                            break;
-                        case 2:
-                            this.surfaceElement.textContent = "Asphalt";
-                            break;
-                        case 4:
-                            this.surfaceElement.textContent = "Hard surface";
-                            break;
-                        case 101:
-                            this.surfaceElement.textContent = "Grass";
-                            break;
-                        case 102:
-                            this.surfaceElement.textContent = "Turf";
-                            break;
-                        case 103:
-                            this.surfaceElement.textContent = "Dirt";
-                            break;
-                        case 104:
-                            this.surfaceElement.textContent = "Coral";
-                            break;
-                        case 105:
-                            this.surfaceElement.textContent = "Gravel";
-                            break;
-                        case 106:
-                            this.surfaceElement.textContent = "Oil Treated";
-                            break;
-                        case 107:
-                            this.surfaceElement.textContent = "Steel";
-                            break;
-                        case 108:
-                            this.surfaceElement.textContent = "Bituminus";
-                            break;
-                        case 109:
-                            this.surfaceElement.textContent = "Brick";
-                            break;
-                        case 110:
-                            this.surfaceElement.textContent = "Macadam";
-                            break;
-                        case 111:
-                            this.surfaceElement.textContent = "Planks";
-                            break;
-                        case 112:
-                            this.surfaceElement.textContent = "Sand";
-                            break;
-                        case 113:
-                            this.surfaceElement.textContent = "Shale";
-                            break;
-                        case 114:
-                            this.surfaceElement.textContent = "Tarmac";
-                            break;
-                        case 115:
-                            this.surfaceElement.textContent = "Snow";
-                            break;
-                        case 116:
-                            this.surfaceElement.textContent = "Ice";
-                            break;
-                        case 201:
-                            this.surfaceElement.textContent = "Water";
-                            break;
-                        default:
-                            this.surfaceElement.textContent = "Unknown";
-                            break;
+                    if(this.surfaceElement)
+                    {
+                        switch (runway.surface) {
+                            case 0:
+    //                            this.surfaceElement.textContent = "Unknown";
+                                this.surfaceElement.textContent = "";
+                                break;
+                            case 1:
+                                this.surfaceElement.textContent = "Concrete";
+                                break;
+                            case 2:
+                                this.surfaceElement.textContent = "Asphalt";
+                                break;
+                            case 4:
+                                this.surfaceElement.textContent = "Hard surface";
+                                break;
+                            case 101:
+                                this.surfaceElement.textContent = "Grass";
+                                break;
+                            case 102:
+                                this.surfaceElement.textContent = "Turf";
+                                break;
+                            case 103:
+                                this.surfaceElement.textContent = "Dirt";
+                                break;
+                            case 104:
+                                this.surfaceElement.textContent = "Coral";
+                                break;
+                            case 105:
+                                this.surfaceElement.textContent = "Gravel";
+                                break;
+                            case 106:
+                                this.surfaceElement.textContent = "Oil Treated";
+                                break;
+                            case 107:
+                                this.surfaceElement.textContent = "Steel";
+                                break;
+                            case 108:
+                                this.surfaceElement.textContent = "Bituminus";
+                                break;
+                            case 109:
+                                this.surfaceElement.textContent = "Brick";
+                                break;
+                            case 110:
+                                this.surfaceElement.textContent = "Macadam";
+                                break;
+                            case 111:
+                                this.surfaceElement.textContent = "Planks";
+                                break;
+                            case 112:
+                                this.surfaceElement.textContent = "Sand";
+                                break;
+                            case 113:
+                                this.surfaceElement.textContent = "Shale";
+                                break;
+                            case 114:
+                                this.surfaceElement.textContent = "Tarmac";
+                                break;
+                            case 115:
+                                this.surfaceElement.textContent = "Snow";
+                                break;
+                            case 116:
+                                this.surfaceElement.textContent = "Ice";
+                                break;
+                            case 201:
+                                this.surfaceElement.textContent = "Water";
+                                break;
+                            default:
+                                this.surfaceElement.textContent = "Unknown";
+                                break;
+                    
+                        }
                     }
-                    switch (runway.lighting) {
-                        case 0:
-                            this.lightingElement.textContent = "";
-//                            this.lightingElement.textContent = "Unknown";
-                            break;
-                        case 1:
-                            this.lightingElement.textContent = "None";
-                            break;
-                        case 2:
-                            this.lightingElement.textContent = "Part Time";
-                            break;
-                        case 3:
-                            this.lightingElement.textContent = "Full Time";
-                            break;
-                        case 4:
-                            this.lightingElement.textContent = "Frequency";
-                            break;
+                    if(this.lightingElement)
+                    {
+                        switch (runway.lighting) {
+                            case 0:
+                                this.lightingElement.textContent = "";
+    //                            this.lightingElement.textContent = "Unknown";
+                                break;
+                            case 1:
+                                this.lightingElement.textContent = "None";
+                                break;
+                            case 2:
+                                this.lightingElement.textContent = "Part Time";
+                                break;
+                            case 3:
+                                this.lightingElement.textContent = "Full Time";
+                                break;
+                            case 4:
+                                this.lightingElement.textContent = "Frequency";
+                                break;
+                        }
                     }
                 }
             }
@@ -1767,11 +1864,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         }
     }
     onExit() {
-        if (this.mapContainer && this.mapElement) {
-            this.mapElement.show(false);
-            //Remove childs
-            this.mapContainer.textContent = '';
-        }
+        if(this.mapElement)
+            this.mapElement.onExit();
         if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
@@ -1974,14 +2068,9 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         this.selectedTransition = -1;
         this.mapContainer = this.gps.getChildById("APTApproachMap");
         this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
-        this.mapElement.mapContainer = this.mapContainer;
-        if (this.mapContainer && this.mapElement) {
-            this.mapContainer.appendChild(this.mapElement.instrument);
-            this.mapElement.setDisplayMode(EMapDisplayMode.GPS);
-            this.mapElement.instrument.setCenteredOnPlane();
-            this.mapElement.instrument.setZoom(7);
-            this.mapElement.show(true);
-        }
+        if(this.mapElement)
+            this.mapElement.onEnter(this.mapContainer, 7);
+
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
@@ -2091,84 +2180,18 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
                         waypoints.push(approach.wayPoints[i]);
                 }
             }
-            this.mapElement.instrument.flightPlanManager._waypoints[0] = waypoints;
+            // Add the airport
+            waypoints.push(this.icaoSearchField.getWaypoint());
 
-            // Calculate center position and scale factor (check est, west, north and south max positions)
-            // First center on searchfield
-            this.mapElement.instrument.setCenter(infos.coordinates);
-            this.mapElement.instrument.navMap.computeCoordinates();
-            if(waypoints.length){
-                let wMostIndex = 0;
-                let eMostIndex = 0;
-                let nMostIndex = 0;
-                let sMostIndex = 0;
-                let wMostXY = 0;
-                let eMostXY = 0;
-                let nMostXY = 0;
-                let sMostXY = 0;
-                for(var i=0; i< waypoints.length; i++) {
-                    let xy = this.mapElement.instrument.navMap.coordinatesToXY(waypoints[i].infos.coordinates);
-                    if(i==0) {
-                        wMostXY = xy.x;
-                        eMostXY = xy.x;
-                        nMostXY = xy.y;
-                        sMostXY = xy.y;
-                    }
-                    else {
-                        if(xy.x < wMostXY)
-                        {
-                            wMostIndex = i;
-                            wMostXY = xy.x;                         
-                        }
-                        if(xy.x > eMostXY)
-                        {
-                            eMostIndex = i;
-                            eMostXY = xy.x;                         
-                        }
-                        if(xy.y < nMostXY)
-                        {
-                            nMostIndex = i;
-                            nMostXY = xy.y;                         
-                        }
-                        if(xy.y > sMostXY)
-                        {
-                            sMostIndex = i;
-                            sMostXY = xy.y;                         
-                        }
-                    }
-                    console.log(waypoints[i].icao + ":" + xy.x + ":" + xy.y);
-                }
-                console.log("w:" + waypoints[wMostIndex].icao + " - e:" + waypoints[eMostIndex].icao + " - n:" + waypoints[nMostIndex].icao + " - s:" + waypoints[sMostIndex].icao);
-                let cxy = new Vec2();
-                cxy.x = ((eMostXY - wMostXY)/2) + wMostXY;
-                cxy.y = ((sMostXY - nMostXY)/2) + nMostXY;
-                let ll = this.mapElement.instrument.navMap.XYToCoordinates(cxy);
-                this.mapElement.instrument.navMap.setCenterCoordinates(ll.lat, ll.long, 1);
-//                this.mapElement.instrument.navMap.computeCoordinates();
-
-                // Check scale factor now
-                // we calculate the distance bewteen extremes
-                let hDistance = Avionics.Utils.computeDistance(waypoints[wMostIndex].infos.coordinates, waypoints[eMostIndex].infos.coordinates);
-                let vDistance = Avionics.Utils.computeDistance(waypoints[sMostIndex].infos.coordinates, waypoints[nMostIndex].infos.coordinates);
-                let distance = Math.max(hDistance, vDistance);
-                distance *= 1.10;
-                for(var i=0; i<this.mapElement.instrument._ranges.length; i++) {
-                    if(this.mapElement.instrument._ranges[i] >= distance)
-                        break;
-                }
-                this.mapElement.instrument.rangeIndex = i;
-            }
+            this.mapElement.updateMap(waypoints, infos.coordinates);
             this.selectionChanged = false;
         }
         if(!approach)
-            this.mapElement.instrument.flightPlanManager._waypoints[0] = [];
+            this.mapElement.updateMap([]);
     }
     onExit() {
-        if (this.mapContainer && this.mapElement) {
-            this.mapElement.show(false);
-            //Remove childs
-            this.mapContainer.textContent = '';
-        }
+        if(this.mapElement)
+            this.mapElement.onExit();
         if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
@@ -2298,7 +2321,8 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
                 var callback = function (_index) {
                     this.selectedTransition = _index;
                     this.selectionChanged = true;
-                    this.gps.SwitchToInteractionState(0);
+                    this.gps.SwitchToInteractionState(1);
+                    this.gps.cursorIndex = 2;
                 };
                 let approach = this.getSelectedApproach(infos);
                 if (approach) {
