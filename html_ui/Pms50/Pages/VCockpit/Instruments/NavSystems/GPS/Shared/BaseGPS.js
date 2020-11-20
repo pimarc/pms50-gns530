@@ -1568,7 +1568,7 @@ class GPS_WaypointMap extends MapInstrumentElement {
         this.instrument.noCenterOnPlane = true;
         this.instrument.flightPlanElement.hideReachedWaypoints = false;
         this.instrument.flightPlanElement.highlightActiveLeg = false;
-        this.instrument._ranges = [1, 2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 50, 75, 100, 150, 200];
+        this.instrument._ranges = [0.5, 1, 1.5, 2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 50, 75, 100, 150, 200];
     }
     onEnter(_mapContainer, _zoomLevel) {
         this.mapContainer = _mapContainer;
@@ -1603,13 +1603,14 @@ class GPS_WaypointMap extends MapInstrumentElement {
         super.onEvent(_event);
     }
 
-    updateMap(waypoints, initial_coordinates) {
+    updateMap(waypoints, initial_coordinates, forceDistance = -1) {
         this.instrument.flightPlanManager._waypoints[0] = waypoints;
         this.instrument.flightPlanManager._lastIndexBeforeApproach = waypoints.length;
         // Calculate center position and scale factor (check est, west, north and south max positions)
         if(waypoints.length){
         // First center on searchfield
-            this.instrument.setCenter(initial_coordinates);
+            if(initial_coordinates)
+                this.instrument.setCenter(initial_coordinates);
             this.instrument.navMap.computeCoordinates();
             let wMostIndex = 0;
             let eMostIndex = 0;
@@ -1657,11 +1658,13 @@ class GPS_WaypointMap extends MapInstrumentElement {
             this.instrument.navMap.setCenterCoordinates(ll.lat, ll.long, 1);
 
             // Check scale factor now
-            // we calculate the distance bewteen extremes
+            // we calculate the distance between extremes
             let hDistance = Avionics.Utils.computeDistance(waypoints[wMostIndex].infos.coordinates, waypoints[eMostIndex].infos.coordinates);
             let vDistance = Avionics.Utils.computeDistance(waypoints[sMostIndex].infos.coordinates, waypoints[nMostIndex].infos.coordinates);
             let distance = Math.max(hDistance, vDistance);
-            distance *= 1.05;
+            distance *= 1.10;
+            if(forceDistance >= 0)
+                distance = forceDistance;
             for(var i=0; i<this.instrument._ranges.length; i++) {
                 if(this.instrument._ranges[i] >= distance)
                     break;
@@ -1698,10 +1701,11 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             new SelectableElement(this.gps, this.nameElement, this.runway_SelectionCallback.bind(this))
         ];
         this.icaoSearchField.elements.push(this.identElement);
-
+        this.selectionChanged = false;
     }
     onEnter() {
         this.selectedRunway = 0;
+        this.selectionChanged = true;
         this.mapContainer = this.gps.getChildById("APTRwyMap");
         this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
         if(this.mapElement)
@@ -1713,8 +1717,9 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         var infos = this.icaoSearchField.getUpdatedInfos();
         if(!infos || !infos.icao) {
             let destination = this.gps.currFlightPlanManager.getDestination();
-            if(destination)
+            if(destination){
                 this.icaoSearchField.SetWaypoint("A", destination.icao);
+            }
         }
     }
     onUpdate(_deltaTime) {
@@ -1850,7 +1855,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
                     }
                 }
             }
-//            this.mapElement.setCenter(infos.coordinates);
+            this.updateMap(infos);
         }
         else {
             this.identElement.textContent = "_____";
@@ -1862,6 +1867,64 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             this.surfaceElement.textContent = "Unknown";
             this.lightingElement.textContent = "Unknown";
         }
+    }
+    updateMap(infos) {
+        let runway = null;
+        if(this.selectedRunway >= 0)
+            runway = infos.runways[this.selectedRunway];
+        if(runway && this.selectionChanged){
+            var wayPointList = this.gps.currFlightPlanManager.getApproachWaypoints();
+            var waypoints = [];
+            let runwayNumber = parseInt(runway.designation[0]);
+            let direction =  runway.direction;
+            let delta = Math.abs(runwayNumber * 10 - direction);
+            if (delta >= 30) {
+                direction += 180;
+                if (direction >= 360) {
+                    direction -= 360;
+                }
+            }
+            while (delta >= 360) {
+                delta -= 360;
+            }
+            let beginningCoordinates = Avionics.Utils.bearingDistanceToCoordinates(direction - 180, runway.length / 1852 * 0.5, runway.latitude, runway.longitude);
+            let endCoordinates = Avionics.Utils.bearingDistanceToCoordinates(direction, runway.length / 1852 * 0.5, runway.latitude, runway.longitude);
+            var waypoint = new WayPoint(this.gps);
+            waypoint.infos = new WayPointInfo(this.gps);
+            waypoint.infos.name = "User-Defined";
+            waypoint.ident = this.getRunwayDesignation(runway, 0);
+            waypoint.infos.ident = waypoint.ident;
+            waypoint.infos.coordinates = endCoordinates;
+            waypoints.push(waypoint);
+
+            waypoint = new WayPoint(this.gps);
+            waypoint.infos = new WayPointInfo(this.gps);
+            waypoint.infos.name = "User-Defined";
+            waypoint.ident = this.getRunwayDesignation(runway, 1);
+            waypoint.infos.ident = waypoint.ident;
+            waypoint.infos.coordinates = beginningCoordinates;
+            waypoints.push(waypoint);
+
+
+            let ll = new LatLong(runway.latitude, runway.longitude);
+//                console.log(runway.latitude + "," + runway.longitude);
+//            var waypoint = new WayPoint(this.gps);
+//            waypoint.SetICAO("U TEST");
+//            waypoint.infos.coordinates = ll;
+//            waypoints.push(waypoint);
+//            waypoints.push(this.icaoSearchField.getWaypoint());
+
+//            waypoint = new WayPoint(this.gps);
+//            waypoint.infos.coordinates = runway.endCoordinates;
+//            waypoints.push(waypoint);
+            // Must be done 2 times in order to avaoid a small bug when changing airport
+            // I don't know why
+            this.mapElement.updateMap(waypoints, infos.coordinates);
+            this.mapElement.updateMap(waypoints, infos.coordinates);
+            this.selectionChanged = false;
+        }
+        if(!runway)
+            this.mapElement.updateMap([]);
     }
     onExit() {
         if(this.mapElement)
@@ -1883,10 +1946,13 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
     }
     searchField_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
-            this.selectedRunway = 0;
+            this.selectedRunway = -1;
+            this.selectionChanged = true;
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
             this.icaoSearchField.StartSearch(function () {
                 this.icaoSearchField.getWaypoint().UpdateApproaches();
+                this.selectedRunway = 0;
+                this.selectionChanged = true;
             }.bind(this));
             this.gps.SwitchToInteractionState(3);
         }
@@ -1900,6 +1966,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
                     this.selectedRunway = _index;
                     this.gps.SwitchToInteractionState(1);
                     this.gps.cursorIndex = 1;
+                    this.selectionChanged = true;
                 };
                 for (var i = 0; i < infos.runways.length; i++) {
                     menu.elements.push(new ContextualMenuElement(this.getRunwayDesignation(infos.runways[i]), callback.bind(this, i)));
@@ -1909,7 +1976,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             }
         }
     }
-    getRunwayDesignation(runway){
+    getRunwayDesignation(runway, index = -1) {
         let designations = runway.designation.split("-");
         let r1 = designations[0];
         let r2 = designations[1];
@@ -1927,6 +1994,10 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             r2 += "R";
         if (cs === 3)
             r2 += "C";
+        if(index == 0)
+            return r1;
+        if(index == 1)
+            return r2;
         return r1 + "-" + r2;
     }
 }
@@ -2161,33 +2232,43 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         }
     }
     updateMap(infos) {
-        let approach = this.getSelectedApproach(infos);
-        if(approach && this.selectionChanged){
+        if(this.selectionChanged){
+            let approach = this.getSelectedApproach(infos);
             var waypoints = [];
-            var i = 0;
-            if(this.selectedTransition >= 0) {
-                let wps = approach.transitions[this.selectedTransition].waypoints;
-                for(var i=0; i<wps.length; i++) {
-                    if(wps[i].icao && wps[i].icao[0] != 'R' && wps[i].infos.coordinates){
-                        if(i==0 || wps[i].icao != wps[i-1].icao)
-                            waypoints.push(wps[i]);
+            if(approach){
+                var i = 0;
+                if(this.selectedTransition >= 0) {
+                    let wps = approach.transitions[this.selectedTransition].waypoints;
+                    for(var i=0; i<wps.length; i++) {
+                        if(wps[i].icao && wps[i].icao[0] != 'R' && wps[i].infos.coordinates){
+                            if(i==0 || wps[i].icao != wps[i-1].icao)
+                                waypoints.push(wps[i]);
+                        }
+                    }
+                }
+                for(var i=0; i<approach.wayPoints.length; i++) {
+                    if(approach.wayPoints[i].icao && approach.wayPoints[i].icao[0] != 'R' && approach.wayPoints[i].infos.coordinates){
+                        if(i>0 && approach.wayPoints[i].icao != approach.wayPoints[i-1].icao)
+                            waypoints.push(approach.wayPoints[i]);
                     }
                 }
             }
-            for(var i=0; i<approach.wayPoints.length; i++) {
-                if(approach.wayPoints[i].icao && approach.wayPoints[i].icao[0] != 'R' && approach.wayPoints[i].infos.coordinates){
-                    if(i>0 && approach.wayPoints[i].icao != approach.wayPoints[i-1].icao)
-                        waypoints.push(approach.wayPoints[i]);
-                }
-            }
             // Add the airport
-            waypoints.push(this.icaoSearchField.getWaypoint());
-
-            this.mapElement.updateMap(waypoints, infos.coordinates);
+            let distance = -1;
+            if(this.icaoSearchField.getWaypoint()){
+                // If no waypoints, add the current airport 2 times for it to be displayed
+                if(!waypoints.length){
+                    waypoints.push(this.icaoSearchField.getWaypoint());
+                    distance = 10;
+                }
+                waypoints.push(this.icaoSearchField.getWaypoint());
+            }
+            // Must be done 2 times in order to avoid a small bug when changing airport
+            // I don't know why
+            this.mapElement.updateMap(waypoints, infos.coordinates, distance);
+            this.mapElement.updateMap(waypoints, infos.coordinates, distance);
             this.selectionChanged = false;
         }
-        if(!approach)
-            this.mapElement.updateMap([]);
     }
     onExit() {
         if(this.mapElement)
@@ -2287,8 +2368,16 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
             this.selectedApproach = -1;
             this.selectedTransition = -1;
+            this.mapElement.updateMap([]);
             this.icaoSearchField.StartSearch(function () {
                 this.icaoSearchField.getWaypoint().UpdateApproaches();
+                var infos = this.icaoSearchField.getUpdatedInfos();
+                if(infos.approaches.length) {
+                    this.selectedApproach = 0;
+                    if(infos.approaches[0].transitions.length)
+                        this.selectedTransition = 0;
+                }
+              this.selectionChanged = true;
             }.bind(this));
             this.gps.SwitchToInteractionState(3);
         }

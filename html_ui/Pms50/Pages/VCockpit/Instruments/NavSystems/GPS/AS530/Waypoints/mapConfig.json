@@ -1,7 +1,7 @@
 ﻿{
   "waypointLabelFontSize": 55,
   "waypointLabelFontFamily": "Consolas",
-  "waypointLabelColor": "black",
+  "waypointLabelColor": "white",
   "waypointLabelStrokeColor": "#black",
   "waypointLabelStrokeWidth": 10,
   "waypointLabelUseBackground": true,
