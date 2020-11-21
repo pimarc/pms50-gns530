@@ -18,13 +18,13 @@ First release features:
 
 # Change log
 ## V 1.0.12
-- wind indicator in map page not displayed at the correct place when data was displayed
+- Wind indicator in map page not displayed at the correct place when data was displayed
 - Pushing ENT button on selected FPL waypoint displays the corresponding waypoint page
 - Coordinates displayed with leading and trailing zeros
 - While in direct To mode, another direct To target can be selected from FPL
 - Waypoint selection: the CLR button displays the previous value
-- Added Maps of approaches, STARs, SIDs and runways
-- Waypoint pages more conform to original GNS530
+- Added Maps for approaches, STARs, SIDs and runways
+- Waypoint pages rebuilt
 ## V 1.0.11
 - Better management of direct to an approach WP (manual approach reactivation not needed any more)
 - Correcting some flight plan distances
@@ -34,7 +34,7 @@ First release features:
 - Adding wind indicator
 - Correcting some flight plan distances
 ## V 1.0.9
-- Adding VNAV page (experimental)
+- Adding VNAV page
 - Adding night/day lighting in default NAV page menu
 - Dynamic flight plan page
 - DirectTo map leg larger
