@@ -628,36 +628,44 @@ as430-element {
         as430-element #Electricity #TopDisplay #GpsPart #Procedures [state="Inactive"], #Electricity #TopDisplay #GpsPart #Procedures [state="Greyed"] {
           color: grey; }
 /*PM Modif: End The greyed status was missing for procedure menu*/
-as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection {
+        as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection {
           position: absolute;
           top: 0%;
           width: 100%;
           height: 100%;
           display: none;
           background-color: #1c2878; }
-          as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection[state=Active] {
+          as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection[state=Active], as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection[state=Active], as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection[state=Active] {
             display: block; }
-          as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .topLine {
+          as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .topLine, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .topLine, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .topLine {
             position: absolute;
-            top: 0%;
+            top: 1%;
+            left: 2%;
             width: 100%;
             height: 14%; }
-            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .topLine #Approach_AirportLogo {
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .topLine #Approach_AirportLogo, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .topLine #Arrival_AirportLogo, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .topLine #Departure_AirportLogo {
               height: 8vh; }
-          as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .map {
-            position: absolute;
-            top: 15%;
-            left: 1%;
-            bottom: 1%;
-            right: 40%;
-            background-color: black;
-            border: 1vh solid #6ecdee; }
-          as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .RightPart {
-            position: absolute;
-            top: 15%;
-            right: 1%;
-            left: 61%; }
-          as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu {
+              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection #Approach_APTInfos, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection #Arrival_APTInfos, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection #Departure_APTInfos {
+              width: 60%;}
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection #ApproachSelectionMap, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection #ArrivalSelectionMap, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection #DepartureSelectionMap {
+              position: absolute;
+              top: 16%;
+              left: 1%;
+              bottom: 1%;
+              width: 73%;
+              background-color: black;
+              border: 1px solid #6ecdee; }
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .RightPart, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .RightPart, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .RightPart {
+              position: absolute;
+              top: 15%;
+              height: 100%;
+              width: 24%;
+              right: 2%; }
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .RightPart #Approach_Approach, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .RightPart #Arrival_Arrival, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .RightPart #Departure_Departure {
+              margin-bottom: 2vh;}
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .RightPart #Approach_Transition, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .RightPart #Arrival_Transition, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .RightPart #Departure_Transition {
+              margin-bottom: 2vh;}
+          as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu {
             position: absolute;
             top: 10vh;
             left: 30vh;
@@ -667,177 +675,35 @@ as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection {
             color: white;
             text-align: left;
             padding-left: 2vh; }
-            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SelectableWhite {
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SelectableWhite, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SelectableWhite, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SelectableWhite {
               color: white; }
-              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SelectableWhite[state=Selected] {
+              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SelectableWhite[state=Selected], as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SelectableWhite[state=Selected], as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SelectableWhite[state=Selected] {
                 color: #1c2878;
                 background-color: white; }
-            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .title {
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .title, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .title, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .title {
               color: #6ecdee;
               border-bottom: 1vh solid black; }
-            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu[state=Active] {
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu[state=Active], as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu[state=Active], as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu[state=Active] {
               visibility: inherit; }
-            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu[state=Inactive] {
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu[state=Inactive], as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu[state=Inactive], as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu[state=Inactive] {
               visibility: hidden; }
-            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .InnerBorder {
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .InnerBorder, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .InnerBorder, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .InnerBorder {
               border: 2vh outset #1c2878; }
-            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SliderContainer {
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .SliderContainer, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SliderContainer, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SliderContainer {
               width: 100%;
               border-top: 1vh solid #6ecdee; }
-            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .Slider {
+            as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .Slider, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .Slider, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .Slider {
               position: absolute;
               right: calc(1.5789473684vh);
               top: 5%;
               border: calc(0.5263157895vh) solid #6ecdee;
               height: 90%;
               width: calc(1.1428571429vw); }
-              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .Slider[state=Active] {
+              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .Slider[state=Active], as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .Slider[state=Active], as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .Slider[state=Active] {
                 visibility: inherit; }
-              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .Slider[state=Inactive] {
+              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .Slider[state=Inactive], as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .Slider[state=Inactive], as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .Slider[state=Inactive] {
                 visibility: hidden; }
-              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .Slider .SliderCursor {
-                position: absolute;
-                width: 100%;
-                background-color: #6ecdee; }
-        as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection {
-          position: absolute;
-          top: 0%;
-          width: 100%;
-          height: 100%;
-          display: none;
-          background-color: #1c2878; }
-          as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection[state=Active] {
-            display: block; }
-          as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .topLine {
-            position: absolute;
-            top: 0%;
-            width: 100%;
-            height: 14%; }
-            as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .topLine #Arrival_AirportLogo {
-              height: 8vh; }
-          as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .map {
-            position: absolute;
-            top: 15%;
-            left: 1%;
-            bottom: 1%;
-            right: 40%;
-            background-color: black;
-            border: 1vh solid #6ecdee; }
-          as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .RightPart {
-            position: absolute;
-            top: 15%;
-            right: 1%;
-            left: 61%; }
-          as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu {
-            position: absolute;
-            top: 10vh;
-            left: 30vh;
-            right: 30vh;
-            background-color: #1c2878;
-            border: 1vh solid white;
-            color: white;
-            text-align: left;
-            padding-left: 2vh; }
-            as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SelectableWhite {
-              color: white; }
-              as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SelectableWhite[state=Selected] {
-                color: #1c2878;
-                background-color: white; }
-            as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .title {
-              color: #6ecdee;
-              border-bottom: 1vh solid black; }
-            as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu[state=Active] {
-              visibility: inherit; }
-            as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu[state=Inactive] {
-              visibility: hidden; }
-            as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .InnerBorder {
-              border: 2vh outset #1c2878; }
-            as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .SliderContainer {
-              width: 100%;
-              border-top: 1vh solid #6ecdee; }
-            as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .Slider {
-              position: absolute;
-              right: calc(1.5789473684vh);
-              top: 5%;
-              border: calc(0.5263157895vh) solid #6ecdee;
-              height: 90%;
-              width: calc(1.1428571429vw); }
-              as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .Slider[state=Active] {
-                visibility: inherit; }
-              as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .Slider[state=Inactive] {
-                visibility: hidden; }
-              as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .Slider .SliderCursor {
-                position: absolute;
-                width: 100%;
-                background-color: #6ecdee; }
-        as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection {
-          position: absolute;
-          top: 0%;
-          width: 100%;
-          height: 100%;
-          display: none;
-          background-color: #1c2878; }
-          as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection[state=Active] {
-            display: block; }
-          as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .topLine {
-            position: absolute;
-            top: 0%;
-            width: 100%;
-            height: 14%; }
-            as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .topLine #Departure_AirportLogo {
-              height: 8vh; }
-          as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .map {
-            position: absolute;
-            top: 15%;
-            left: 1%;
-            bottom: 1%;
-            right: 40%;
-            background-color: black;
-            border: 1vh solid #6ecdee; }
-          as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .RightPart {
-            position: absolute;
-            top: 15%;
-            right: 1%;
-            left: 61%; }
-          as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu {
-            position: absolute;
-            top: 10vh;
-            left: 30vh;
-            right: 30vh;
-            background-color: #1c2878;
-            border: 1vh solid white;
-            color: white;
-            text-align: left;
-            padding-left: 2vh; }
-            as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SelectableWhite {
-              color: white; }
-              as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SelectableWhite[state=Selected] {
-                color: #1c2878;
-                background-color: white; }
-            as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .title {
-              color: #6ecdee;
-              border-bottom: 1vh solid black; }
-            as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu[state=Active] {
-              visibility: inherit; }
-            as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu[state=Inactive] {
-              visibility: hidden; }
-            as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .InnerBorder {
-              border: 2vh outset #1c2878; }
-            as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .SliderContainer {
-              width: 100%;
-              border-top: 1vh solid #6ecdee; }
-            as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .Slider {
-              position: absolute;
-              right: calc(1.5789473684vh);
-              top: 5%;
-              border: calc(0.5263157895vh) solid #6ecdee;
-              height: 90%;
-              width: calc(1.1428571429vw); }
-              as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .Slider[state=Active] {
-                visibility: inherit; }
-              as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .Slider[state=Inactive] {
-                visibility: hidden; }
-              as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .Slider .SliderCursor {
+              as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection .SubMenu .Slider .SliderCursor, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection .SubMenu .Slider .SliderCursor, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection .SubMenu .Slider .SliderCursor {
                 position: absolute;
                 width: 100%;
                 background-color: #6ecdee; }

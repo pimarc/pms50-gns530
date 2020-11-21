@@ -2311,12 +2311,6 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
     }
     loadApproachIntoFPL() {
 //PM Modif: Load approach from airport
-//Auto activation
-//        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachAirport", "string", this.icaoSearchField.getUpdatedInfos().icao);
-//        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachApproach", "number", this.selectedApproach);
-//        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachTransition", "number", this.selectedTransition);
-//        SimVar.SetSimVarValue("C:fs9gps:FlightPlanLoadApproach", "number", 1);
-//        this.gps.currFlightPlan.FillWithCurrentFP();
 
         // Do load approach
         let infos = this.icaoSearchField.getUpdatedInfos();
@@ -2345,13 +2339,6 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
     
     loadApproachAndActivate() {
 //PM Modif: Activate approach from airport
-//Auto activation and U-turn bug
-
-//        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachAirport", "string", this.icaoSearchField.getUpdatedInfos().icao);
-//        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachApproach", "number", this.selectedApproach);
-//        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachTransition", "number", this.selectedTransition);
-//        SimVar.SetSimVarValue("C:fs9gps:FlightPlanLoadApproach", "number", 2);
-//        this.gps.currFlightPlan.FillWithCurrentFP();
 
         // Do activate approach
         let infos = this.icaoSearchField.getUpdatedInfos();
@@ -5369,16 +5356,79 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
             new SelectableElement(this.gps, this.transitionList.getElementsByClassName("L6")[0], this.transition_CB.bind(this)),
         ], this.transitionList.getElementsByClassName("Slider")[0], this.transitionList.getElementsByClassName("SliderCursor")[0]);
         this.transitionSelectables = [this.transitionSelectionGroup];
+        this._t = 0;
     }
 // PM Modif: Let cursor to load if no approachs
     onEnter(){
         super.onEnter();
+        this._t = 0;
+        this.mapContainer = this.gps.getChildById("ApproachSelectionMap");
+        this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
+        if(this.mapElement)
+            this.mapElement.onEnter(this.mapContainer, 7);
+
         this.gps.cursorIndex = 0;
         let infos = this.icaoSearchField.getUpdatedInfos();
         if ((infos == null) || (infos.icao == "") || (!infos.approaches.length)) {
             this.gps.cursorIndex = 2;
         }
     }
+
+    getSelectedApproach(airport) {
+        if (airport && airport.approaches && this.selectedApproach >= 0 && this.selectedApproach < airport.approaches.length) {
+            return airport.approaches[this.selectedApproach];
+        }
+        return null;
+    }
+    
+    onUpdate(_deltaTime) {
+        this._t++;
+        if(this._t < 5)
+            return;
+        this._t = 0;
+        super.onUpdate(_deltaTime);
+        this.icaoSearchField.Update();
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if (infos && infos.icao) {
+            this.updateMap(infos);
+        }
+    }
+    updateMap(infos) {
+        if(this.icaoSearchField.isActive)
+            return;
+        let approach = this.getSelectedApproach(infos);
+        var waypoints = [];
+        if(approach){
+            var i = 0;
+            if(this.selectedTransition >= 0) {
+                let wps = approach.transitions[this.selectedTransition].waypoints;
+                for(var i=0; i<wps.length; i++) {
+                    if(wps[i].icao && wps[i].icao[0] != 'R' && wps[i].infos.coordinates){
+                        if(i==0 || wps[i].icao != wps[i-1].icao)
+                            waypoints.push(wps[i]);
+                    }
+                }
+            }
+            for(var i=0; i<approach.wayPoints.length; i++) {
+                if(approach.wayPoints[i].icao && approach.wayPoints[i].icao[0] != 'R' && approach.wayPoints[i].infos.coordinates){
+                    if(i>0 && approach.wayPoints[i].icao != approach.wayPoints[i-1].icao)
+                        waypoints.push(approach.wayPoints[i]);
+                }
+            }
+        }
+        // Add the airport
+        let distance = -1;
+        if(this.icaoSearchField.getWaypoint()){
+            // If no waypoints, add the current airport 2 times for it to be displayed
+            if(!waypoints.length){
+                waypoints.push(this.icaoSearchField.getWaypoint());
+                distance = 10;
+            }
+            waypoints.push(this.icaoSearchField.getWaypoint());
+        }
+        this.mapElement.updateMap(waypoints, infos.coordinates, distance);
+    }
+
 // PM Modif: End Let cursor to load if no approachs
 // PM Modif: Activate and load approach modification
 // Auto activation and U-turn bug
@@ -5538,6 +5588,91 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
         ], this.transitionList.getElementsByClassName("Slider")[0], this.transitionList.getElementsByClassName("SliderCursor")[0]);
         this.transitionSelectables = [this.transitionSelectionGroup];
     }
+    onEnter(){
+        super.onEnter();
+        this._t = 0;
+        this.mapContainer = this.gps.getChildById("ArrivalSelectionMap");
+        this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
+        if(this.mapElement)
+            this.mapElement.onEnter(this.mapContainer, 7);
+    }
+    getSelectedArrival(airport) {
+        if (airport && airport.arrivals && this.selectedArrival >= 0 && this.selectedArrival < airport.arrivals.length) {
+            return airport.arrivals[this.selectedArrival];
+        }
+        return null;
+    }
+    onUpdate(_deltaTime) {
+        this._t++;
+        if(this._t < 5)
+            return;
+        this._t = 0;
+        super.onUpdate(_deltaTime);
+        this.icaoSearchField.Update();
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if (infos && infos.icao) {
+            this.updateMap(infos);
+        }
+    }
+    updateMap(infos) {
+        if(this.icaoSearchField.isActive)
+            return;
+        let arrival = this.getSelectedArrival(infos);
+        var waypoints = [];
+        if(arrival){
+            if(this.selectedTransition >= 0) {
+                let enRouteTransition = arrival.enRouteTransitions[this.selectedRunway];
+                if (enRouteTransition && enRouteTransition.legs) {
+                    for (let i = 0; i < enRouteTransition.legs.length; i++) {
+                        let wp = new WayPoint(this.gps);
+                        wp.icao = enRouteTransition.legs[i].fixIcao;
+                        wp.ident = wp.icao.substr(7);
+                        if(wp.icao.replace(/\s+/g, '').length){
+                            wp.UpdateInfos();
+                            waypoints.push(wp);
+                        }
+                    }
+                }
+            }
+            if (arrival.commonLegs) {
+                for (let i = 0; i < arrival.commonLegs.length; i++) {
+                    let wp = new WayPoint(this.gps);
+                    wp.icao = arrival.commonLegs[i].fixIcao;
+                    wp.ident = wp.icao.substr(7);
+                    if(wp.icao.replace(/\s+/g, '').length){
+                        wp.UpdateInfos();
+                        waypoints.push(wp);
+                    }
+            }
+            }
+            if(this.selectedRunway >= 0) {
+                let runwayTransition = arrival.runwayTransitions[this.selectedRunway];
+                if (runwayTransition && runwayTransition.legs) {
+                    for (let i = 0; i < runwayTransition.legs.length; i++) {
+                        let wp = new WayPoint(this.gps);
+                        wp.icao = runwayTransition.legs[i].fixIcao;
+                        wp.ident = wp.icao.substr(7);
+                        if(wp.icao.replace(/\s+/g, '').length){
+                            wp.UpdateInfos();
+                            waypoints.push(wp);
+                        }
+                    }
+                }
+            }
+        }
+        // Add the airport
+        let distance = -1;
+        if(this.icaoSearchField.getWaypoint()){
+            // If no waypoints, add the current airport 2 times for it to be displayed
+            if(!waypoints.length){
+                waypoints.push(this.icaoSearchField.getWaypoint());
+                distance = 10;
+            }
+            waypoints.push(this.icaoSearchField.getWaypoint());
+        }
+        this.mapElement.updateMap(waypoints, infos.coordinates, distance, false);
+    }
+    
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "DRCT_Push"
@@ -5660,6 +5795,7 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
         }
     }
 }
+
 class GPS_DepartureSelection extends MFD_DepartureSelection {
     init(root) {
         super.init(root);
@@ -5691,6 +5827,91 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
         ], this.transitionList.getElementsByClassName("Slider")[0], this.transitionList.getElementsByClassName("SliderCursor")[0]);
         this.transitionSelectables = [this.transitionSelectionGroup];
     }
+    onEnter(){
+        super.onEnter();
+        this._t = 0;
+        this.mapContainer = this.gps.getChildById("DepartureSelectionMap");
+        this.mapElement = this.gps.getElementOfType(GPS_WaypointMap);
+        if(this.mapElement)
+            this.mapElement.onEnter(this.mapContainer, 7);
+    }
+    getSelectedDeparture(airport) {
+        if (airport && airport.departures && this.selectedDeparture >= 0 && this.selectedDeparture < airport.departures.length) {
+            return airport.departures[this.selectedDeparture];
+        }
+        return null;
+    }
+    onUpdate(_deltaTime) {
+        this._t++;
+        if(this._t < 5)
+            return;
+        this._t = 0;
+        super.onUpdate(_deltaTime);
+        this.icaoSearchField.Update();
+        var infos = this.icaoSearchField.getUpdatedInfos();
+        if (infos && infos.icao) {
+            this.updateMap(infos);
+        }
+    }
+    updateMap(infos) {
+        if(this.icaoSearchField.isActive)
+            return;
+        let departure = this.getSelectedDeparture(infos);
+        var waypoints = [];
+        if(departure){
+            if(this.selectedRunway >= 0) {
+                let runwayTransition = departure.runwayTransitions[this.selectedRunway];
+                if (runwayTransition && runwayTransition.legs) {
+                    for (let i = 0; i < runwayTransition.legs.length; i++) {
+                        let wp = new WayPoint(this.gps);
+                        wp.icao = runwayTransition.legs[i].fixIcao;
+                        wp.ident = wp.icao.substr(7);
+                        if(wp.icao.replace(/\s+/g, '').length){
+                            wp.UpdateInfos();
+                            waypoints.push(wp);
+                        }
+                    }
+                }
+            }
+            if (departure.commonLegs) {
+                for (let i = 0; i < departure.commonLegs.length; i++) {
+                    let wp = new WayPoint(this.gps);
+                    wp.icao = departure.commonLegs[i].fixIcao;
+                    wp.ident = wp.icao.substr(7);
+                    if(wp.icao.replace(/\s+/g, '').length){
+                        wp.UpdateInfos();
+                        waypoints.push(wp);
+                    }
+            }
+            }
+            if(this.selectedTransition >= 0) {
+                let enRouteTransition = departure.enRouteTransitions[this.selectedRunway];
+                if (enRouteTransition && enRouteTransition.legs) {
+                    for (let i = 0; i < enRouteTransition.legs.length; i++) {
+                        let wp = new WayPoint(this.gps);
+                        wp.icao = enRouteTransition.legs[i].fixIcao;
+                        wp.ident = wp.icao.substr(7);
+                        if(wp.icao.replace(/\s+/g, '').length){
+                            wp.UpdateInfos();
+                            waypoints.push(wp);
+                        }
+                    }
+                }
+            }
+        }
+        // Add the airport
+        let distance = -1;
+        if(this.icaoSearchField.getWaypoint()){
+            // If no waypoints, add the current airport 2 times for it to be displayed
+            if(!waypoints.length){
+                waypoints.unshift(this.icaoSearchField.getWaypoint());
+                distance = 10;
+            }
+            waypoints.unshift(this.icaoSearchField.getWaypoint());
+        }
+        this.mapElement.updateMap(waypoints, infos.coordinates, distance);
+    }
+
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "DRCT_Push"
@@ -5768,12 +5989,6 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
                 }
             }
         }
-    }
-    getSelectedDeparture(airport) {
-        if (airport && airport.departures && this.selectedDeparture >= 0 && this.selectedDeparture < airport.departures.length) {
-            return airport.departures[this.selectedDeparture];
-        }
-        return null;
     }
     openRunwaysList(_event) {
         if (_event == "ENT_Push" || _event == "NavigationSmallInc" || _event == "NavigationSmallDec") {
