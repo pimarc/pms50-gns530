@@ -8,6 +8,10 @@ class SearchFieldWaypointICAO {
         this.elements = _elements;
         this.container = _container;
         this.wayPoint = new WayPoint(_instrument);
+//PM Modif: Reset on CLR
+        this.initialWaypoint = null;
+        this.initialWpType = null;
+//PM Modif: End Reset on CLR
         this.wayPoint.type = null;
         this.wpType = _wpType;
         this.batch = new SimVar.SimVarBatch("C:fs9gps:IcaoSearchMatchedIcaosNumber", "C:fs9gps:IcaoSearchMatchedIcao");
@@ -94,16 +98,22 @@ class SearchFieldWaypointICAO {
             }
         });
     }
+//PM Modif: Reset on CLR
     StartSearch(_callback = null) {
         this.isActive = true;
+        this.initialWaypoint = null;
         if (this.wayPoint) {
+            this.initialWaypoint = this.wayPoint;
             SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.wayPoint.GetInfos().icao, this.instrument.instrumentIdentifier);
         }
+        this.initialWpType = null;
         if (this.wpType) {
+            this.initialWpType = this.wpType;
             SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", this.wpType, this.instrument.instrumentIdentifier);
         }
         this.endCallback = _callback;
     }
+//PM Modif: End Reset on CLR
     onInteractionEvent(_args) {
         switch (_args[0]) {
             case "NavigationLargeInc":
@@ -118,10 +128,13 @@ class SearchFieldWaypointICAO {
             case "NavigationSmallDec":
                 this.AdvanceCharacterPrevious();
                 break;
+            case "CLR_Push":
+                this.Reset();
+                break;
             case "ENT_Push":
                 this.Validate();
                 break;
-        }
+            }
     }
     AdvanceCursorRight() {
         SimVar.SetSimVarValue("C:fs9gps:IcaoSearchAdvanceCursor", "number", 1, this.instrument.instrumentIdentifier);
@@ -135,7 +148,19 @@ class SearchFieldWaypointICAO {
     AdvanceCharacterPrevious() {
         SimVar.SetSimVarValue("C:fs9gps:IcaoSearchAdvanceCharacter", "number", -1, this.instrument.instrumentIdentifier);
     }
-    Validate() {
+//PM Modif: Reset on CLR
+    Reset() {
+        if(this.initialWaypoint){
+            this.SetWaypoint(this.initialWpTyp, this.initialWaypoint.icao);
+            this.lastIcao = this.wayPoint.infos.icao;
+        }
+        this.container.OnSearchFieldEndEditing();
+        if (this.endCallback) {
+            this.endCallback();
+        }
+    }
+//PM Modif: End Reset on CLR
+    Validate(reset = false) {
         this.instrument.facilityLoader.getFacilityCB(SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", this.instrument.instrumentIdentifier), (waypoint) => {
             if (waypoint) {
                 this.wayPoint = waypoint;

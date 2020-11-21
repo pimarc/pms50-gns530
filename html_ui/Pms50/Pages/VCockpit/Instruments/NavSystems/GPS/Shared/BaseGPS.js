@@ -1607,11 +1607,13 @@ class GPS_WaypointMap extends MapInstrumentElement {
         super.onEvent(_event);
     }
 
-    updateMap(waypoints, initial_coordinates, forceDistance = -1) {
+    updateMap(waypoints, initial_coordinates = null, forceDistance = -1, lastLeg = true) {
         this.numupdates++;
         let signature = "";
         this.instrument.flightPlanManager._waypoints[0] = waypoints;
         this.instrument.flightPlanManager._lastIndexBeforeApproach = waypoints.length;
+        if(!lastLeg && waypoints.length >= 2)
+            this.instrument.flightPlanManager._lastIndexBeforeApproach = waypoints.length - 1;
 
         for(var i=0; i< waypoints.length; i++)
             signature += waypoints[i].icao + ":";
@@ -1886,6 +1888,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         }
     }
     updateMap(infos) {
+        if(this.icaoSearchField.isActive)
+            return;
         let runway = null;
         if(this.selectedRunway >= 0)
             runway = infos.runways[this.selectedRunway];
@@ -1895,21 +1899,22 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             let runwayNumber = parseInt(runway.designation[0]);
             let direction =  runway.direction;
             let delta = Math.abs(runwayNumber * 10 - direction);
+            let permuted = false;
             if (delta >= 30) {
                 direction += 180;
                 if (direction >= 360) {
                     direction -= 360;
                 }
-            }
-            while (delta >= 360) {
-                delta -= 360;
+                permuted = true;
             }
             let beginningCoordinates = Avionics.Utils.bearingDistanceToCoordinates(direction - 180, runway.length / 1852 * 0.5, runway.latitude, runway.longitude);
             let endCoordinates = Avionics.Utils.bearingDistanceToCoordinates(direction, runway.length / 1852 * 0.5, runway.latitude, runway.longitude);
             var waypoint = new WayPoint(this.gps);
             waypoint.infos = new WayPointInfo(this.gps);
             waypoint.infos.name = "User-Defined";
-            waypoint.ident = this.getRunwayDesignation(runway, 0);
+            waypoint.ident = this.getRunwayDesignation(runway, 1);
+            if(permuted)
+                waypoint.ident = this.getRunwayDesignation(runway, 0);
             waypoint.icao = waypoint.ident;
             waypoint.infos.ident = waypoint.ident;
             waypoint.infos.coordinates = endCoordinates;
@@ -1918,15 +1923,21 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             waypoint = new WayPoint(this.gps);
             waypoint.infos = new WayPointInfo(this.gps);
             waypoint.infos.name = "User-Defined";
-            waypoint.ident = this.getRunwayDesignation(runway, 1);
+            waypoint.ident = this.getRunwayDesignation(runway, 0);
+            if(permuted)
+                waypoint.ident = this.getRunwayDesignation(runway, 1);
             waypoint.icao = waypoint.ident;
             waypoint.infos.ident = waypoint.ident;
             waypoint.infos.coordinates = beginningCoordinates;
             waypoints.push(waypoint);
 
-
             let ll = new LatLong(runway.latitude, runway.longitude);
-            this.mapElement.updateMap(waypoints, infos.coordinates);
+
+            // Add the airport but no leg to it
+            if(this.icaoSearchField.getWaypoint()){
+                waypoints.push(this.icaoSearchField.getWaypoint());
+            }
+            this.mapElement.updateMap(waypoints, infos.coordinates, -1, false);
         }
         if(!runway)
             this.mapElement.updateMap([]);
@@ -1952,6 +1963,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
     searchField_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
             this.selectedRunway = -1;
+            this.mapElement.updateMap([]);
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
             this.icaoSearchField.StartSearch(function () {
                 this.icaoSearchField.getWaypoint().UpdateApproaches();
@@ -2236,6 +2248,8 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         }
     }
     updateMap(infos) {
+        if(this.icaoSearchField.isActive)
+            return;
         let approach = this.getSelectedApproach(infos);
         var waypoints = [];
         if(approach){
@@ -2559,6 +2573,8 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
         }
     }
     updateMap(infos) {
+        if(this.icaoSearchField.isActive)
+            return;
         let arrival = this.getSelectedArrival(infos);
         var waypoints = [];
         if(arrival){
@@ -2586,18 +2602,12 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
             if(this.selectedRunway >= 0) {
                 let runwayTransition = arrival.runwayTransitions[this.selectedRunway];
                 if (runwayTransition && runwayTransition.legs) {
-                    let numupdated = 0;
                     for (let i = 0; i < runwayTransition.legs.length; i++) {
                         let wp = new WayPoint(this.gps);
                         wp.icao = runwayTransition.legs[i].fixIcao;
                         wp.ident = wp.icao.substr(7);
                         wp.UpdateInfos();
                         waypoints.push(wp);
-//                            this.updateWaypoint(wp, waypoints);
-//                           wp.UpdateInfos(() => {
-//                                waypoints.push(wp);
-//                                numupdated++;
-//                            });
                     }
                 }
             }
@@ -2612,9 +2622,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
             }
             waypoints.push(this.icaoSearchField.getWaypoint());
         }
-        // Must be done 2 times in order to avoid a small bug when changing airport
-        // I don't know why
-        this.mapElement.updateMap(waypoints, infos.coordinates, distance);
+        this.mapElement.updateMap(waypoints, infos.coordinates, distance, false);
     }
       
     onExit() {
@@ -2696,13 +2704,9 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
                     this.selectedArrival = _index;
                     this.selectedTransition = 0;
                     this.selectedRunway = 0;
+                    // Stay on arrival list
                     this.gps.SwitchToInteractionState(1);
-                    if(infos.arrivals[_index].enRouteTransitions.length)
-                        this.gps.cursorIndex = 2;
-                    else if(infos.arrivals[_index].runwayTransitions.length)
-                        this.gps.cursorIndex = 3;
-                    else
-                        this.gps.cursorIndex = 1;
+                    this.gps.cursorIndex = 1;
                 };
                 for (var i = 0; i < infos.arrivals.length; i++) {
                     menu.elements.push(new ContextualMenuElement(infos.arrivals[i].name, callback.bind(this, i)));
@@ -2743,7 +2747,8 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
                 var menu = new ContextualMenu("RUNWAY", []);
                 var callback = function (_index) {
                     this.selectedRunway = _index;
-                    this.gps.SwitchToInteractionState(0);
+                    this.gps.SwitchToInteractionState(1);
+                    this.gps.cursorIndex = 3;
                 };
                 let arrival = this.getSelectedArrival(infos);
                 if (arrival) {
