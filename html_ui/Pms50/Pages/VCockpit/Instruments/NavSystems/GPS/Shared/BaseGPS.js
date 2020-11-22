@@ -1745,10 +1745,6 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao && infos instanceof AirportInfo) {
-            var size = infos.GetSize();
-            var nmPixelSize = Math.min(130 / size.x, 110 / size.y);
-//            var context = this.mapElement.getContext("2d");
-//            context.clearRect(0, 0, 200, 200);
 //PM Modif: Directly get image file name instead of get symbol
             var logo = infos.imageFileName();
             if (logo != "") {
@@ -1938,10 +1934,12 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             if(this.icaoSearchField.getWaypoint()){
                 waypoints.push(this.icaoSearchField.getWaypoint());
             }
-            this.mapElement.updateMap(waypoints, infos.coordinates, -1, false);
+            if(this.mapElement)
+                this.mapElement.updateMap(waypoints, infos.coordinates, -1, false);
         }
         if(!runway)
-            this.mapElement.updateMap([]);
+            if(this.mapElement)
+                this.mapElement.updateMap([]);
     }
     onExit() {
         if(this.mapElement)
@@ -1964,7 +1962,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
     searchField_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
             this.selectedRunway = -1;
-            this.mapElement.updateMap([]);
+            if(this.mapElement)
+                this.mapElement.updateMap([]);
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
             this.icaoSearchField.StartSearch(function () {
                 this.icaoSearchField.getWaypoint().UpdateApproaches();
@@ -2282,7 +2281,8 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
             }
             waypoints.push(this.icaoSearchField.getWaypoint());
         }
-        this.mapElement.updateMap(waypoints, infos.coordinates, distance);
+        if(this.mapElement)
+            this.mapElement.updateMap(waypoints, infos.coordinates, distance);
     }
     onExit() {
         if(this.mapElement)
@@ -2369,7 +2369,8 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
             this.selectedApproach = -1;
             this.selectedTransition = -1;
-            this.mapElement.updateMap([]);
+            if(this.mapElement)
+                this.mapElement.updateMap([]);
             this.icaoSearchField.StartSearch(function () {
                 this.icaoSearchField.getWaypoint().UpdateApproaches();
                 var infos = this.icaoSearchField.getUpdatedInfos();
@@ -2624,10 +2625,13 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
             }
             waypoints.push(this.icaoSearchField.getWaypoint());
         }
-        this.mapElement.updateMap(waypoints, infos.coordinates, distance, false);
+        if(this.mapElement)
+            this.mapElement.updateMap(waypoints, infos.coordinates, distance, false);
     }
       
     onExit() {
+        if(this.mapElement)
+            this.mapElement.onExit();
         if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
@@ -2684,7 +2688,8 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
             this.selectedArrival = -1;
             this.selectedTransition = -1;
             this.selectedRunway = -1;
-            this.mapElement.updateMap([]);
+            if(this.mapElement)
+                this.mapElement.updateMap([]);
             this.icaoSearchField.StartSearch(function () {
                 var infos = this.icaoSearchField.getUpdatedInfos();
                 if(infos.arrivals.length) {
@@ -2966,10 +2971,13 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
             }
             waypoints.unshift(this.icaoSearchField.getWaypoint());
         }
-        this.mapElement.updateMap(waypoints, infos.coordinates, distance);
+        if(this.mapElement)
+            this.mapElement.updateMap(waypoints, infos.coordinates, distance);
     }
 
     onExit() {
+        if(this.mapElement)
+            this.mapElement.onExit();
         if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
@@ -5426,7 +5434,8 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
             }
             waypoints.push(this.icaoSearchField.getWaypoint());
         }
-        this.mapElement.updateMap(waypoints, infos.coordinates, distance);
+        if(this.mapElement)
+            this.mapElement.updateMap(waypoints, infos.coordinates, distance);
     }
 
 // PM Modif: End Let cursor to load if no approachs
@@ -5552,6 +5561,8 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
         }
     }
     onExit() {
+        if(this.mapElement)
+            this.mapElement.onExit();
         super.onExit();
         this.approachList.setAttribute("state", "Inactive");
         this.transitionList.setAttribute("state", "Inactive");
@@ -5670,7 +5681,8 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
             }
             waypoints.push(this.icaoSearchField.getWaypoint());
         }
-        this.mapElement.updateMap(waypoints, infos.coordinates, distance, false);
+        if(this.mapElement)
+            this.mapElement.updateMap(waypoints, infos.coordinates, distance, false);
     }
     
     onEvent(_event) {
@@ -5794,6 +5806,11 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
             }
         }
     }
+    onExit() {
+        if(this.mapElement)
+            this.mapElement.onExit();
+        super.onExit();
+    }
 }
 
 class GPS_DepartureSelection extends MFD_DepartureSelection {
@@ -5909,7 +5926,8 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
             }
             waypoints.unshift(this.icaoSearchField.getWaypoint());
         }
-        this.mapElement.updateMap(waypoints, infos.coordinates, distance);
+        if(this.mapElement)
+            this.mapElement.updateMap(waypoints, infos.coordinates, distance);
     }
 
     onEvent(_event) {
@@ -6027,6 +6045,11 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
                 }
             }
         }
+    }
+    onExit() {
+        if(this.mapElement)
+            this.mapElement.onExit();
+        super.onExit();
     }
 }
 

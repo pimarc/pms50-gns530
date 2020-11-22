@@ -6,12 +6,12 @@ class AS430 extends BaseGPS {
         this.menuMaxElems = 11;
         var defaultNav = new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7], "430");
         defaultNav.element.addElement(new MapInstrumentElement());
-        var mapNav = new GPS_MapNavPage(4, [16, 3, 4, 9]);
-        mapNav.element.addElement(new MapInstrumentElement());
+//        var mapNav = new GPS_MapNavPage(4, [16, 3, 4, 9]);
+//        mapNav.element.addElement(new MapInstrumentElement());
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
                 defaultNav,
-                mapNav,
+//                mapNav,
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav()),
                 new NavSystemPage("Position", "Position", new GPS_Position()),
             ]),
@@ -41,7 +41,7 @@ class AS430 extends BaseGPS {
         this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("430"))]));
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", new GPS_Messages())]));
-        this.addIndependentElementContainer(new NavSystemElementContainer("WaypointMap", "WaypointMap", new GPS_WaypointMap()));
+//        this.addIndependentElementContainer(new NavSystemElementContainer("WaypointMap", "WaypointMap", new GPS_WaypointMap()));
     }
 }
 

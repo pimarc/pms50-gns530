@@ -17,6 +17,8 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.13
+- Disabling maps in gns430 since the sim only accepts a total of 4 maps by aircraft and crashed if there are more.
 ## V 1.0.12
 - Wind indicator in map page not displayed at the correct place when data was displayed
 - Pushing ENT button on selected FPL waypoint displays the corresponding waypoint page
