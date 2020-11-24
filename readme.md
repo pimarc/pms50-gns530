@@ -17,6 +17,11 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.14
+- Bug correction in airport WP pages: the GNS freeze if selecting an empty menu (ex NONE in arrival transition)
+- Bug correction: airspace status was not displayed correctly in near airspace page
+- Bug correction: ILS name display overflow in VOR/COM part
+- Near airspace list extended to 4 items
 ## V 1.0.13
 - Disabled maps in gns430 since the sim only accepts a total of 4 maps by aircraft and crashes if there are more.
 ## V 1.0.12

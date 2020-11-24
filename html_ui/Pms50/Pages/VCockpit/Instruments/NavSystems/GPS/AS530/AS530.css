@@ -1416,7 +1416,7 @@ as530-element {
           as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection img, as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB img, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR img {
             height: 7vh; }
         as530-element #Electricity #TopDisplay #GpsPart #NRSTAirspace #NRSTAirspaceList {
-          height: calc(59.8290598291vh); }
+          height: 80vh; }
           as530-element #Electricity #TopDisplay #GpsPart #NRSTAirspace #NRSTAirspaceList .BotBorder {
             border-bottom: calc(0.4273504274vh) solid #6ecdee;
             height: calc(19.2307692308vh); }

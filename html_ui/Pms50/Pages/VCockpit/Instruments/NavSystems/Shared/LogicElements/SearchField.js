@@ -18,6 +18,9 @@ class SearchFieldWaypointICAO {
         this.batch.add("C:fs9gps:IcaoSearchCurrentIcaoType", "string", "string");
         this.batch.add("C:fs9gps:IcaoSearchCurrentIcao", "string", "string");
         this.batch.add("C:fs9gps:IcaoSearchCurrentIdent", "string", "string");
+//PM Modif: Set initial first characters as region name
+        this.firstUpdate = true;
+//PM Modif: End Set initial first characters as region name
     }
     getUpdatedInfos() {
         if (this.isActive) {
@@ -65,6 +68,35 @@ class SearchFieldWaypointICAO {
         if (this.isActive) {
             this.getUpdatedInfos();
             var currICAO = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIdent", "string", this.instrument.instrumentIdentifier);
+//PM Modif: Set initial first characters as region name
+            if(this.firstUpdate && currICAO == "0010N") {
+                var waypoint = this.instrument.currFlightPlanManager.getActiveWaypoint();
+                if(waypoint)
+                {
+                    var region = waypoint.infos.region;
+                    region = region.replace(/ /g, '');
+                    if(!region.length && waypoint.type == "A")
+                    {
+                        region = waypoint.ident[0];
+                        if(region != "K" && region != "C" && region != "Y")
+                            region += waypoint.ident[1];
+                    }
+                    if(region.length) {
+                        var numiterations = region.charCodeAt(0) - 65 + 10;
+                        for(var i=0; i<numiterations; i++)
+                            this.AdvanceCharacterNext();
+                        if(region.length > 1) {
+                            this.AdvanceCursorRight();
+                            var numiterations = region.charCodeAt(1) - 65 + 10 + 1;
+                            for(var i=0; i<numiterations; i++)
+                                this.AdvanceCharacterNext();
+                            this.AdvanceCursorLeft();
+                        }
+                    }
+                }
+                this.firstUpdate = false;
+            }
+//PM Modif: End Set initial first characters as region name
             currICAO = currICAO + "_____".slice(currICAO.length, 5);
             var state = this.container.blinkGetState(400, 200) ? "Blink" : "Off";
             var blinkPos = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCursorPosition", "number", this.instrument.instrumentIdentifier);
@@ -101,6 +133,9 @@ class SearchFieldWaypointICAO {
 //PM Modif: Reset on CLR
     StartSearch(_callback = null) {
         this.isActive = true;
+//PM Modif: Set initial first characters as region name
+        this.firstUpdate = true;
+//PM Modif: End Set initial first characters as region name
         this.initialWaypoint = null;
         if (this.wayPoint) {
             this.initialWaypoint = this.wayPoint;

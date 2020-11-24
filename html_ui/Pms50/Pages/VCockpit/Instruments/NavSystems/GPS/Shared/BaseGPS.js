@@ -1993,8 +1993,8 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
     }
     getRunwayDesignation(runway, index = -1) {
         let designations = runway.designation.split("-");
-        let r1 = designations[0];
-        let r2 = designations[1];
+        let r1 = Utils.leadingZeros(designations[0], 2);
+        let r2 = Utils.leadingZeros(designations[1], 2);
         let cp = runway.designatorCharPrimary;
         let cs = runway.designatorCharSecondary;
         if (cp=== 1)
@@ -2397,9 +2397,10 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
                 for (var i = 0; i < infos.approaches.length; i++) {
                     menu.elements.push(new ContextualMenuElement(infos.approaches[i].name, callback.bind(this, i)));
                 }
-                if(infos.approaches.length)
-                this.gps.ShowContextualMenu(menu);
-                this.gps.cursorIndex = this.selectedApproach;
+                if(infos.approaches.length) {
+                    this.gps.ShowContextualMenu(menu);
+                    this.gps.cursorIndex = this.selectedApproach;
+                }
             }
         }
     }
@@ -2418,10 +2419,11 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
                     for (var i = 0; i < approach.transitions.length; i++) {
                         menu.elements.push(new ContextualMenuElement(approach.transitions[i].name, callback.bind(this, i)));
                     }
-                    if(approach.transitions.length)
+                    if(approach.transitions.length) {
                         this.gps.ShowContextualMenu(menu);
                         this.gps.cursorIndex = this.selectedTransition;
                     }
+                }
             }
         }
     }
@@ -2719,33 +2721,35 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
                 for (var i = 0; i < infos.arrivals.length; i++) {
                     menu.elements.push(new ContextualMenuElement(infos.arrivals[i].name, callback.bind(this, i)));
                 }
-                if(infos.arrivals.length)
+                if(infos.arrivals.length) {
                     this.gps.ShowContextualMenu(menu);
                     this.gps.cursorIndex = this.selectedArrival;
                 }
+            }
         }
     }
     transition_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
             var infos = this.icaoSearchField.getUpdatedInfos();
             if (infos && infos.icao) {
-                var menu = new ContextualMenu("TRANS", []);
-                var callback = function (_index) {
-                    this.selectedTransition = _index;
-                    this.gps.SwitchToInteractionState(1);
-                    if(infos.arrivals[_index].runwayTransitions.length)
-                        this.gps.cursorIndex = 3;
-                    else
-                        this.gps.cursorIndex = 2;
-                };
                 let arrival = this.getSelectedArrival(infos);
                 if (arrival) {
+                    var menu = new ContextualMenu("TRANS", []);
+                    var callback = function (_index) {
+                        this.selectedTransition = _index;
+                        this.gps.SwitchToInteractionState(1);
+                        if(arrival.runwayTransitions.length)
+                            this.gps.cursorIndex = 3;
+                        else
+                            this.gps.cursorIndex = 2;
+                    };
                     for (var i = 0; i < arrival.enRouteTransitions.length; i++) {
                         menu.elements.push(new ContextualMenuElement(arrival.enRouteTransitions[i].name, callback.bind(this, i)));
                     }
-                    if(arrival.enRouteTransitions.length)
+                    if(arrival.enRouteTransitions.length) {
                         this.gps.ShowContextualMenu(menu);
                         this.gps.cursorIndex = this.selectedTransition;
+                    }
                 }
             }
         }
@@ -2765,9 +2769,10 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
                     for (var i = 0; i < arrival.runwayTransitions.length; i++) {
                         menu.elements.push(new ContextualMenuElement(arrival.runwayTransitions[i].name, callback.bind(this, i)));
                     }
-                    if(arrival.runwayTransitions.length)
+                    if(arrival.runwayTransitions.length) {
                         this.gps.ShowContextualMenu(menu);
                         this.gps.cursorIndex = this.selectedRunway;
+                    }
                 }
             }
         }
@@ -3062,9 +3067,10 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
                 for (var i = 0; i < infos.departures.length; i++) {
                     menu.elements.push(new ContextualMenuElement(infos.departures[i].name, callback.bind(this, i)));
                 }
-                if(infos.departures.length)
+                if(infos.departures.length) {
                     this.gps.ShowContextualMenu(menu);
                     this.gps.cursorIndex = this.selectedDeparture;
+                }
             }
         }
     }
@@ -3083,10 +3089,11 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
                     for (var i = 0; i < departure.enRouteTransitions.length; i++) {
                         menu.elements.push(new ContextualMenuElement(departure.enRouteTransitions[i].name, callback.bind(this, i)));
                     }
-                    if(departure.enRouteTransitions.length)
+                    if(departure.enRouteTransitions.length) {
                         this.gps.ShowContextualMenu(menu);
                         this.gps.cursorIndex = this.selectedTransition;
                     }
+                }
             }
         }
     }
@@ -3105,9 +3112,10 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
                     for (var i = 0; i < departure.runwayTransitions.length; i++) {
                         menu.elements.push(new ContextualMenuElement(departure.runwayTransitions[i].name, callback.bind(this, i)));
                     }
-                    if(departure.runwayTransitions.length)
+                    if(departure.runwayTransitions.length) {
                         this.gps.ShowContextualMenu(menu);
                         this.gps.cursorIndex = this.selectedRunway;
+                    }
                 }
             }
         }
@@ -3645,6 +3653,8 @@ class GPS_NearestAirpaces extends NavSystemElement {
         this.nrstAirspaceStatus2 = this.gps.getChildById("NRST_Airspace_Status_2");
         this.nrstAirspaceName3 = this.gps.getChildById("NRST_Airspace_Name_3");
         this.nrstAirspaceStatus3 = this.gps.getChildById("NRST_Airspace_Status_3");
+        this.nrstAirspaceName4 = this.gps.getChildById("NRST_Airspace_Name_4");
+        this.nrstAirspaceStatus4 = this.gps.getChildById("NRST_Airspace_Status_4");
         this.nearestAirspacesList = new NearestAirspaceList(this.gps);
     }
     onEnter() {
@@ -3655,7 +3665,7 @@ class GPS_NearestAirpaces extends NavSystemElement {
         if (nbAirspaces > 0) {
             let airspace = this.nearestAirspacesList.airspaces[0];
             this.nrstAirspaceName1.textContent = airspace.name;
-            this.nrstAirspaceStatus1.textContent = airspace.GetStatus();
+            this.nrstAirspaceStatus1.textContent = this.GetStatus(airspace);
         }
         else {
             this.nrstAirspaceName1.textContent = "____________________";
@@ -3664,7 +3674,7 @@ class GPS_NearestAirpaces extends NavSystemElement {
         if (nbAirspaces > 1) {
             let airspace = this.nearestAirspacesList.airspaces[1];
             this.nrstAirspaceName2.textContent = airspace.name;
-            this.nrstAirspaceStatus2.textContent = airspace.GetStatus();
+            this.nrstAirspaceStatus2.textContent = this.GetStatus(airspace);
         }
         else {
             this.nrstAirspaceName2.textContent = "____________________";
@@ -3673,11 +3683,22 @@ class GPS_NearestAirpaces extends NavSystemElement {
         if (nbAirspaces > 2) {
             let airspace = this.nearestAirspacesList.airspaces[2];
             this.nrstAirspaceName3.textContent = airspace.name;
-            this.nrstAirspaceStatus3.textContent = airspace.GetStatus();
+            this.nrstAirspaceStatus3.textContent = this.GetStatus(airspace);
         }
         else {
             this.nrstAirspaceName3.textContent = "____________________";
             this.nrstAirspaceStatus3.textContent = "___________________";
+        }
+        if (this.nrstAirspaceName4) {
+            if (nbAirspaces > 3) {
+                let airspace = this.nearestAirspacesList.airspaces[3];
+                this.nrstAirspaceName4.textContent = airspace.name;
+                this.nrstAirspaceStatus4.textContent = this.GetStatus(airspace);
+            }
+            else {
+                this.nrstAirspaceName4.textContent = "____________________";
+                this.nrstAirspaceStatus4.textContent = "___________________";
+            }
         }
         this.nearestAirspacesList.airspaces;
     }
@@ -3685,6 +3706,27 @@ class GPS_NearestAirpaces extends NavSystemElement {
     }
     onEvent(_event) {
     }
+    GetStatus(airspace) {
+        var aheadTime = airspace.aheadTime;
+        aheadTime = Math.trunc(aheadTime);
+        var displayAheadTime = "" + (aheadTime / 60 < 10 ? "0" : "") + Math.trunc(aheadTime / 60) + ':' + (aheadTime % 60 < 10 ? "0" : "") + aheadTime % 60;
+//        console.log(airspace.type + ":" + airspace.status + ":" + airspace.aheadTime + ":" + aheadTime + ":" + displayAheadTime);
+        switch (airspace.status) {
+            case 0:
+                return "";
+            case 1:
+                return "Ahead";
+            case 2:
+                return "Ahead " + displayAheadTime;
+            case 3:
+                return "Within 2nm of airspace " + displayAheadTime;
+            case 4:
+                return "Inside of airspace";
+            default:
+                return "";
+        }
+    }
+
 }
 class GPS_DirectTo extends NavSystemElement {
     constructor() {
@@ -5501,6 +5543,16 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
             || _event == "CLR_Push_Long"
             || _event == "CLR_Push") {
             this.gps.closePopUpElement();
+            if (_event == "PROC_Push") {
+                if(this.gps.currentEventLinkedPageGroup)
+                    this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
+                this.gps.currentEventLinkedPageGroup = null;
+                this.gps.computeEvent("PROC_Push");
+            }
+            if (_event == "CLR_Push") {
+                this.gps.SwitchToPageName("NAV", "DefaultNav");
+                this.gps.currentEventLinkedPageGroup = null;
+            }
         }
     }
     approach_CB(_event, _index) {
@@ -5695,6 +5747,16 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
             || _event == "CLR_Push_Long"
             || _event == "CLR_Push") {
             this.gps.closePopUpElement();
+            if (_event == "PROC_Push") {
+                if(this.gps.currentEventLinkedPageGroup)
+                    this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
+                this.gps.currentEventLinkedPageGroup = null;
+                this.gps.computeEvent("PROC_Push");
+            }
+            if (_event == "CLR_Push") {
+                this.gps.SwitchToPageName("NAV", "DefaultNav");
+                this.gps.currentEventLinkedPageGroup = null;
+            }
         }
     }
 // PM Modif: Go back to the flight plan page
@@ -5940,6 +6002,16 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
             || _event == "CLR_Push_Long"
             || _event == "CLR_Push") {
             this.gps.closePopUpElement();
+            if (_event == "PROC_Push") {
+                if(this.gps.currentEventLinkedPageGroup)
+                    this.gps.currentEventLinkedPageGroup.pageGroup.onExit();
+                this.gps.currentEventLinkedPageGroup = null;
+                this.gps.computeEvent("PROC_Push");
+            }
+            if (_event == "CLR_Push") {
+                this.gps.SwitchToPageName("NAV", "DefaultNav");
+                this.gps.currentEventLinkedPageGroup = null;
+            }
         }
     }
 // PM Modif: Go back to the flight plan page
