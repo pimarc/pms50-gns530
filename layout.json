@@ -71,6 +71,51 @@
       "date": 132453631615266157
     },
     {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/NavPages.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/WaypointPages.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/NearestPages.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/AuxPages.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/DirectTo.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/Message.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/Vnav.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/Procedures.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/GPS/Shared/FlightPlan.js",
+      "size": 197662,
+      "date": 132453631615266157
+    },
+    {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js",
       "size": 120885,
       "date": 132453631615266157
