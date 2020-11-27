@@ -3,6 +3,7 @@ class AS430 extends BaseGPS {
     connectedCallback() {
         this.gpsType = "430";
         this.cnt = 0;
+        this.superCnt = 0;
         this.toInit = true;
         this.initDone = false;
         super.connectedCallback();
@@ -16,12 +17,19 @@ class AS430 extends BaseGPS {
         // the simulator cannot accept more than 4 maps for an airplane (crash if more)
     }
     onUpdate(_deltaTime) {
-        if(this.toInit){
+        if(this.isStarted && this.toInit) {
             this.cnt++;
             // Init delayed after 50 updates
-            if(this.cnt > 50){
-                this.toInit = false;
-                this.doInit();
+            if(this.cnt > 50 || this.superCnt > 15){
+                var state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
+                if(state530 || this.superCnt > 15) {
+                    this.toInit = false;
+                    this.doInit();
+                }
+                else {
+                    this.cnt = 0;
+                    this.superCnt++;
+                }
             }
         }
         super.onUpdate(_deltaTime);

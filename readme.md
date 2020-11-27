@@ -17,6 +17,8 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.16
+- Bug correction on automatic detection of the GNS530 by the GNS4330 in cold and start mode.
 ## V 1.0.15
 - Code cleanup and reorganization
 - Added thumbnail for content manager
