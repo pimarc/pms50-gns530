@@ -8,20 +8,37 @@ class SearchFieldWaypointICAO {
         this.elements = _elements;
         this.container = _container;
         this.wayPoint = new WayPoint(_instrument);
-//PM Modif: Reset on CLR
         this.initialWaypoint = null;
         this.initialWpType = null;
-//PM Modif: End Reset on CLR
         this.wayPoint.type = null;
         this.wpType = _wpType;
         this.batch = new SimVar.SimVarBatch("C:fs9gps:IcaoSearchMatchedIcaosNumber", "C:fs9gps:IcaoSearchMatchedIcao");
         this.batch.add("C:fs9gps:IcaoSearchCurrentIcaoType", "string", "string");
         this.batch.add("C:fs9gps:IcaoSearchCurrentIcao", "string", "string");
         this.batch.add("C:fs9gps:IcaoSearchCurrentIdent", "string", "string");
-//PM Modif: Set initial first characters as region name
         this.firstUpdate = true;
-//PM Modif: End Set initial first characters as region name
+        this.region = "";
+        this.entryType = -1;
     }
+
+    init() {
+        this.getRegion();
+    }
+    getRegion() {
+        var waypoint = this.instrument.currFlightPlanManager.getActiveWaypoint();
+        if(waypoint)
+        {
+            this.region = waypoint.infos.region;
+            this.region = this.region.replace(/ /g, '');
+            if(!this.region.length && waypoint.type == "A")
+            {
+                this.region = waypoint.ident[0];
+                if(this.region != "K" && this.region != "C" && this.region != "Y")
+                this.region += waypoint.ident[1];
+            }
+        }
+    }
+
     getUpdatedInfos() {
         if (this.isActive) {
             let icao = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", this.instrument.instrumentIdentifier);
@@ -68,35 +85,22 @@ class SearchFieldWaypointICAO {
         if (this.isActive) {
             this.getUpdatedInfos();
             var currICAO = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIdent", "string", this.instrument.instrumentIdentifier);
-//PM Modif: Set initial first characters as region name
-            if(this.firstUpdate && currICAO == "0010N") {
-                var waypoint = this.instrument.currFlightPlanManager.getActiveWaypoint();
-                if(waypoint)
-                {
-                    var region = waypoint.infos.region;
-                    region = region.replace(/ /g, '');
-                    if(!region.length && waypoint.type == "A")
-                    {
-                        region = waypoint.ident[0];
-                        if(region != "K" && region != "C" && region != "Y")
-                            region += waypoint.ident[1];
-                    }
-                    if(region.length) {
-                        var numiterations = region.charCodeAt(0) - 65 + 10;
+            if(this.firstUpdate) {
+                currICAO = this.region;
+                if(currICAO.length) {
+                    var numiterations = currICAO.charCodeAt(0) - 65 + 10 + this.entryType;
+                    for(var i=0; i<numiterations; i++)
+                        this.AdvanceCharacterNext();
+                    if(currICAO.length > 1) {
+                        this.AdvanceCursorRight();
+                        var numiterations = currICAO.charCodeAt(1) - 65 + 10 + 1;
                         for(var i=0; i<numiterations; i++)
                             this.AdvanceCharacterNext();
-                        if(region.length > 1) {
-                            this.AdvanceCursorRight();
-                            var numiterations = region.charCodeAt(1) - 65 + 10 + 1;
-                            for(var i=0; i<numiterations; i++)
-                                this.AdvanceCharacterNext();
-                            this.AdvanceCursorLeft();
-                        }
+                        this.AdvanceCursorLeft();
                     }
                 }
                 this.firstUpdate = false;
             }
-//PM Modif: End Set initial first characters as region name
             currICAO = currICAO + "_____".slice(currICAO.length, 5);
             var state = this.container.blinkGetState(400, 200) ? "Blink" : "Off";
             var blinkPos = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCursorPosition", "number", this.instrument.instrumentIdentifier);
@@ -109,10 +113,14 @@ class SearchFieldWaypointICAO {
                 ident = this.wayPoint.infos.ident;
             }
             else {
-                this.instrument.facilityLoader.getFacilityCB(this.lastIcao, (waypoint) => {
-                    this.wayPoint = waypoint;
-                });
-                ident = "_____";
+                if(this.region.length)
+                    ident = this.region;
+                else {
+                    this.instrument.facilityLoader.getFacilityCB(this.lastIcao, (waypoint) => {
+                        this.wayPoint = waypoint;
+                    });
+                    ident = "_____";
+                }
             }
         }
         for (let i = 0; i < this.elements.length; i++) {
@@ -130,16 +138,17 @@ class SearchFieldWaypointICAO {
             }
         });
     }
-//PM Modif: Reset on CLR
-    StartSearch(_callback = null) {
+    StartSearch(_callback = null, entryType = 0) {
+        // entryType: 0=direct, -1=RightSmallKnob_Right, +1=RightSmallKnob_Left
+        this.entryType = entryType;
         this.isActive = true;
-//PM Modif: Set initial first characters as region name
         this.firstUpdate = true;
-//PM Modif: End Set initial first characters as region name
         this.initialWaypoint = null;
+        this.getRegion();
         if (this.wayPoint) {
             this.initialWaypoint = this.wayPoint;
-            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.wayPoint.GetInfos().icao, this.instrument.instrumentIdentifier);
+//            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.wayPoint.GetInfos().icao, this.instrument.instrumentIdentifier);
+            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", "", this.instrument.instrumentIdentifier);
         }
         this.initialWpType = null;
         if (this.wpType) {
@@ -148,7 +157,6 @@ class SearchFieldWaypointICAO {
         }
         this.endCallback = _callback;
     }
-//PM Modif: End Reset on CLR
     onInteractionEvent(_args) {
         switch (_args[0]) {
             case "NavigationLargeInc":
@@ -183,7 +191,6 @@ class SearchFieldWaypointICAO {
     AdvanceCharacterPrevious() {
         SimVar.SetSimVarValue("C:fs9gps:IcaoSearchAdvanceCharacter", "number", -1, this.instrument.instrumentIdentifier);
     }
-//PM Modif: Reset on CLR
     Reset() {
         if(this.initialWaypoint){
             this.SetWaypoint(this.initialWpTyp, this.initialWaypoint.icao);
@@ -194,13 +201,12 @@ class SearchFieldWaypointICAO {
             this.endCallback();
         }
     }
-//PM Modif: End Reset on CLR
     Validate(reset = false) {
         this.instrument.facilityLoader.getFacilityCB(SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", this.instrument.instrumentIdentifier), (waypoint) => {
             if (waypoint) {
                 this.wayPoint = waypoint;
             }
-            if (waypoint || this.wayPoint.infos.icao == this.lastIcao) {
+            if (waypoint || (this.lastIcao && this.wayPoint && this.wayPoint.infos.icao == this.lastIcao)) {
                 this.isActive = false;
                 this.container.OnSearchFieldEndEditing();
                 let numberOfDuplicates = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchMatchedIcaosNumber", "number", this.instrument.instrumentIdentifier);
@@ -226,9 +232,11 @@ class SearchFieldWaypointICAO {
                 }
             }
             else {
-                this.lastIcao = this.wayPoint.infos.icao;
-                if (this.endCallback) {
-                    this.endCallback();
+                if(this.wayPoint) {
+                    this.lastIcao = this.wayPoint.infos.icao;
+                    if (this.endCallback) {
+                        this.endCallback();
+                    }
                 }
             }
         });

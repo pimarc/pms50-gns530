@@ -17,6 +17,7 @@ class GPS_DirectTo extends NavSystemElement {
         this.crs = this.gps.getChildById("DRCTCrs");
         this.activate = this.gps.getChildById("DRCTActivate");
         this.icaoSearchField = new SearchFieldWaypointICAO(this.gps, [this.icao], this.gps, 'WANV');
+        this.icaoSearchField.init();
         this.currentFPLWpSelected = 0;
         this.geoCalc = new GeoCalcInfo(this.gps);
         this.container.defaultMenu = new ContextualMenu("PAGE MENU", [
@@ -96,23 +97,30 @@ class GPS_DirectTo extends NavSystemElement {
     onEvent(_event) {
         if (_event == "CLR_Push") {
             this.gps.ActiveSelection(this.defaultSelectables);
-            if (this.gps.popUpElement || this.gps.currentContextualMenu) {
-                this.gps.closePopUpElement();
+            if(this.icaoSearchField.isActive){
+                this.icaoSearchField.isActive = false;
                 this.gps.SwitchToInteractionState(1);
                 this.gps.cursorIndex = 0;
-                if(this.menuname == "fpl"){
-                    this.gps.cursorIndex = 1;
-                }
-                if(this.menuname == "search"){
-                    this.gps.cursorIndex = 2;
-                }
-                this.menuname = "";
-                this.gps.currentContextualMenu = null;
             }
             else {
-                this.menuname = "";
-                this.gps.SwitchToInteractionState(0);
-                this.gps.leaveEventPage();
+                if (this.gps.popUpElement || this.gps.currentContextualMenu) {
+                    this.gps.closePopUpElement();
+                    this.gps.SwitchToInteractionState(1);
+                    this.gps.cursorIndex = 0;
+                    if(this.menuname == "fpl"){
+                        this.gps.cursorIndex = 1;
+                    }
+                    if(this.menuname == "search"){
+                        this.gps.cursorIndex = 2;
+                    }
+                    this.menuname = "";
+                    this.gps.currentContextualMenu = null;
+                }
+                else {
+                    this.menuname = "";
+                    this.gps.SwitchToInteractionState(0);
+                    this.gps.leaveEventPage();
+                }
             }
         }
         if (_event == "ENT_Push") {
@@ -120,6 +128,13 @@ class GPS_DirectTo extends NavSystemElement {
                 this.gps.cursorIndex = 2;
                 this.gps.SwitchToInteractionState(1);
             }
+        }
+        if (_event == "NavigationPush") {
+            // Stay in selection state
+            setTimeout(() => {
+                this.gps.ActiveSelection(this.defaultSelectables);
+                this.gps.SwitchToInteractionState(1);
+            }, 100);
         }
     }
     searchField_SelectionCallback(_event) {
@@ -141,7 +156,10 @@ class GPS_DirectTo extends NavSystemElement {
             if (infos && infos.icao != '') {
                 this.gps.lastRelevantICAO = infos.icao;
             }
-            this.icaoSearchField.StartSearch(this.onSearchEnd.bind(this));
+            var entryType = -1;
+            if(_event == "RightSmallKnob_Left")
+                entryType = 1;
+            this.icaoSearchField.StartSearch(this.onSearchEnd.bind(this), entryType);
             this.gps.SwitchToInteractionState(3);
             this.menuname = "search";
         }
@@ -156,6 +174,11 @@ class GPS_DirectTo extends NavSystemElement {
                     this.menuname = ""
                 }
             });
+        }
+        else {
+            this.gps.ActiveSelection(this.defaultSelectables);
+            this.gps.cursorIndex = 2;
+            this.menuname = ""
         }
     }
     flightPlan_SelectionCallback(_event) {

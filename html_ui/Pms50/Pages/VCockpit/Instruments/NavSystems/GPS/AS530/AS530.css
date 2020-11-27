@@ -969,27 +969,48 @@ as530-element {
             padding-left: 0;
             width: 6vw;
           }
-        as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          top: 0%;
-          display: none;
-          background-color: #1c2878; }
-          as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection[state=Active] {
-            display: block; }
-          as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .Title {
-            font-size: calc(7.264957265vh); }
-          as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .Value {
-            font-size: calc(7.264957265vh);
-            margin: calc(0.8547008547vh); }
-          as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSPosNS, as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSPosEW {
-            height: calc(7.264957265vh); }
-          as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .Half {
-            width: 48%; }
-          as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSInfos {
-            height: calc(34.188034188vh); }
-        as530-element #Electricity #TopDisplay #GpsPart #Procedures .Value {
+
+          
+          as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            margin: 0 1vw 0 1vw;
+            top: 0%;
+            display: none;
+            background-color: #1c2878; }
+            as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .WhiteTitle{
+              margin-bottom: 2vh; }
+              as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection[state=Active] {
+              display: block; }
+            as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSMainInfos {
+              margin-bottom: 5vh;
+              width: 98%;
+              height: 28vh; }
+              as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .FullWidth {
+                width: 100%;
+                position: relative; }
+                as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .RightAlign {
+                  position: absolute;
+                  right: 15vh; }
+                  as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSAccept {
+                  color: white;
+                  text-align: center;  
+                  margin-top: 3vh; }
+                as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .Title {
+                font-size: calc(6.4102564103vh); }
+            as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSPosNS, as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSPosEW {
+              height: calc(7.264957265vh); }
+            as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .Half {
+              width: 48%; }
+              as530-element #Electricity #TopDisplay #GpsPart #WaypointSelection .SizedL {
+                width: 40vw;
+                height: calc(19.2307692308vh);
+                text-align: center;
+                vertical-align: central; }
+     
+
+           as530-element #Electricity #TopDisplay #GpsPart #Procedures .Value {
           width: 95%;
           margin-left: 2.5%;
           line-height: 15vh; }

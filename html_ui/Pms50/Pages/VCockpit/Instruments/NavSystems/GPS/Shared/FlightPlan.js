@@ -520,70 +520,148 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
     }
     init(_root) {
         this.root = _root;
-        this.wpSIdent = this.gps.getChildById("WPSIdent");
-        this.wpSRegion = this.gps.getChildById("WPSIdent2");
-        this.wpSFacility1 = this.gps.getChildById("WPSFacility1");
-        this.wpSFacility2 = this.gps.getChildById("WPSFacility2");
-        this.wpSPosNS = this.gps.getChildById("WPSPosNS");
-        this.wpSPosEW = this.gps.getChildById("WPSPosEW");
-        this.waypointSelectionSearchField = new SearchFieldWaypointICAO(this.gps, [this.wpSIdent], this.gps, "AWNV");
+        this.icao = this.gps.getChildById("WPSIcao");
+        this.airportPrivateLogo = this.gps.getChildById("WPSAirportPrivateLogo");
+        this.region = this.gps.getChildById("WPSRegion");
+        this.facilityName = this.gps.getChildById("WPSFacilityName");
+        this.city = this.gps.getChildById("WPSCity");
+        this.posNS = this.gps.getChildById("WPSPosNS");
+        this.posEW = this.gps.getChildById("WPSPosEW");
+        this.accept = this.gps.getChildById("WPSAccept");
+        this.icaoSearchField = new SearchFieldWaypointICAO(this.gps, [this.icao], this.gps, "AWNV");
+        this.icaoSearchField.init();
+        this.defaultSelectables = [
+            new SelectableElement(this.gps, this.icao, this.searchField_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.facilityName, this.facilityName_SelectionCallback.bind(this)),
+            new SelectableElement(this.gps, this.city, this.city_SelectionCallback.bind(this)),
+        ];
         this.duplicateWaypoints = new NavSystemElementContainer("Duplicate Waypoints", "DuplicateWaypointWindow", new MFD_DuplicateWaypoint());
         this.duplicateWaypoints.setGPS(this.gps);
-        this.duplicateWaypoints.element.icaoSearchField = this.waypointSelectionSearchField;
+        this.duplicateWaypoints.element.icaoSearchField = this.icaoSearchField;
         this.preventRemove = false;
+        this.initialUpdate = true;
     }
     onEnter() {
+        this.gps.closeConfirmWindow();
+        this.gps.closeAlertWindow();
         this.preventRemove = false;
         this.root.setAttribute("state", "Active");
-        this.gps.SwitchToInteractionState(3);
-        this.gps.currentSearchFieldWaypoint = this.waypointSelectionSearchField;
-        this.waypointSelectionSearchField.StartSearch(this.onSearchFieldValidation.bind(this));
     }
     onUpdate(_deltaTime) {
-        var infos = this.waypointSelectionSearchField.getUpdatedInfos();
-        this.wpSRegion.textContent = infos.region ? infos.region : '';
-        this.wpSFacility1.textContent = infos.name ? infos.name : '';
-        this.wpSFacility2.textContent = infos.city ? infos.city : '';
-        if (infos.coordinates && infos.coordinates.lat && infos.coordinates.long) {
-            this.wpSPosNS.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
-            this.wpSPosEW.textContent = this.gps.longitudeFormat(infos.coordinates.long);
+        if(this.initialUpdate){
+            this.gps.ActiveSelection(this.defaultSelectables);
+            this.gps.cursorIndex = 0;
+            this.initialUpdate = false;
+        }
+        var infos = this.icaoSearchField.getWaypoint() ? this.icaoSearchField.getWaypoint().infos : new WayPointInfo(this.gps);
+        if (infos && infos.icao != '') {
+            this.icao.textContent = infos.icao;
+            var logo = infos.imageFileName();
+            if (logo != "") {
+                this.airportPrivateLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+            }
+            else{
+                this.airportPrivateLogo.innerHTML = '';
+            }
+            this.region.textContent = infos.region;
+            this.facilityName.textContent = infos.name;
+            this.city.textContent = infos.city;
+            this.posNS.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
+            this.posEW.textContent = this.gps.longitudeFormat(infos.coordinates.long);
         }
         else {
-            this.wpSPosNS.textContent = '';
-            this.wpSPosEW.textContent = '';
+            this.icao.textContent = "_____";
+            this.region.textContent = "__________";
+            this.facilityName.textContent = "______________________";
+            this.city.textContent = "______________________";
+            this.posNS.textContent = "_ __°__.__'";
+            this.posEW.textContent = "____°__.__'";
         }
-        this.waypointSelectionSearchField.Update();
+        this.icaoSearchField.Update();
     }
     onExit() {
+        this.gps.closeConfirmWindow();
+        this.gps.closeAlertWindow();
+        this.initialUpdate = true;
         this.root.setAttribute("state", "Inactive");
     }
-    onSearchFieldValidation() {
-        if (this.waypointSelectionSearchField.duplicates.length > 0) {
-            this.gps.lastRelevantICAO = null;
-            this.gps.lastRelevantICAOType = null;
-            this.gps.switchToPopUpPage(this.duplicateWaypoints, this.gps.popUpCloseCallback);
-        }
-        else {
-            var infos = this.waypointSelectionSearchField.getUpdatedInfos();
-            this.gps.lastRelevantICAO = infos.icao;
-            this.gps.lastRelevantICAOType = infos.getWaypointType();
-            this.gps.closePopUpElement();
-        }
-    }
     onEvent(_event) {
-        if (_event == "CLR_Push"
-            || _event == "CLR") {
+        if (_event == "CLR_Push" || _event == "CLR") {
             this.preventRemove = true;
         }
         if (_event == "DRCT_Push"
             || _event == "FPL_Push"
             || _event == "PROC_Push"
+            || _event == "DirectTo_Push"
             || _event == "MSG_Push"
             || _event == "VNAV_Push"
-            || _event == "CLR_Push_Long"
-            || _event == "CLR_Push") {
+            || _event == "CLR_Push_Long") {
             this.gps.lastRelevantICAO = null;
             this.gps.lastRelevantICAOType = null;
+            this.gps.closePopUpElement();
+        }
+        if (_event == "CLR_Push") {
+            if(this.icaoSearchField.isActive){
+                this.icaoSearchField.isActive = false;
+                this.gps.SwitchToInteractionState(1);
+            }
+            else {
+                this.gps.lastRelevantICAO = null;
+                this.gps.lastRelevantICAOType = null;
+                this.gps.closePopUpElement();
+            }
+        }
+        if (_event == "NavigationPush") {
+            // Stay in selection state
+            setTimeout(() => {
+                this.gps.ActiveSelection(this.defaultSelectables);
+                this.gps.SwitchToInteractionState(1);
+                this.gps.cursorIndex = 0;
+            }, 100);
+        }
+    }
+    searchField_SelectionCallback(_event) {
+        if (_event == "ENT_Push") {
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            this.gps.lastRelevantICAO = infos.icao;
+            this.gps.lastRelevantICAOType = infos.getWaypointType();
+            this.gps.closePopUpElement();
+        }
+        if (_event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
+            this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
+            let infos = this.icaoSearchField.getWaypoint() ? this.icaoSearchField.getWaypoint().infos : new WayPointInfo(this.gps);
+            if (infos && infos.icao != '') {
+                this.gps.lastRelevantICAO = infos.icao;
+            }
+            var entryType = -1;
+            if(_event == "RightSmallKnob_Left")
+                entryType = 1;
+            this.icaoSearchField.StartSearch(this.onSearchEnd.bind(this), entryType);
+            this.gps.SwitchToInteractionState(3);
+        }
+    }
+    facilityName_SelectionCallback(_event) {
+    }
+    city_SelectionCallback(_event) {
+    }
+    onSearchEnd(status = "") {
+        if (this.icaoSearchField.duplicates.length > 0) {
+            this.gps.lastRelevantICAO = null;
+            this.gps.lastRelevantICAOType = null;
+            this.gps.switchToPopUpPage(this.duplicateWaypoints, this.gps.popUpCloseCallback);
+        }
+        else {
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            this.gps.lastRelevantICAO = infos.icao;
+            this.gps.lastRelevantICAOType = infos.getWaypointType();
+            this.gps.closePopUpElement();
+        }
+    }
+    acceptButton_SelectionCallback(_event) {
+        if (_event == "ENT_Push") {
+            var infos = this.icaoSearchField.getUpdatedInfos();
+            this.gps.lastRelevantICAO = infos.icao;
+            this.gps.lastRelevantICAOType = infos.getWaypointType();
             this.gps.closePopUpElement();
         }
     }
