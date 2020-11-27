@@ -611,13 +611,13 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
                 this.gps.closePopUpElement();
             }
         }
-        if (_event == "NavigationPush") {
+        if (_event == "NavigationPush" || _event == "MENU_Push") {
             // Stay in selection state
-            setTimeout(() => {
+            this.gps.requestCall(() => {
                 this.gps.ActiveSelection(this.defaultSelectables);
                 this.gps.SwitchToInteractionState(1);
                 this.gps.cursorIndex = 0;
-            }, 100);
+            });
         }
     }
     searchField_SelectionCallback(_event) {

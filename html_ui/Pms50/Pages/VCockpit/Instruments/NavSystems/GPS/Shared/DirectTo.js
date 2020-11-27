@@ -131,10 +131,11 @@ class GPS_DirectTo extends NavSystemElement {
         }
         if (_event == "NavigationPush") {
             // Stay in selection state
-            setTimeout(() => {
+            this.gps.requestCall(() => {
                 this.gps.ActiveSelection(this.defaultSelectables);
                 this.gps.SwitchToInteractionState(1);
-            }, 100);
+                this.gps.cursorIndex = 0;
+            });
         }
     }
     searchField_SelectionCallback(_event) {
