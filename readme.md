@@ -19,6 +19,9 @@ First release features:
 # Change log
 ## V 1.0.15
 - Code cleanup and reorganization
+- Added thumbnail for content manager
+- Rebuilding of the selection waypoint page
+- Added missing images for GNS430
 ## V 1.0.14
 - Compatibility with update 1.11.16.0 code
 - Bug correction in airport WP pages: the GNS freeze if selecting an empty menu (ex NONE in arrival transition)

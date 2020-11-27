@@ -529,11 +529,13 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
         this.posEW = this.gps.getChildById("WPSPosEW");
         this.accept = this.gps.getChildById("WPSAccept");
         this.icaoSearchField = new SearchFieldWaypointICAO(this.gps, [this.icao], this.gps, "AWNV");
+        // No search by facility for now because not working well
+        // this.nameSearchField = new SearchFieldWaypointName(this.gps, [this.facilityName], this.gps, "AWNV", this.icaoSearchField);
         this.icaoSearchField.init();
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.icao, this.searchField_SelectionCallback.bind(this)),
-            new SelectableElement(this.gps, this.facilityName, this.facilityName_SelectionCallback.bind(this)),
-            new SelectableElement(this.gps, this.city, this.city_SelectionCallback.bind(this)),
+            // No search by facility for now because not working well
+            // new SelectableElement(this.gps, this.facilityName, this.facilityName_SelectionCallback.bind(this)),
         ];
         this.duplicateWaypoints = new NavSystemElementContainer("Duplicate Waypoints", "DuplicateWaypointWindow", new MFD_DuplicateWaypoint());
         this.duplicateWaypoints.setGPS(this.gps);
@@ -578,6 +580,8 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
             this.posEW.textContent = "____°__.__'";
         }
         this.icaoSearchField.Update();
+        // No search by facility for now because not working well
+        // this.nameSearchField.Update();
     }
     onExit() {
         this.gps.closeConfirmWindow();
@@ -641,11 +645,14 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
         }
     }
     facilityName_SelectionCallback(_event) {
+        if (_event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
+            this.gps.currentSearchFieldWaypoint = this.nameSearchField;
+            this.nameSearchField.StartSearch(this.onSearchEnd.bind(this));
+            this.gps.SwitchToInteractionState(3);
+        }
     }
-    city_SelectionCallback(_event) {
-    }
-    onSearchEnd(status = "") {
-        if (this.icaoSearchField.duplicates.length > 0) {
+    onSearchEnd() {
+        if (this.icaoSearchField.duplicates && this.icaoSearchField.duplicates.length > 0) {
             this.gps.lastRelevantICAO = null;
             this.gps.lastRelevantICAOType = null;
             this.gps.switchToPopUpPage(this.duplicateWaypoints, this.gps.popUpCloseCallback);
