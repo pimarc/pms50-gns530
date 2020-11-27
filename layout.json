@@ -1,6 +1,11 @@
 {
   "content": [
     {
+      "path": "ContentInfo/pms50-gns530/Thumbnail.jpg",
+      "size": 58203,
+      "date": 132453631615266157
+    },
+    {
       "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_PLANE_GNS530.svg",
       "size": 5149,
       "date": 132453631615266157
