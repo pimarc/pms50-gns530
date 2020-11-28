@@ -2,8 +2,56 @@ class AS530 extends BaseGPS {
     get templateID() { return "AS530"; }
     connectedCallback() {
         this.gpsType = "530";
+        this.cnt = 0;
+        this.toInit = true;
+        this.initDone = false;
+        this.hotStart = false;
         super.connectedCallback();
-        this.menuMaxElems = 11;
+        this.initScreen = this.getChildById("InitScreen");
+        this.initScreenBottomInfo = this.getChildById("InitScreenBottomInfo");
+        this.NbLoopInitScreen = 150;
+        this.initScreen.setAttribute("style", "display: flex");
+        this.pageGroups = [
+            new NavSystemPageGroup("AUX", this, [
+                new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
+            ])
+        ];
+    }
+
+    onUpdate(_deltaTime) {
+        // Normal start
+        if(this.isStarted && this.toInit) {
+            this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br /> Initializing...";
+            this.cnt++;
+            // Init delayed after 50 updates
+            if(this.cnt > this.NbLoopInitScreen){
+                this.toInit = false;
+                this.hotStart = false;
+                this.doInit();
+                this.initScreen.setAttribute("style", "display: none");
+            }
+        }
+        // Hot restart
+        if(this.initDone) {
+            if(!this.isStarted) {
+                this.hotStart = true;
+                this.cnt = 0;
+            }
+            if(this.hotStart && this.isStarted) {
+                if(this.cnt == 0) {
+                    this.initScreen.setAttribute("style", "display: flex");
+                }
+                this.cnt++;
+                if(this.cnt > this.NbLoopInitScreen) {
+                    this.hotStart = false;
+                    this.initScreen.setAttribute("style", "display: none");
+                }
+            }
+        }
+        super.onUpdate(_deltaTime);
+    }
+
+    doInit(){
         var defaultNav = new GPS_DefaultNavPage(5, [3, 4, 9, 7, 10], "530");
         defaultNav.element.addElement(new MapInstrumentElement());
         var mapNav = new GPS_MapNavPage(5, [16, 3, 10, 4, 9]);
@@ -49,8 +97,10 @@ class AS530 extends BaseGPS {
         this.addEventLinkedPageGroup("VNAV_Push", new NavSystemPageGroup("VNAV", this, [new NavSystemPage("VNAV", "Vnav", new GPS_Vnav())]));
         this.addIndependentElementContainer(new NavSystemElementContainer("VorInfos", "RadioPart", new AS530_VorInfos()));
         this.addIndependentElementContainer(new NavSystemElementContainer("WaypointMap", "WaypointMap", new GPS_WaypointMap()));
+        this.initDone = true;
     }
 }
+
 
 class AS530_VorInfos extends NavSystemElement {
     init(root) {

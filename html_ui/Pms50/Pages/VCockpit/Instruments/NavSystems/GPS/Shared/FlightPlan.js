@@ -688,7 +688,6 @@ class GPS_FPLCatalog extends NavSystemElement {
         this.used = this.gps.getChildById("FPLCatalogUsed");
         this.empty = this.gps.getChildById("FPLCatalogEmpty");
 
-//        this.nearestIntersectionList = new NearestIntersectionList(this.gps);
         this.fplsSliderGroup = new SelectableElementSliderGroup(this.gps, [], this.sliderElement, this.sliderCursorElement);
         for (let i = 0; i < this.nbElemsMax; i++) {
             this.fplsSliderGroup.addElement(new SelectableElement(this.gps, this.gps.getChildById("FPL_Catalog_" + i), this.fpl_SelectionCallback.bind(this)));

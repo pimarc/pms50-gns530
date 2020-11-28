@@ -59,6 +59,29 @@ as430-element {
     filter: brightness(1%);
     width: 100%;
     height: 100%; }
+    as430-element #Mainframe #InitScreen {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 30;
+      width: 100%;
+      height: 100%;
+      color: white;
+      font-size: 6vh;
+      background-color: black;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+    as430-element #Mainframe #InitScreen #InitScreenLogo img {
+      width: 60vw;
+    }
+    as430-element #Mainframe #InitScreen #InitScreenBottomInfo {
+      margin-bottom: 3vh;
+      text-align: center;
+    }
+
   as430-element #Electricity {
     color: #4ce22c;
     background-color: #1c2878;

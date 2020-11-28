@@ -1,6 +1,11 @@
 {
   "content": [
     {
+      "path": "ContentInfo/pms50-gns530/info.json",
+      "size": 340,
+      "date": 132453631615266158
+    },
+    {
       "path": "ContentInfo/pms50-gns530/Thumbnail.jpg",
       "size": 58203,
       "date": 132453631615266158
@@ -8,6 +13,11 @@
     {
       "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_PLANE_GNS530.svg",
       "size": 5149,
+      "date": 132453631615266158
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/glogo.png",
+      "size": 10324,
       "date": 132453631615266158
     },
     {

@@ -6,7 +6,12 @@ class AS430 extends BaseGPS {
         this.superCnt = 0;
         this.toInit = true;
         this.initDone = false;
+        this.hotStart = false;
         super.connectedCallback();
+        this.initScreen = this.getChildById("InitScreen");
+        this.initScreenBottomInfo = this.getChildById("InitScreenBottomInfo");
+        this.NbLoopInitScreen = 150;
+        this.initScreen.setAttribute("style", "display: flex");
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
                 new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7], "430"),
@@ -17,18 +22,41 @@ class AS430 extends BaseGPS {
         // the simulator cannot accept more than 4 maps for an airplane (crash if more)
     }
     onUpdate(_deltaTime) {
+        // Normal start
         if(this.isStarted && this.toInit) {
+            this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br /> Initializing...";
             this.cnt++;
-            // Init delayed after 50 updates
-            if(this.cnt > 50 || this.superCnt > 15){
-                var state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
-                if(state530 || this.superCnt > 15) {
-                    this.toInit = false;
-                    this.doInit();
+            if(this.cnt > this.NbLoopInitScreen || this.superCnt > 0){
+                // Init delayed after 50 updates
+                if(this.cnt > 50 || this.superCnt > 15){
+                    var state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
+                    if(state530 || this.superCnt > 15) {
+                        this.toInit = false;
+                        this.hotStart = false;
+                        this.doInit();
+                        this.initScreen.setAttribute("style", "display: none");
+                    }
+                    else {
+                        this.cnt = 0;
+                        this.superCnt++;
+                    }
                 }
-                else {
-                    this.cnt = 0;
-                    this.superCnt++;
+            }
+        }
+        // Hot restart
+        if(this.initDone) {
+            if(!this.isStarted) {
+                this.hotStart = true;
+                this.cnt = 0;
+            }
+            if(this.hotStart && this.isStarted) {
+                if(this.cnt == 0) {
+                    this.initScreen.setAttribute("style", "display: flex");
+                }
+                this.cnt++;
+                if(this.cnt > this.NbLoopInitScreen) {
+                    this.hotStart = false;
+                    this.initScreen.setAttribute("style", "display: none");
                 }
             }
         }

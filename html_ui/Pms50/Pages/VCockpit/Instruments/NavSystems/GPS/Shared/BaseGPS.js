@@ -25,6 +25,7 @@ class BaseGPS extends NavSystem {
         this.navIndex = 1;
         this.comIndex = 1;
         this.fplNumber = 0;
+        this.version = "";
         this.airportWaypointsIcaoSearchField = new SearchFieldWaypointICAO(this, [], this, "A");
         this.addEventAlias("RightSmallKnob_Right", "NavigationSmallInc");
         this.addEventAlias("RightSmallKnob_Left", "NavigationSmallDec");
@@ -34,6 +35,7 @@ class BaseGPS extends NavSystem {
     }
     connectedCallback() {
         super.connectedCallback();
+        this.getVersion();
         this.comActive = this.getChildById("ComActive");
         this.comStandby = this.getChildById("ComStandby");
         this.vlocActive = this.getChildById("VlocActive");
@@ -329,6 +331,29 @@ class BaseGPS extends NavSystem {
         format +=  Utils.leadingZeros(minutes.toFixed(2), 2);
         format += "'";
         return format;
+    }
+    getVersion() {
+        return new Promise((resolve) => {
+            var milliseconds = new Date().getTime().toString();
+            this.loadFile("/VFS/ContentInfo/pms50-gns530/info.json" + "?id=" + milliseconds, (text) => {
+                let data = JSON.parse(text);
+                this.version = data.version;
+                resolve();
+            });
+        });
+    }
+    loadFile(file, callbackSuccess) {
+        let httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function (data) {
+            if (this.readyState === XMLHttpRequest.DONE) {
+                let loaded = this.status === 200 || this.status === 0;
+                if (loaded) {
+                    callbackSuccess(this.responseText);
+                }
+            }
+        };
+        httpRequest.open("GET", file);
+        httpRequest.send();
     }
 }
 
