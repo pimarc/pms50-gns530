@@ -1484,8 +1484,24 @@ as530-element {
               color: black;
               background-color: #4ce22c; }
         as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages {
-          width: 98%;
-          height: calc(59.8290598291vh);
+          overflow: hidden;
+          width: 79vw;
+          margin: 1vw 0 0 1vh;
+          height: 89%;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations {
+          font-size: 2vh;
+          overflow: hidden;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations br {
+          font-size: 2vh;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations {
+          overflow: hidden;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations div {
+          font-size: 7vh;
+          overflow: hidden;
         }
         as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock {
           display: flex;

@@ -16,6 +16,8 @@ class AS530 extends BaseGPS {
                 new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
             ])
         ];
+        this.messageList = new GPS_Messages();
+        this.messageList.setGPS(this);
     }
 
     onUpdate(_deltaTime) {
@@ -93,11 +95,28 @@ class AS530 extends BaseGPS {
                 new NavSystemPage("FPLCatalog", "FPLCatalog", new GPS_FPLCatalog("530"))
             ]));
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
-        this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", new GPS_Messages())]));
+        this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", this.messageList)]));
         this.addEventLinkedPageGroup("VNAV_Push", new NavSystemPageGroup("VNAV", this, [new NavSystemPage("VNAV", "Vnav", new GPS_Vnav())]));
         this.addIndependentElementContainer(new NavSystemElementContainer("VorInfos", "RadioPart", new AS530_VorInfos()));
         this.addIndependentElementContainer(new NavSystemElementContainer("WaypointMap", "WaypointMap", new GPS_WaypointMap()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("MSG", "MSG", new AS530_InitMessageList()));
         this.initDone = true;
+    }
+}
+
+// Just to be able to initialize the message list (needed for checking if we have messages before displaying them)
+// I didn't find another way to proceed. It works like this.
+class AS530_InitMessageList extends NavSystemElement {
+    init(root) {
+        this.gps.messageList.init(root);
+    }
+    onUpdate(_deltaTime) {
+    }
+    onEnter() {
+    }
+    onExit() {
+    }
+    onEvent(_event) {
     }
 }
 

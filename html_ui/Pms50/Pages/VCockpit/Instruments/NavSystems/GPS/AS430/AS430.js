@@ -17,6 +17,8 @@ class AS430 extends BaseGPS {
                 new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7], "430"),
             ])
         ];
+        this.messageList = new GPS_Messages();
+        this.messageList.setGPS(this);
         // We delay the init of the GNS430 in order to check if there is a GNS530
         // Because at this time we must disable the GNS430 maps since
         // the simulator cannot accept more than 4 maps for an airplane (crash if more)
@@ -114,10 +116,27 @@ class AS430 extends BaseGPS {
         this.addEventLinkedPageGroup("DirectTo_Push", new NavSystemPageGroup("DRCT", this, [new NavSystemPage("DRCT", "DRCT", new GPS_DirectTo())]));
         this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("430"))]));
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
-        this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", new GPS_Messages())]));
+        this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", this.messageList)]));
         if(!state530)
             this.addIndependentElementContainer(new NavSystemElementContainer("WaypointMap", "WaypointMap", new GPS_WaypointMap()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("MSG", "MSG", new AS530_InitMessageList()));
         this.initDone = true;
+    }
+}
+
+// Just to be able to initialize the message list (needed for checking if we have messages before displaying them)
+// I didn't find another way to proceed. It works like this.
+class AS530_InitMessageList extends NavSystemElement {
+    init(root) {
+        this.gps.messageList.init(root);
+    }
+    onUpdate(_deltaTime) {
+    }
+    onEnter() {
+    }
+    onExit() {
+    }
+    onEvent(_event) {
     }
 }
 
