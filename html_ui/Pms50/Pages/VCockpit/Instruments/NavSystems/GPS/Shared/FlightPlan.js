@@ -3,7 +3,7 @@ class GPS_WaypointLine extends MFD_WaypointLine {
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
             this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
-            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident : this.waypoint.ident) + '</td><td>'
+            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 5) : this.waypoint.ident.slice(0, 5)) + '</td><td>'
                 + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
                 + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
                 + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
@@ -83,6 +83,10 @@ class GPS_WaypointLine extends MFD_WaypointLine {
                     distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
                 }
             }
+            if(activeIndex == -1 && this.index > 0) {
+                var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
+                distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
+            }
         }
         return isNaN(distance) ? "__._" : distance.toFixed(1);
     }
@@ -102,6 +106,14 @@ class GPS_WaypointLine extends MFD_WaypointLine {
                     }
                 }
             }
+            if(activeIndex == -1 && this.index > 0) {
+                var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
+                cumDistance = 0;
+                for(var i=this.index; i > 0; i--) {
+                    var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
+                    cumDistance += distance;
+                }
+            }
         }
         return isNaN(cumDistance) ? "__._" : cumDistance.toFixed(1);
     }
@@ -111,7 +123,7 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
             this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
-            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident : this.waypoint.ident) + '</td><td>'
+            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 5) : this.waypoint.ident.slice(0, 5)) + '</td><td>'
                 + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
                 + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
                 + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';

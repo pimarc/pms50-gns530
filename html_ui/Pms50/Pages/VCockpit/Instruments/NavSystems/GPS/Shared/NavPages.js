@@ -338,7 +338,7 @@ class GPS_DefaultNav extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        this.currBranchFrom.textContent = SimVar.GetSimVarValue("GPS WP PREV ID", "string");
+        this.currBranchFrom.textContent = SimVar.GetSimVarValue("GPS WP PREV ID", "string").slice(0, 5);
         if (this.gps.currFlightPlanManager.getIsDirectTo()) {
             if (this.legSymbol != 1) {
                 this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png" class="imgSizeM"/>';
@@ -410,7 +410,7 @@ class GPS_DefaultNav extends NavSystemElement {
                 }
             }
         }
-        this.currBranchTo.textContent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
+        this.currBranchTo.textContent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string").slice(0, 5);
         for (var i = 0; i < this.dnCustoms.length; i++) {
             this.dnCustoms[i].Update();
         }

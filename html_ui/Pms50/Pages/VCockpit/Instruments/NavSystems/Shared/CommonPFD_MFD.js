@@ -1754,16 +1754,25 @@ class MFD_WaypointLine extends MFD_FlightPlanLine {
                 case "CLR":
                 case "CLR_Push":
 // PM Modif: Prevent removing a waypoint after a clear on waypoint window
-                    if(!this.element.waypointWindow.element || (this.element.waypointWindow.element.preventRemove == false)){
-                        this.element.gps.confirmWindow.element.setTexts("Remove Waypoint ?");
-                        this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
-                            if (this.element.gps.confirmWindow.element.Result == 1) {
-                                this.element.removeWaypoint(this.index);
-                                this.element.gps.SwitchToInteractionState(0);
-                            }
-                            else
+// And discard removing first waypoint
+                    if(!this.element.waypointWindow.element || (this.element.waypointWindow.element.preventRemove == false)) {
+                        if(this.index > 0) {
+                            this.element.gps.confirmWindow.element.setTexts("Remove Waypoint ?");
+                            this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
+                                if (this.element.gps.confirmWindow.element.Result == 1) {
+                                    this.element.removeWaypoint(this.index);
+                                    this.element.gps.SwitchToInteractionState(0);
+                                }
+                                else
+                                    this.element.gps.SwitchToInteractionState(1);
+                            });
+                        }
+                        else {
+                            this.element.gps.alertWindow.element.setTexts("Cannot remove first waypoint", "Ok");
+                            this.element.gps.switchToPopUpPage(this.element.gps.alertWindow, () => {
                                 this.element.gps.SwitchToInteractionState(1);
-                        });
+                            });
+                        }
                     }
                     else{
                         this.element.waypointWindow.element.preventRemove = false;
@@ -1899,7 +1908,29 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
             });
             this._t = 0;
         }
-        Avionics.Utils.diffAndSet(this.titleElement, (this.gps.currFlightPlanManager.getWaypointsCount() > 0 ? (this.gps.currFlightPlanManager.getWaypoint(0).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(0).infos.ident : this.gps.currFlightPlanManager.getWaypoint(0).ident) : "______") + "&nbsp;/&nbsp;" + (this.gps.currFlightPlanManager.getWaypointsCount() > 1 ? (this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident : this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).ident) : "______"));
+// PM Modif: Make the code more clear
+        //        Avionics.Utils.diffAndSet(this.titleElement, (this.gps.currFlightPlanManager.getWaypointsCount() > 0 ? (this.gps.currFlightPlanManager.getWaypoint(0).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(0).infos.ident : this.gps.currFlightPlanManager.getWaypoint(0).ident) : "______") + "&nbsp;/&nbsp;" + (this.gps.currFlightPlanManager.getWaypointsCount() > 1 ? (this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident : this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).ident) : "______"));
+        let title = "";
+        let numwp = this.gps.currFlightPlanManager.getWaypointsCount();
+        if(numwp > 0) {
+            if(this.gps.currFlightPlanManager.getWaypoint(0).infos.ident != "")
+                title = this.gps.currFlightPlanManager.getWaypoint(0).infos.ident.slice(0, 5);
+            else
+                title = this.gps.currFlightPlanManager.getWaypoint(0).ident.slice(0, 5);
+        }
+        else
+            title = "______";
+        title += "&nbsp;/&nbsp;";
+        if(numwp > 1 && this.gps.currFlightPlanManager.getWaypoint(numwp - 1)) {
+            if(this.gps.currFlightPlanManager.getWaypoint(numwp - 1).infos.ident != "")
+                title += this.gps.currFlightPlanManager.getWaypoint(numwp - 1).infos.ident.slice(0, 5);
+            else
+                title += this.gps.currFlightPlanManager.getWaypoint(numwp - 1).ident.slice(0, 5);
+        }
+        else
+            title += "______";
+        Avionics.Utils.diffAndSet(this.titleElement, title);
+// PM Modif: End Make the code more clear
         if (!this.upToDateWaypoints) {
             this.updateWaypoints();
         }
@@ -2082,17 +2113,19 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
         let maxAltitude = undefined;
         for (let i = this.gps.currFlightPlanManager.getWaypointsCount() - 1; i >= 0; i--) {
             let wp = this.gps.currFlightPlanManager.getWaypoint(i);
-            if (maxAltitude == undefined || wp.altitudeinFP > maxAltitude) {
+// PM Modif: Bug correction for POI waypoints
+            if (wp && (maxAltitude == undefined || wp.altitudeinFP > maxAltitude)) {
                 if (wp.altitudeModeinFP == "Subdued") {
                     this.gps.currFlightPlanManager.setWaypointAdditionalData(i, "ALTITUDE_MODE", "Manual");
                 }
                 maxAltitude = wp.altitudeinFP;
             }
-            if (wp.altitudeinFP < maxAltitude) {
+            if (wp && (wp.altitudeinFP < maxAltitude)) {
                 if (wp.altitudeModeinFP == "Manual") {
                     this.gps.currFlightPlanManager.setWaypointAdditionalData(i, "ALTITUDE_MODE", "Subdued");
                 }
             }
+// PM Modif: End Bug correction for POI waypoints
         }
     }
     onWaypointSelectionEnd() {
