@@ -1756,7 +1756,7 @@ class MFD_WaypointLine extends MFD_FlightPlanLine {
 // PM Modif: Prevent removing a waypoint after a clear on waypoint window
 // And discard removing first waypoint
                     if(!this.element.waypointWindow.element || (this.element.waypointWindow.element.preventRemove == false)) {
-                        if(this.index > 0) {
+                        if(this.index >= 0) {
                             this.element.gps.confirmWindow.element.setTexts("Remove Waypoint ?");
                             this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
                                 if (this.element.gps.confirmWindow.element.Result == 1) {
@@ -1765,12 +1765,6 @@ class MFD_WaypointLine extends MFD_FlightPlanLine {
                                 }
                                 else
                                     this.element.gps.SwitchToInteractionState(1);
-                            });
-                        }
-                        else {
-                            this.element.gps.alertWindow.element.setTexts("Cannot remove first waypoint", "Ok");
-                            this.element.gps.switchToPopUpPage(this.element.gps.alertWindow, () => {
-                                this.element.gps.SwitchToInteractionState(1);
                             });
                         }
                     }
@@ -1908,11 +1902,11 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
             });
             this._t = 0;
         }
-// PM Modif: Make the code more clear
+// PM Modif: Make the code more clear and correct bug for POI
         //        Avionics.Utils.diffAndSet(this.titleElement, (this.gps.currFlightPlanManager.getWaypointsCount() > 0 ? (this.gps.currFlightPlanManager.getWaypoint(0).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(0).infos.ident : this.gps.currFlightPlanManager.getWaypoint(0).ident) : "______") + "&nbsp;/&nbsp;" + (this.gps.currFlightPlanManager.getWaypointsCount() > 1 ? (this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident != "" ? this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident : this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).ident) : "______"));
         let title = "";
         let numwp = this.gps.currFlightPlanManager.getWaypointsCount();
-        if(numwp > 0) {
+        if(numwp > 0 && this.gps.currFlightPlanManager.getWaypoint(0)) {
             if(this.gps.currFlightPlanManager.getWaypoint(0).infos.ident != "")
                 title = this.gps.currFlightPlanManager.getWaypoint(0).infos.ident.slice(0, 5);
             else

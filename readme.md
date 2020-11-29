@@ -19,7 +19,6 @@ First release features:
 # Change log
 ## V 1.0.17
 - Added initialization screen with software version
-- Prevent removing of first flight plan waypoint (departure)
 - Bug correction: freeze when using a POI into the flight plan.
 ## V 1.0.16
 - Bug correction on automatic detection of the GNS530 by the GNS4330 in cold and start mode
