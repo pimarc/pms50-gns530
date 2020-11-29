@@ -445,8 +445,11 @@ as430-element {
             overflow: hidden;
           }
           as430-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations div {
-            font-size: 9vh;
+            font-size: 8vh;
             overflow: hidden;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations .Caution {
+            color: red;
           }
         as430-element #Electricity #TopDisplay #GpsPart #ComNav #TerrainStatus {
           color: white;

@@ -1500,8 +1500,11 @@ as530-element {
           overflow: hidden;
         }
         as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations div {
-          font-size: 7vh;
+          font-size: 6.5vh;
           overflow: hidden;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations .Caution {
+          color: red;
         }
         as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock {
           display: flex;

@@ -4,10 +4,13 @@ class GPS_Annunciations extends PFD_Annunciations {
         this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.Test1);
         this.addMessage(Annunciation_MessageType.WARNING, "Test message 2", this.Test2);
         this.addMessage(Annunciation_MessageType.WARNING, "Test message 3", this.Test3);
-        // this.addMessage(Annunciation_MessageType.WARNING, "Test message 4", this.Test4);
-        // this.addMessage(Annunciation_MessageType.WARNING, "Test message 5", this.Test5);
-        // this.addMessage(Annunciation_MessageType.WARNING, "Test message 6", this.Test6);
-        // this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
+        this.addMessage(Annunciation_MessageType.WARNING, "Test message 4", this.Test4);
+        this.addMessage(Annunciation_MessageType.WARNING, "Test message 5", this.Test5);
+        this.addMessage(Annunciation_MessageType.WARNING, "Test message 6", this.Test6);
+        this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
+        this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
+        this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
+        this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
         // switch (this.engineType) {
         //     case EngineType.ENGINE_TYPE_PISTON:
         //         this.addMessage(Annunciation_MessageType.WARNING, "OIL PRESSURE", this.OilPressure);
@@ -74,10 +77,10 @@ class GPS_Annunciations extends PFD_Annunciations {
         super.onUpdate(_deltaTime);
     }
     Test1() {
-        return false;
+        return true;
     }
     Test2() {
-        return false;
+        return true;
     }
     Test3() {
         return false;
@@ -86,7 +89,7 @@ class GPS_Annunciations extends PFD_Annunciations {
         return true;
     }
     Test5() {
-        return true;
+        return false;
     }
     Test6() {
         return true;
