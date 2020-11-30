@@ -19,7 +19,9 @@ First release features:
 # Change log
 ## V 1.0.17
 - Added initialization screen with software version
-- Bug correction: freeze when using a POI into the flight plan.
+- Bug correction: freeze or CTDs when using a POI into the flight plan.
+- Initialize flight plan on GNS430 at startup
+- Added MSG button management. Only few messages available for now. More will be added. 
 ## V 1.0.16
 - Bug correction on automatic detection of the GNS530 by the GNS4330 in cold and start mode
 ## V 1.0.15
@@ -163,3 +165,6 @@ There are 3 maps available (1 for GNS430). You can use the CLR button to declutt
 
 ## Flight plan loading
 19 flight plans can be loaded. The flight plan files must be named "flx.pln" where x is a number between 1 and 19. The files must reside in the folder named fpl530 at the root of the MOD folder. Only the PLN format is accepted. If the PLN file comes from MSFS2020 (save option in world map) the MOD will recognize SID, STARS and APPR. If your PLN file comes from another software, the result may differ from the original flight plan because the producer software may not use the same database and SID, STARS or APPROCH may be not recognized (for example little navmap doesn't save procedures).
+
+## Messages
+When there are messages available, the MSG indicator is set. It blinks if there are new messages not acknowledged. In order to view and acknowledge the messages, press the MSG button. There are 3 kind of messages: Advise in green, warning in yellow and caution in red.

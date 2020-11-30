@@ -3,7 +3,7 @@ class GPS_WaypointLine extends MFD_WaypointLine {
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
             this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
-            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 5) : this.waypoint.ident.slice(0, 5)) + '</td><td>'
+            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 8) : this.waypoint.ident.slice(0, 8)) + '</td><td>'
                 + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
                 + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
                 + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
@@ -123,7 +123,7 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
             this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
-            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 5) : this.waypoint.ident.slice(0, 5)) + '</td><td>'
+            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 8) : this.waypoint.ident.slice(0, 8)) + '</td><td>'
                 + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
                 + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
                 + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
@@ -313,7 +313,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
             new ContextualMenuElement("Activate&nbsp;Leg?", this.activateLegFromMenu.bind(this), this.isCurrentlySelectedNotALeg.bind(this)),
             new ContextualMenuElement("Crossfill?", this.FPLCrossfill_CB.bind(this), true),
             new ContextualMenuElement("Copy&nbsp;Flight&nbsp;Plan?", this.FPLCopyFlightPlan_CB.bind(this), true),
-            new ContextualMenuElement("Invert&nbsp;Flight&nbsp;Plan?", this.FPLInvertFlightPlan_CB.bind(this)),
+            new ContextualMenuElement("Invert&nbsp;Flight&nbsp;Plan?", this.FPLInvertFlightPlan_CB.bind(this), this.invertFlightPlanCB.bind(this)),
             new ContextualMenuElement("Delete&nbsp;Flight&nbsp;Plan?", this.FPLDeleteFlightPlan_CB.bind(this)),
             new ContextualMenuElement("Select&nbsp;Approach?", this.FPLSelectApproach_CB.bind(this)),
             new ContextualMenuElement("Select&nbsp;Arrival?", this.FPLSelectArrival_CB.bind(this)),
@@ -432,10 +432,17 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
     FPLCopyFlightPlan_CB() {
         this.gps.SwitchToInteractionState(0);
     }
+    invertFlightPlanCB() {
+        return this.gps.currFlightPlanManager.getActiveWaypointIndex() < 0;
+    }
     FPLInvertFlightPlan_CB() {
-        this.gps.currFlightPlanManager.invertActiveFlightPlan(() => {
-            this.gps.currFlightPlanManager.updateFlightPlan(this.updateWaypoints.bind(this));
-        });
+        // Do that only if there is a vild active index (CTD otherwise ex with POI)
+        if(this.gps.currFlightPlanManager.getActiveWaypointIndex() >= 0)
+        {
+            this.gps.currFlightPlanManager.invertActiveFlightPlan(() => {
+                this.gps.currFlightPlanManager.updateFlightPlan(this.updateWaypoints.bind(this));
+            });
+        }
         this.gps.SwitchToInteractionState(0);
     }
     FPLDeleteFlightPlan_CB() {

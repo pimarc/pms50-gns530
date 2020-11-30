@@ -1,370 +1,4 @@
-class GPS_Annunciations extends PFD_Annunciations {
-    init(root) {
-        super.init(root);
-        this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.Test1);
-        this.addMessage(Annunciation_MessageType.WARNING, "Test message 2", this.Test2);
-        this.addMessage(Annunciation_MessageType.WARNING, "Test message 3", this.Test3);
-        this.addMessage(Annunciation_MessageType.WARNING, "Test message 4", this.Test4);
-        this.addMessage(Annunciation_MessageType.WARNING, "Test message 5", this.Test5);
-        this.addMessage(Annunciation_MessageType.WARNING, "Test message 6", this.Test6);
-        this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
-        this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
-        this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
-        this.addMessage(Annunciation_MessageType.CAUTION, "Test message 7", this.Test6);
-        // switch (this.engineType) {
-        //     case EngineType.ENGINE_TYPE_PISTON:
-        //         this.addMessage(Annunciation_MessageType.WARNING, "OIL PRESSURE", this.OilPressure);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "LOW VOLTS", this.LowVoltage);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "HIGH VOLTS", this.HighVoltage);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "CO LVL HIGH", this.COLevelHigh);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "STBY BATT", this.StandByBattery);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "LOW VACUUM", this.LowVaccum);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "LOW FUEL R", this.LowFuelR);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "LOW FUEL L", this.LowFuelL);
-        //         break;
-        //     case EngineType.ENGINE_TYPE_TURBOPROP:
-        //     case EngineType.ENGINE_TYPE_JET:
-        //         this.addMessage(Annunciation_MessageType.WARNING, "FUEL OFF", this.fuelOff);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "FUEL PRESS", this.fuelPress);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "OIL PRESS", this.oilPressWarning);
-        //         this.addMessageMultipleConditions(Annunciation_MessageType.WARNING, "ITT", [
-        //             new Condition(this.itt.bind(this, "1000")),
-        //             new Condition(this.itt.bind(this, "870"), 5),
-        //             new Condition(this.itt.bind(this, "840"), 20)
-        //         ]);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "FLAPS ASYM", this.flapsAsym);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "ELEC FEATH FAULT", this.elecFeathFault);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "BLEED TEMP", this.bleedTemp);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "CABIN ALTITUDE", this.cabinAltitude);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "EDM", this.edm);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "CABIN DIFF PRESS", this.cabinDiffPress);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "DOOR", this.door);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "USP ACTIVE", this.uspActive);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "GEAR UNSAFE", this.gearUnsafe);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "PARK BRAKE", this.parkBrake);
-        //         this.addMessage(Annunciation_MessageType.WARNING, "OXYGEN", this.oxygen);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "OIL PRESS", this.oilPressCaution);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "CHIP", this.chip);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "OIL TEMP", this.oilTemp);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "AUX BOOST PMP ON", this.auxBoostPmpOn);
-        //         this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["FUEL LOW L", "FUEL LOW R", "FUEL LOW L-R"], this.fuelLowSelector);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "AUTO SEL", this.autoSel);
-        //         this.addMessageTimed(Annunciation_MessageType.CAUTION, "FUEL IMBALANCE", this.fuelImbalance, 30);
-        //         this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["LOW LVL FAIL L", "LOW LVL FAIL R", "LOW LVL FAIL L-R"], this.lowLvlFailSelector);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "BAT OFF", this.batOff);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "BAT AMP", this.batAmp);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "MAIN GEN", this.mainGen);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "LOW VOLTAGE", this.lowVoltage);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "BLEED OFF", this.bleedOff);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "USE OXYGEN MASK", this.useOxygenMask);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "VACUUM LOW", this.vacuumLow);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "PROP DEICE FAIL", this.propDeiceFail);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "INERT SEP FAIL", this.inertSepFail);
-        //         this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["PITOT NO HT L", "PITOT NO HT R", "PITOT NO HT L-R"], this.pitotNoHtSelector);
-        //         this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["PITOT HT ON L", "PITOT HT ON R", "PITOT HT ON L-R"], this.pitotHtOnSelector);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "STALL NO HEAT", this.stallNoHeat);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "STALL HEAT ON", this.stallHeatOn);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "FRONT CARGO DOOR", this.frontCargoDoor);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "GPU DOOR", this.gpuDoor);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "IGNITION", this.ignition);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "STARTER", this.starter);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "MAX DIFF MODE", this.maxDiffMode);
-        //         this.addMessage(Annunciation_MessageType.CAUTION, "CPCS BACK UP MODE", this.cpcsBackUpMode);
-        //         break;
-        // }
-    }
-    onUpdate(_deltaTime) {
-        super.onUpdate(_deltaTime);
-    }
-    Test1() {
-        return true;
-    }
-    Test2() {
-        return true;
-    }
-    Test3() {
-        return false;
-    }
-    Test4() {
-        return true;
-    }
-    Test5() {
-        return false;
-    }
-    Test6() {
-        return true;
-    }
-    
-    // sayTrue() {
-    //     return true;
-    // }
-    // SafePropHeat() {
-    //     return false;
-    // }
-    // CautionPropHeat() {
-    //     return false;
-    // }
-    // StandByBattery() {
-    //     return false;
-    // }
-    // LowVaccum() {
-    //     return SimVar.GetSimVarValue("WARNING VACUUM", "Boolean");
-    // }
-    // LowPower() {
-    //     return false;
-    // }
-    // LowFuelR() {
-    //     return SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallon") < 5;
-    // }
-    // LowFuelL() {
-    //     return SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallon") < 5;
-    // }
-    // FuelTempFailed() {
-    //     return false;
-    // }
-    // ECUMinorFault() {
-    //     return false;
-    // }
-    // PitchTrim() {
-    //     return false;
-    // }
-    // StartEngage() {
-    //     return false;
-    // }
-    // OilPressure() {
-    //     return SimVar.GetSimVarValue("WARNING OIL PRESSURE", "Boolean");
-    // }
-    // LowFuelPressure() {
-    //     var pressure = SimVar.GetSimVarValue("ENG FUEL PRESSURE", "psi");
-    //     if (pressure <= 1)
-    //         return true;
-    //     return false;
-    // }
-    // LowVoltage() {
-    //     var voltage;
-    //     voltage = SimVar.GetSimVarValue("ELECTRICAL MAIN BUS VOLTAGE", "volts");
-    //     if (voltage < 24)
-    //         return true;
-    //     return false;
-    // }
-    // HighVoltage() {
-    //     var voltage;
-    //     voltage = SimVar.GetSimVarValue("ELECTRICAL MAIN BUS VOLTAGE", "volts");
-    //     if (voltage > 32)
-    //         return true;
-    //     return false;
-    // }
-    // FuelTemperature() {
-    //     return false;
-    // }
-    // ECUMajorFault() {
-    //     return false;
-    // }
-    // COLevelHigh() {
-    //     return false;
-    // }
-    // fuelOff() {
-    //     return (SimVar.GetSimVarValue("FUEL TANK SELECTOR:1", "number") == 0);
-    // }
-    // fuelPress() {
-    //     return (SimVar.GetSimVarValue("GENERAL ENG FUEL PRESSURE:1", "psi") <= 10);
-    // }
-    // oilPressWarning() {
-    //     return (SimVar.GetSimVarValue("ENG OIL PRESSURE:1", "psi") <= 60);
-    // }
-    // itt(_limit = 840) {
-    //     let itt = SimVar.GetSimVarValue("TURB ENG ITT:1", "celsius");
-    //     return (itt > _limit);
-    // }
-    // flapsAsym() {
-    //     return false;
-    // }
-    // elecFeathFault() {
-    //     return false;
-    // }
-    // bleedTemp() {
-    //     return false;
-    // }
-    // cabinAltitude() {
-    //     return SimVar.GetSimVarValue("PRESSURIZATION CABIN ALTITUDE", "feet") > 10000;
-    // }
-    // edm() {
-    //     return false;
-    // }
-    // cabinDiffPress() {
-    //     return SimVar.GetSimVarValue("PRESSURIZATION PRESSURE DIFFERENTIAL", "psi") > 6.2;
-    // }
-    // door() {
-    //     return SimVar.GetSimVarValue("EXIT OPEN:0", "percent") > 0;
-    // }
-    // uspActive() {
-    //     return false;
-    // }
-    // gearUnsafe() {
-    //     return false;
-    // }
-    // parkBrake() {
-    //     return SimVar.GetSimVarValue("BRAKE PARKING INDICATOR", "Bool");
-    // }
-    // oxygen() {
-    //     return false;
-    // }
-    // oilPressCaution() {
-    //     let press = SimVar.GetSimVarValue("ENG OIL PRESSURE:1", "psi");
-    //     return (press <= 105 && press >= 60);
-    // }
-    // chip() {
-    //     return false;
-    // }
-    // oilTemp() {
-    //     let temp = SimVar.GetSimVarValue("GENERAL ENG OIL TEMPERATURE:1", "celsius");
-    //     return (temp <= 0 || temp >= 104);
-    // }
-    // auxBoostPmpOn() {
-    //     return SimVar.GetSimVarValue("GENERAL ENG FUEL PUMP ON:1", "Bool");
-    // }
-    // fuelLowSelector() {
-    //     let left = SimVar.GetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallon") < 9;
-    //     let right = SimVar.GetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallon") < 9;
-    //     if (left && right) {
-    //         return 3;
-    //     }
-    //     else if (left) {
-    //         return 1;
-    //     }
-    //     else if (right) {
-    //         return 2;
-    //     }
-    //     else {
-    //         return 0;
-    //     }
-    // }
-    // autoSel() {
-    //     return false;
-    // }
-    // fuelImbalance() {
-    //     let left = SimVar.GetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallon");
-    //     let right = SimVar.GetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallon");
-    //     return Math.abs(left - right) > 15;
-    // }
-    // lowLvlFailSelector() {
-    //     return false;
-    // }
-    // batOff() {
-    //     return !SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "Bool");
-    // }
-    // batAmp() {
-    //     return SimVar.GetSimVarValue("ELECTRICAL BATTERY BUS AMPS", "amperes") > 50;
-    // }
-    // mainGen() {
-    //     return !SimVar.GetSimVarValue("GENERAL ENG GENERATOR SWITCH:1", "Bool");
-    // }
-    // lowVoltage() {
-    //     return SimVar.GetSimVarValue("ELECTRICAL MAIN BUS VOLTAGE", "volts") < 24.5;
-    // }
-    // bleedOff() {
-    //     return SimVar.GetSimVarValue("BLEED AIR SOURCE CONTROL", "Enum") == 1;
-    // }
-    // useOxygenMask() {
-    //     return SimVar.GetSimVarValue("PRESSURIZATION CABIN ALTITUDE", "feet") > 10000;
-    // }
-    // vacuumLow() {
-    //     return SimVar.GetSimVarValue("PARTIAL PANEL VACUUM", "Enum") == 1;
-    // }
-    // propDeiceFail() {
-    //     return false;
-    // }
-    // inertSepFail() {
-    //     return false;
-    // }
-    // pitotNoHtSelector() {
-    //     return 0;
-    // }
-    // pitotHtOnSelector() {
-    //     return 0;
-    // }
-    // stallNoHeat() {
-    //     return false;
-    // }
-    // stallHeatOn() {
-    //     return false;
-    // }
-    // frontCargoDoor() {
-    //     return false;
-    // }
-    // gpuDoor() {
-    //     return false;
-    // }
-    // ignition() {
-    //     return SimVar.GetSimVarValue("TURB ENG IS IGNITING:1", "Bool");
-    // }
-    // starter() {
-    //     return SimVar.GetSimVarValue("GENERAL ENG STARTER ACTIVE:1", "Bool");
-    // }
-    // maxDiffMode() {
-    //     return SimVar.GetSimVarValue("BLEED AIR SOURCE CONTROL", "Enum") == 3;
-    // }
-    // cpcsBackUpMode() {
-    //     return false;
-    // }
-    hasMessages() {
-        for (var i = 0; i < this.allMessages.length; i++) {
-            if (this.allMessages[i].Visible) {
-                return true;
-            }
-        }
-        return false;
-    }
-}
 
-class GPS_Messages extends NavSystemElement {
-    constructor() {
-        super();
-        this.name = "MSG";
-        this.annunciations = new GPS_Annunciations();
-        this.initialized = false;
-    }
-    init(root) {
-//        this.messages = new MessageList(this.gps);
-        if(!this.initialized) {
-            this.initialized = true;
-            this.messagesWindow = this.gps.getChildById("Messages");
-            this.annunciations.setGPS(this.gps);
-            this.annunciations.init(root);
-        }
-    }
-    onEnter() {
-        this.gps.closeConfirmWindow();
-        this.gps.closeAlertWindow();
-        this.annunciations.onEnter();
-    }
-    onUpdate(_deltaTime) {
-//        var html = "";
-//        this.messagesWindow.innerHTML = html;
-        this.annunciations.onUpdate(_deltaTime);
-    }
-    onExit() {
-        this.annunciations.onExit();
-        this.gps.closeConfirmWindow();
-        this.gps.closeAlertWindow();
-    }
-    onEvent(_event) {
-        this.annunciations.onEvent(_event);
-        if (_event == "CLR_Push") {
-            this.gps.SwitchToInteractionState(0);
-            this.gps.SwitchToPageName("NAV", "DefaultNav");
-            this.gps.currentEventLinkedPageGroup = null;
-        }
-    }
-    onSoundEnd(_eventId) {
-        this.annunciations.onSoundEnd(_eventId);
-    }
-    hasMessages() {
-        if(this.annunciations.hasMessages())
-            return true;
-        return false;
-    }
-}
 
 class GPS_ConfirmationWindow extends NavSystemElement {
     constructor() {
@@ -483,5 +117,194 @@ class GPS_AlertWindow extends NavSystemElement {
     setTexts(WindowText = "Alert", ButtonTxt = "Ok") {
         this.CurrentText = WindowText;
         this.CurrentButtonText = ButtonTxt;
+    }
+}
+
+class GPS_Messages extends NavSystemElement {
+    constructor() {
+        super();
+        this.name = "MSG";
+        this.annunciations = new GPS_Annunciations();
+        this.initialized = false;
+    }
+    init(root) {
+//        this.messages = new MessageList(this.gps);
+        if(!this.initialized) {
+            this.initialized = true;
+            this.messagesWindow = this.gps.getChildById("Messages");
+            this.annunciations.setGPS(this.gps);
+            this.annunciations.init(root);
+        }
+    }
+    onEnter() {
+        this.gps.closeConfirmWindow();
+        this.gps.closeAlertWindow();
+        this.annunciations.onEnter();
+    }
+    onUpdate(_deltaTime) {
+//        var html = "";
+//        this.messagesWindow.innerHTML = html;
+        this.annunciations.onUpdate(_deltaTime);
+    }
+    onExit() {
+        this.annunciations.onExit();
+        this.gps.closeConfirmWindow();
+        this.gps.closeAlertWindow();
+    }
+    onEvent(_event) {
+        this.annunciations.onEvent(_event);
+        if (_event == "CLR_Push") {
+            this.gps.SwitchToInteractionState(0);
+            this.gps.SwitchToPageName("NAV", "DefaultNav");
+            this.gps.currentEventLinkedPageGroup = null;
+        }
+    }
+    onSoundEnd(_eventId) {
+        this.annunciations.onSoundEnd(_eventId);
+    }
+    hasMessages() {
+        return this.annunciations.hasMessages();
+    }
+    hasNewMessages() {
+        return this.annunciations.hasNewMessages();
+    }
+}
+
+
+class GPS_Annunciations extends PFD_Annunciations {
+    constructor() {
+        super(...arguments);
+        this.isActive = false;
+    }
+    init(root) {
+        super.init(root);
+        this.addMessage(Annunciation_MessageType.CAUTION, "Invalid waypoint index", this.invalidIndex);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "Set course to", this.chekCourse);
+//        this.addMessage(Annunciation_MessageType.WARNING, "Test Obs < 10", this.testObs);
+//        this.addMessage(Annunciation_MessageType.ADVISORY, "Test Obs < 10", this.testObs);
+//        this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.sayTrue);
+        // switch (this.engineType) {
+        //     case EngineType.ENGINE_TYPE_PISTON:
+        //         break;
+        //     case EngineType.ENGINE_TYPE_TURBOPROP:
+        //     case EngineType.ENGINE_TYPE_JET:
+        //         this.addMessageMultipleConditions(Annunciation_MessageType.WARNING, "ITT", [
+        //             new Condition(this.itt.bind(this, "1000")),
+        //             new Condition(this.itt.bind(this, "870"), 5),
+        //             new Condition(this.itt.bind(this, "840"), 20)
+        //         ]);
+        //         this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["FUEL LOW L", "FUEL LOW R", "FUEL LOW L-R"], this.fuelLowSelector);
+        //         break;
+        // }
+    }
+    onEnter() {
+        super.onEnter();
+        this.isActive = true;
+    }
+    onExit() {
+        super.onExit();
+        this.isActive = false;
+    }
+    onUpdate(_deltaTime) {
+        // Set all messages to unacknowledged state here
+        if(this.isActive){
+            // Set all the visible messages to acknowledged state
+            for (let i = 0; i < this.allMessages.length; i++) {
+                if (this.allMessages[i].Visible) {
+                    this.allMessages[i].Acknowledged = true;
+                    this.needReload = true;
+                }
+            }
+        }
+        super.onUpdate(_deltaTime);
+    }
+
+    addMessage(_type, _text, _handler) {
+        var msg = new Annunciation_Message();
+        msg.Type = _type;
+        msg.Text = _text;
+        msg.gps = this.gps;
+        msg.Handler = _handler.bind(msg);
+        this.allMessages.push(msg);
+    }
+    
+    // Bug with POI waypoints
+    invalidIndex() {
+        let flightPlanActive = SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean");
+        if(!flightPlanActive)
+            return false;
+        if(this.gps.currFlightPlanManager.getWaypointsCount() < 2)
+            return false;
+        if(this.gps.currFlightPlanManager.getActiveWaypointIndex() >= 0)
+            return false;
+        this.Text = "Invalid waypoint index";
+        let nextWaypoint = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
+        if(nextWaypoint && nextWaypoint.length)
+            this.Text += ": " + nextWaypoint.slice(0, 7);
+        return true;
+    }
+    chekCourse(){
+        let flightPlanActive = SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean");
+        if(!flightPlanActive)
+            return false;
+        // No message if near the ground
+        if(SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet") < 100)
+            return false;
+        var dtk = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+        var trk = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
+        if(Math.abs(dtk-trk) < 10)
+            return false;
+        this.Text = "Set course to " + Utils.leadingZeros(fastToFixed(dtk, 0), 3) + "°";
+        return true;
+    }
+    testObs() {
+        let obs = SimVar.GetSimVarValue("NAV OBS:1", "degrees");
+        if(obs < 10)
+            return true;
+        return false;
+    }
+    sayTrue() {
+        return true;
+    }
+    
+    // itt(_limit = 840) {
+    //     let itt = SimVar.GetSimVarValue("TURB ENG ITT:1", "celsius");
+    //     return (itt > _limit);
+    // }
+    // fuelLowSelector() {
+    //     let left = SimVar.GetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallon") < 9;
+    //     let right = SimVar.GetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallon") < 9;
+    //     if (left && right) {
+    //         return 3;
+    //     }
+    //     else if (left) {
+    //         return 1;
+    //     }
+    //     else if (right) {
+    //         return 2;
+    //     }
+    //     else {
+    //         return 0;
+    //     }
+    // }
+    hasMessages() {
+        for (var i = 0; i < this.allMessages.length; i++) {
+            if (this.allMessages[i].Visible) {
+                return true;
+            }
+        }
+        return false;
+    }
+    hasNewMessages() {
+        // Check if there is a new warning or caution message
+        // Used in GPS to blink the MSG indicator
+        if(this.isActive)
+            return false;
+        for (var i = 0; i < this.allMessages.length; i++) {
+            if (this.allMessages[i].Visible && !this.allMessages[i].Acknowledged && (this.allMessages[i].Type != Annunciation_MessageType.ADVISORY)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

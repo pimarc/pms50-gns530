@@ -1908,18 +1908,18 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
         let numwp = this.gps.currFlightPlanManager.getWaypointsCount();
         if(numwp > 0 && this.gps.currFlightPlanManager.getWaypoint(0)) {
             if(this.gps.currFlightPlanManager.getWaypoint(0).infos.ident != "")
-                title = this.gps.currFlightPlanManager.getWaypoint(0).infos.ident.slice(0, 5);
+                title = this.gps.currFlightPlanManager.getWaypoint(0).infos.ident.slice(0, 7);
             else
-                title = this.gps.currFlightPlanManager.getWaypoint(0).ident.slice(0, 5);
+                title = this.gps.currFlightPlanManager.getWaypoint(0).ident.slice(0, 7);
         }
         else
             title = "______";
         title += "&nbsp;/&nbsp;";
         if(numwp > 1 && this.gps.currFlightPlanManager.getWaypoint(numwp - 1)) {
             if(this.gps.currFlightPlanManager.getWaypoint(numwp - 1).infos.ident != "")
-                title += this.gps.currFlightPlanManager.getWaypoint(numwp - 1).infos.ident.slice(0, 5);
+                title += this.gps.currFlightPlanManager.getWaypoint(numwp - 1).infos.ident.slice(0, 7);
             else
-                title += this.gps.currFlightPlanManager.getWaypoint(numwp - 1).ident.slice(0, 5);
+                title += this.gps.currFlightPlanManager.getWaypoint(numwp - 1).ident.slice(0, 7);
         }
         else
             title += "______";

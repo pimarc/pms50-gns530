@@ -57,6 +57,7 @@ class BaseGPS extends NavSystem {
         this.alertWindow = new NavSystemElementContainer("AlertWindow", "AlertWindow", new GPS_AlertWindow());
         this.alertWindow.setGPS(this);
         this._t = 0;
+        this.msg_t = 0;
         this.waypointDirectTo = null;
     }
     parseXMLConfig() {
@@ -127,19 +128,27 @@ class BaseGPS extends NavSystem {
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         Avionics.Utils.diffAndSet(this.CDIState, SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean") == 0 ? "VLOC" : "GPS");
-        if(this.messageList) {
-            this.messageList.onUpdate(_deltaTime);
-            if (this.messageList.hasMessages()) {
-                this.msgAlert.setAttribute("style", "visibility: visible");
-    //            if (this.messageList.haveNewMessages) {
-                    this.msgAlert.setAttribute("state", this.blinkGetState(1000, 500) ? "Blink" : "None");
-    //            }
-                // else {
-                //     this.msgAlert.setAttribute("state", "None");
-                // }
-            }
-            else {
-                this.msgAlert.setAttribute("style", "visibility: hidden");
+        this.msg_t++;
+        if(this.msg_t > 5)
+        {
+            this.msg_t = 0;
+            if(this.gpsType == "530" || !this.state530)
+            {
+                if(this.messageList) {
+                    this.messageList.onUpdate(_deltaTime);
+                    if (this.messageList.hasMessages()) {
+                        this.msgAlert.setAttribute("style", "visibility: visible");
+                        if (this.messageList.hasNewMessages()) {
+                            this.msgAlert.setAttribute("state", this.blinkGetState(1000, 500) ? "Blink" : "None");
+                        }
+                        else {
+                            this.msgAlert.setAttribute("state", "None");
+                        }
+                    }
+                    else {
+                        this.msgAlert.setAttribute("style", "visibility: hidden");
+                    }
+                }
             }
         }
         this.comActive.innerHTML = this.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:" + this.comIndex, "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:" + this.comIndex, "Enum") == 0 ? 2 : 3);

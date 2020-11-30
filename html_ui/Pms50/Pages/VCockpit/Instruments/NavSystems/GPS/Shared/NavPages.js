@@ -237,6 +237,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         this.cdiElement = cdiElem;
         this.baseElem = baseElem;
         this.nightLighting = false;
+        this.initialUpdate = true;
     }
     init() {
         super.init(1, true, "110%", "66%", 1.62, 1, 200);
@@ -272,6 +273,10 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        if(this.initialUpdate) {
+            this.initialUpdate = false;
+            this.gps.currFlightPlanManager.updateFlightPlan();
+        }
     }
     restoreDefaults() {
         this.baseElem.restoreCustomValues();
@@ -338,7 +343,7 @@ class GPS_DefaultNav extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        this.currBranchFrom.textContent = SimVar.GetSimVarValue("GPS WP PREV ID", "string").slice(0, 5);
+        this.currBranchFrom.textContent = SimVar.GetSimVarValue("GPS WP PREV ID", "string").slice(0, 7);
         if (this.gps.currFlightPlanManager.getIsDirectTo()) {
             if (this.legSymbol != 1) {
                 this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png" class="imgSizeM"/>';
@@ -410,7 +415,7 @@ class GPS_DefaultNav extends NavSystemElement {
                 }
             }
         }
-        this.currBranchTo.textContent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string").slice(0, 5);
+        this.currBranchTo.textContent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string").slice(0, 7);
         for (var i = 0; i < this.dnCustoms.length; i++) {
             this.dnCustoms[i].Update();
         }

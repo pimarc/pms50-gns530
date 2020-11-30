@@ -423,6 +423,7 @@ as530-element {
 /*PM Modif: End Look near original */
               width: 100%; }
             as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CurrActiveBranch #CurrBranchFrom, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #CurrActiveBranch #CurrBranchTo {
+              white-space: nowrap;
               position: absolute;
               font-size: calc(8.547008547vh);
               line-height: calc(10.6837606838vh); }
@@ -884,6 +885,7 @@ as530-element {
             width: 100%;
             overflow: visible; }
           as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit table tbody {
+            white-space: nowrap;
             background-color: black;
             border: 1vh solid #6ecdee;
             height: calc(34.188034188vh);
@@ -1496,15 +1498,18 @@ as530-element {
         as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations br {
           font-size: 2vh;
         }
-        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations {
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations, as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #acknowledged {
           overflow: hidden;
         }
-        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations div {
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations div, as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #acknowledged div {
           font-size: 6.5vh;
           overflow: hidden;
         }
-        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations .Caution {
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations .Caution, as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #acknowledged .Caution {
           color: red;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations .Advisory, as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #acknowledged .Advisory {
+          color: #8fbe31;
         }
         as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock {
           display: flex;
