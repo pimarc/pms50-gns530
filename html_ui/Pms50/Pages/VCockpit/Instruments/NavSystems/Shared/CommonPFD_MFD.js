@@ -2173,7 +2173,7 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
         this.gps.SwitchToInteractionState(1);
     }
     activateLeg(_index, _approach = false) {
-        console.log("CommonPFD_MFD.ts > Activate leg for index " + _index);
+//        console.log("CommonPFD_MFD.ts > Activate leg for index " + _index);
         if (_approach) {
             let icao = this.gps.currFlightPlanManager.getApproachWaypoints()[_index].icao;
             this.gps.currFlightPlanManager.activateApproach(() => {
