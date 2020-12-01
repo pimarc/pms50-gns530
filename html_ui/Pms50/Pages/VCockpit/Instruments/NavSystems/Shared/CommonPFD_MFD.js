@@ -1757,15 +1757,31 @@ class MFD_WaypointLine extends MFD_FlightPlanLine {
 // And discard removing first waypoint
                     if(!this.element.waypointWindow.element || (this.element.waypointWindow.element.preventRemove == false)) {
                         if(this.index >= 0) {
-                            this.element.gps.confirmWindow.element.setTexts("Remove Waypoint ?");
-                            this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
-                                if (this.element.gps.confirmWindow.element.Result == 1) {
-                                    this.element.removeWaypoint(this.index);
-                                    this.element.gps.SwitchToInteractionState(0);
-                                }
-                                else
-                                    this.element.gps.SwitchToInteractionState(1);
-                            });
+                            var curIndex  = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+                            var gsr = fastToFixed(SimVar.GetSimVarValue("SURFACE RELATIVE GROUND SPEED", "knots"), 0);
+                            // Do not remove current leg if aircraft is moving
+                            if(gsr > 0 && (this.index == curIndex || ((this.index + 1) == curIndex))) {
+                                // Cannot remove the current leg waypoints
+                                // Set a message for 20 seconds
+                                this.element.gps.attemptDeleteWpLeg++;
+                                setTimeout(() => {
+                                    this.element.gps.attemptDeleteWpLeg--;
+                                    if(this.element.gps.attemptDeleteWpLeg < 0)
+                                        this.element.gps.attemptDeleteWpLeg = 0;
+                                }, 20000);
+                                this.element.gps.SwitchToInteractionState(1);
+                            }
+                            else {
+                                this.element.gps.confirmWindow.element.setTexts("Remove Waypoint ?");
+                                this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
+                                    if (this.element.gps.confirmWindow.element.Result == 1) {
+                                        this.element.removeWaypoint(this.index);
+                                        this.element.gps.SwitchToInteractionState(0);
+                                    }
+                                    else
+                                        this.element.gps.SwitchToInteractionState(1);
+                                });
+                            }
                         }
                     }
                     else{

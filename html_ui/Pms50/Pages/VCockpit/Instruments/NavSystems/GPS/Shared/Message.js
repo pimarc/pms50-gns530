@@ -180,6 +180,8 @@ class GPS_Annunciations extends PFD_Annunciations {
         super.init(root);
         this.addMessage(Annunciation_MessageType.CAUTION, "Invalid waypoint index", this.invalidIndex);
         this.addMessage(Annunciation_MessageType.ADVISORY, "Set course to", this.chekCourse);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "Arrival at waypoint", this.arrivalWp);
+        this.addMessage(Annunciation_MessageType.WARNING, "Attempt to delete active waypoint", this.deleteWpLeg);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.ADVISORY, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.sayTrue);
@@ -230,8 +232,7 @@ class GPS_Annunciations extends PFD_Annunciations {
     
     // Bug with POI waypoints
     invalidIndex() {
-        let flightPlanActive = SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean");
-        if(!flightPlanActive)
+        if(!SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean"))
             return false;
         if(this.gps.currFlightPlanManager.getWaypointsCount() < 2)
             return false;
@@ -244,18 +245,32 @@ class GPS_Annunciations extends PFD_Annunciations {
         return true;
     }
     chekCourse(){
-        let flightPlanActive = SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean");
-        if(!flightPlanActive)
+        if(!SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean"))
             return false;
         // No message if near the ground
         if(SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet") < 100)
             return false;
-        var dtk = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
-        var trk = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
-        if(Math.abs(dtk-trk) < 10)
+        // No message if autopilot in nav mode
+        if(SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "boolean"))
             return false;
-        this.Text = "Set course to " + Utils.leadingZeros(fastToFixed(dtk, 0), 3) + "°";
+        var brg = SimVar.GetSimVarValue("GPS WP BEARING", "degree");
+        var trk = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
+        if(Math.abs(brg-trk) < 10)
+            return false;
+        this.Text = "Set course to " + Utils.leadingZeros(fastToFixed(brg, 0), 3) + "°";
         return true;
+    }
+    deleteWpLeg() {
+        return this.gps.attemptDeleteWpLeg;      
+    }
+    arrivalWp() {
+        if(!SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean"))
+            return false;
+        if(SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
+            this.Text = "Arrival at waypoint " + this.gps.currFlightPlanManager.getActiveWaypointIdent();
+            return true;
+        }
+        return false;        
     }
     testObs() {
         let obs = SimVar.GetSimVarValue("NAV OBS:1", "degrees");

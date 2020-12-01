@@ -436,7 +436,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         return this.gps.currFlightPlanManager.getActiveWaypointIndex() < 0;
     }
     FPLInvertFlightPlan_CB() {
-        // Do that only if there is a vild active index (CTD otherwise ex with POI)
+        // Do that only if there is a valid active index (CTD otherwise ex with POI)
         if(this.gps.currFlightPlanManager.getActiveWaypointIndex() >= 0)
         {
             this.gps.currFlightPlanManager.invertActiveFlightPlan(() => {

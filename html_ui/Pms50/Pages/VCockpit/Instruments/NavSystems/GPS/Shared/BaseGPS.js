@@ -59,6 +59,7 @@ class BaseGPS extends NavSystem {
         this._t = 0;
         this.msg_t = 0;
         this.waypointDirectTo = null;
+        this.attemptDeleteWpLeg = 0;
     }
     parseXMLConfig() {
         super.parseXMLConfig();
