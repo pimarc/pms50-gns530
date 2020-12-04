@@ -635,6 +635,7 @@ as530-element {
             padding-left: calc(0.4273504274vh);
             padding-right: calc(0.4273504274vh);
             border-left: calc(0.4273504274vh) solid #6ecdee;
+            background-color: #1c2878;
             color: #6ecdee; }
           as530-element #Electricity #TopDisplay #GpsPart #MapNav #MapRightDisplay .Display {
             background-color: black;

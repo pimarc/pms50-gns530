@@ -17,11 +17,13 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.18
+- Bug correction on procedures maps display
 ## V 1.0.17
 - Added initialization screen with software version
-- Bug correction: freeze or CTDs when using a POI into the flight plan.
+- Bug correction: freeze or CTDs when using a POI into the flight plan
 - Initialize flight plan on GNS430 at startup
-- Added MSG button management. Only few messages available for now. More will be added. 
+- Added MSG button management. Only a few messages are available for now. More will be added
 ## V 1.0.16
 - Bug correction on automatic detection of the GNS530 by the GNS4330 in cold and start mode
 ## V 1.0.15

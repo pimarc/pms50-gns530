@@ -386,6 +386,7 @@ as430-element {
           width: 30%;
           vertical-align: top;
           border-left: calc(0.4273504274vh) solid #6ecdee;
+          background-color: #1c2878;
           color: #6ecdee; }
         as430-element #Electricity #TopDisplay #GpsPart #MapNav #MapRightDisplay .Display {
           background-color: black;

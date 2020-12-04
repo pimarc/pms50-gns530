@@ -129,7 +129,7 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
         var waypoints = [];
         if(approach){
             var i = 0;
-            if(this.selectedTransition >= 0) {
+            if(this.selectedTransition >= 0 && approach.transitions && this.selectedTransition < approach.transitions.length) {
                 let wps = approach.transitions[this.selectedTransition].waypoints;
                 for(var i=0; i<wps.length; i++) {
                     if(wps[i].icao && wps[i].icao[0] != 'R' && wps[i].infos.coordinates){
@@ -349,8 +349,8 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
         let arrival = this.getSelectedArrival(infos);
         var waypoints = [];
         if(arrival){
-            if(this.selectedTransition >= 0) {
-                let enRouteTransition = arrival.enRouteTransitions[this.selectedRunway];
+            if(this.selectedTransition >= 0 && arrival.enRouteTransitions && this.selectedTransition < arrival.enRouteTransitions.length) {
+                let enRouteTransition = arrival.enRouteTransitions[this.selectedTransition];
                 if (enRouteTransition && enRouteTransition.legs) {
                     for (let i = 0; i < enRouteTransition.legs.length; i++) {
                         let wp = new WayPoint(this.gps);
@@ -374,7 +374,7 @@ class GPS_ArrivalSelection extends MFD_ArrivalSelection {
                     }
             }
             }
-            if(this.selectedRunway >= 0) {
+            if(this.selectedRunway >= 0 && arrival.runwayTransitions && this.selectedRunway < arrival.runwayTransitions.length) {
                 let runwayTransition = arrival.runwayTransitions[this.selectedRunway];
                 if (runwayTransition && runwayTransition.legs) {
                     for (let i = 0; i < runwayTransition.legs.length; i++) {
@@ -596,7 +596,7 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
         let departure = this.getSelectedDeparture(infos);
         var waypoints = [];
         if(departure){
-            if(this.selectedRunway >= 0) {
+            if(this.selectedRunway >= 0 && departure.runwayTransitions && this.selectedRunway < departure.runwayTransitions.length) {
                 let runwayTransition = departure.runwayTransitions[this.selectedRunway];
                 if (runwayTransition && runwayTransition.legs) {
                     for (let i = 0; i < runwayTransition.legs.length; i++) {
@@ -621,8 +621,8 @@ class GPS_DepartureSelection extends MFD_DepartureSelection {
                     }
             }
             }
-            if(this.selectedTransition >= 0) {
-                let enRouteTransition = departure.enRouteTransitions[this.selectedRunway];
+            if(this.selectedTransition >= 0 && departure.enRouteTransitions && this.selectedTransition < departure.enRouteTransitions.length) {
+                let enRouteTransition = departure.enRouteTransitions[this.selectedTransition];
                 if (enRouteTransition && enRouteTransition.legs) {
                     for (let i = 0; i < enRouteTransition.legs.length; i++) {
                         let wp = new WayPoint(this.gps);

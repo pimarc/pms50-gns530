@@ -56,6 +56,8 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.dlevel = this.gps.getChildById("MapDeclutterLevel" + this.mapnum);
         this.map = this.gps.getChildById("MapInstrument" + this.mapnum);
         this.mapDisplayRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
+        this.weatherRangeIndex = 0;
+        this.RangeIndex = 5;
         if(this.map){
             this.map.intersectionMaxRange = 16;
             this.map.mapScaleFactor = 1.4;
@@ -69,6 +71,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.northIndicator = this.gps.getChildById("NorthIndicator" + this.mapnum);
         this.windDirection = this.gps.getChildById("MapWindArrow" + this.mapnum);
         this.windVelocity = this.gps.getChildById("MapWindValue" + this.mapnum);
+        this.windUnit = this.gps.getChildById("MapWindUnit" + this.mapnum);
         this.lasttrk = -1;
         this.lastwinddir = -1;
         if(this.navCompass)
@@ -78,12 +81,14 @@ class GPS_BaseNavPage extends NavSystemPage {
         if(this.trkIndicator)
             this.trkIndicator.setAttribute("style", "visibility: hidden");
         this.alwaysHideAirspacesAndRoads = false;
+        this.displayWeather = false;
+        this.weatherModeHorizontal = true;
         this.setMapOrientation();
     }
     onEvent(_event){
         super.onEvent(_event);
         if (_event == "CLR_Push") {
-            if (!this.gps.currentContextualMenu) {
+            if (!this.gps.currentContextualMenu && !this.displayWeather) {
                 if (this.map) {
                     this.declutterLevelIndex ++;
                     if (this.declutterLevelIndex >= this.declutterLevels.length) {
@@ -111,7 +116,7 @@ class GPS_BaseNavPage extends NavSystemPage {
                     this.windDirection.style.transform = this.gps.gpsType == "530" ? "rotate(" + direction + "deg)" : "rotate(" + direction + "deg) scale(0.7)";
             }
         }
-        if(this.trackUp && (this.navCompassImg || this.northIndicatorImg)){
+        if(this.trackUp && (this.navCompassImg || this.northIndicatorImg) && !this.displayWeather){
             // magnetic north
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
             if(trk != this.lasttrk){
@@ -149,8 +154,9 @@ class GPS_BaseNavPage extends NavSystemPage {
                         this.map.roadNetwork.setVisible(true);
                 }
             }
-            if(this.mrange)
+            if(this.mrange) {
                 Avionics.Utils.diffAndSet(this.mrange, this.mapDisplayRanges[this.map.rangeIndex]);
+            }
             if(this.dlevel)
                 Avionics.Utils.diffAndSet(this.dlevel, this.declutterLevelIndex ? "-" + this.declutterLevelIndex : "");
         }
@@ -166,27 +172,51 @@ class GPS_BaseNavPage extends NavSystemPage {
         if (this.map && this.map.navMap) {
             if(this.trackUp){
                 this.map.rotateWithPlane(true);
-                if(this.navCompass)
-                    this.navCompass.setAttribute("style", "visibility: visible");
-                if(this.navBrg)
-                    this.navBrg.setAttribute("style", "visibility: visible");
-                if(this.trkIndicator)
-                    this.trkIndicator.setAttribute("style", "visibility: visible");
-                if(this.northIndicator)
-                    this.northIndicator.setAttribute("style", "visibility: visible");
-                this.map.setAttribute("style", "height: " + this.trkUpHeight + ";");
-                this.setMapRanges();
-                this.map.intersectionMaxRange = 27
-                this.map.vorMaxRange = 270;
-                this.map.ndbMaxRange = 180;
-                this.map.smallAirportMaxRange = 65;
-                this.map.medAirportMaxRange = 180;
-                this.map.smallCityMaxRange = 180;
-                this.map.medCityMaxRange = 360;
-                this.map.largeCityMaxRange = 2670;
-                this.map.npcAirplaneMaxRange = 107;
-                this.map.roadNetwork._lastRange = -1;
-
+                if(this.displayWeather){
+                    if(this.navCompass)
+                    this.navCompass.setAttribute("style", "visibility: hidden;");
+                    if(this.navBrg)
+                        this.navBrg.setAttribute("style", "visibility: hidden;");
+                    if(this.trkIndicator)
+                        this.trkIndicator.setAttribute("style", "visibility: hidden;");
+                    if(this.northIndicator)
+                        this.northIndicator.setAttribute("style", "visibility: hidden");
+                    if(this.windDirection)
+                        this.windDirection.setAttribute("style", "visibility: hidden");
+                    if(this.windVelocity)
+                        this.windVelocity.setAttribute("style", "visibility: hidden");
+                    if(this.windUnit)
+                        this.windUnit.setAttribute("style", "visibility: hidden");
+                    this.setMapRanges();
+                }
+                else {
+                    if(this.windDirection)
+                        this.windDirection.setAttribute("style", "visibility: visible");
+                    if(this.windVelocity)
+                        this.windVelocity.setAttribute("style", "visibility: visible");
+                    if(this.windUnit)
+                        this.windUnit.setAttribute("style", "visibility: visible");
+                    if(this.navCompass)
+                        this.navCompass.setAttribute("style", "visibility: visible");
+                    if(this.navBrg)
+                        this.navBrg.setAttribute("style", "visibility: visible");
+                    if(this.trkIndicator)
+                        this.trkIndicator.setAttribute("style", "visibility: visible");
+                    if(this.northIndicator)
+                        this.northIndicator.setAttribute("style", "visibility: visible");
+                    this.map.setAttribute("style", "height: " + this.trkUpHeight + ";");
+                    this.setMapRanges();
+                    this.map.intersectionMaxRange = 27
+                    this.map.vorMaxRange = 270;
+                    this.map.ndbMaxRange = 180;
+                    this.map.smallAirportMaxRange = 65;
+                    this.map.medAirportMaxRange = 180;
+                    this.map.smallCityMaxRange = 180;
+                    this.map.medCityMaxRange = 360;
+                    this.map.largeCityMaxRange = 2670;
+                    this.map.npcAirplaneMaxRange = 107;
+                    this.map.roadNetwork._lastRange = -1;
+                }
             }
             else{
                 this.map.rotateWithPlane(false);
@@ -221,6 +251,45 @@ class GPS_BaseNavPage extends NavSystemPage {
                 break;
             this.map._ranges[i] = this.mapDisplayRanges[i]*rangeFactor;
         }
+    }
+    toggleMapWeather() {
+        let elem = this.gps.getElementOfType(MapInstrumentElement);
+        if(this.displayWeather){
+            this.displayWeather = false;
+            this.weatherRangeIndex = this.map.rangeIndex;
+            this.map.rangeIndex = this.RangeIndex;
+            this.map.showWeather(EWeatherRadar.OFF);
+            this.alwaysHideAirspacesAndRoads = false;
+            this.setMapOrientation();
+        }
+        else {
+            this.displayWeather = true;
+            this.weatherModeHorizontal = true;
+            this.trackUp  = true;
+            this.alwaysHideAirspacesAndRoads = true;
+            this.RangeIndex = this.map.rangeIndex;
+            this.map.rangeIndex = this.weatherRangeIndex;
+            this.map.showWeather(EWeatherRadar.HORIZONTAL);
+            this.map.showWeatherWithGPS(EWeatherRadar.HORIZONTAL);
+            this.setMapOrientation();
+        }
+        this.gps.currentContextualMenu = null;
+        this.gps.SwitchToInteractionState(0);
+    }
+    toggleWeatherMode() {
+        if(this.displayWeather){
+            if(this.weatherModeHorizontal){
+                this.map.showWeather(EWeatherRadar.VERTICAL);
+                this.weatherModeHorizontal = false;
+            }
+            else {
+                this.map.showWeather(EWeatherRadar.HORIZONTAL);
+                this.map.showWeatherWithGPS(EWeatherRadar.HORIZONTAL);
+                this.weatherModeHorizontal = true;
+            }
+        }
+        this.gps.currentContextualMenu = null;
+        this.gps.SwitchToInteractionState(0);
     }
 }
 
@@ -463,10 +532,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         super.init(2, false, "110%", "66%", 1.47, 1.53, 2000);
         this.displayData = true;
         this.defaultMenu = new ContextualMenu("PAGE MENU", [
-            new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this)),
+            new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)),
             new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)),
-            new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)),
-            new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this))
+            new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this), this.toggleMapOrientationCB.bind(this)),
+            new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this), this.restoreDefaultsCB.bind(this)),
+            new ContextualMenuElement("Map/Weather", this.toggleMapWeather.bind(this), this.toggleMapWeatherCB.bind(this)),
+            new ContextualMenuElement("Horizontal/Vertical", this.toggleWeatherMode.bind(this), this.toggleWeatherModeCB.bind(this))
         ]);
         // No data displayed by default
         this.toggleDataDisplay();
@@ -486,6 +557,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
     }
+    restoreDefaultsCB(){
+        return !this.displayData;
+    }
     restoreDefaults() {
         this.baseElem.restoreCustomValues();
         this.gps.currentContextualMenu = null;
@@ -504,6 +578,28 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         }
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
+    }
+    toggleMapOrientationCB(){
+        return this.displayWeather;
+    }
+    toggleWeatherModeCB(){
+        return !this.displayWeather;
+    }
+    toggleMapWeatherCB(){
+        return this.displayData;
+    }
+    toggleMapWeather() {
+        super.toggleMapWeather();
+        this.gps.currentContextualMenu = null;
+        this.gps.SwitchToInteractionState(0);
+    }
+    toggleWeatherMode() {
+        super.toggleWeatherMode();
+        this.gps.currentContextualMenu = null;
+        this.gps.SwitchToInteractionState(0);
+    }
+    toggleDisplayDataCB(){
+        return this.displayWeather;
     }
     toggleDataDisplay(){
         this.displayData = this.displayData ? false : true;
