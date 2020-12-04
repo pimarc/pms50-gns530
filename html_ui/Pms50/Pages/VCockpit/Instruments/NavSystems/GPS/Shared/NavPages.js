@@ -88,12 +88,14 @@ class GPS_BaseNavPage extends NavSystemPage {
     onEvent(_event){
         super.onEvent(_event);
         if (_event == "CLR_Push") {
-            if (!this.gps.currentContextualMenu && !this.displayWeather) {
+            if (!this.gps.currentContextualMenu) {
                 if (this.map) {
                     this.declutterLevelIndex ++;
                     if (this.declutterLevelIndex >= this.declutterLevels.length) {
                         this.declutterLevelIndex = 0;
                     }
+                    if(this.displayWeather)
+                        this.declutterLevelIndex = 0;
                     this.map.declutterLevel=this.declutterLevels[this.declutterLevelIndex];
                 }
             }
@@ -140,7 +142,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         }
 
         if (this.map) {
-            if(this.declutterLevelIndex || this.map.getDisplayRange() > 90) {
+            if(this.declutterLevelIndex || this.map.getDisplayRange() > 90 || this.displayWeather) {
                 if(this.map.roadNetwork)
                     this.map.roadNetwork.setVisible(false);
                 this.map.showAirspaces = false;
@@ -254,6 +256,7 @@ class GPS_BaseNavPage extends NavSystemPage {
     }
     toggleMapWeather() {
         let elem = this.gps.getElementOfType(MapInstrumentElement);
+        this.declutterLevelIndex = 0;
         if(this.displayWeather){
             this.displayWeather = false;
             this.weatherRangeIndex = this.map.rangeIndex;
