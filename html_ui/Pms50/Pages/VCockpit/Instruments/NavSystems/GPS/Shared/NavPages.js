@@ -75,6 +75,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.windDirection = this.gps.getChildById("MapWindArrow" + this.mapnum);
         this.windVelocity = this.gps.getChildById("MapWindValue" + this.mapnum);
         this.windUnit = this.gps.getChildById("MapWindUnit" + this.mapnum);
+        this.windContainer = this.gps.getChildById("Wind" + this.mapnum);
         this.lasttrk = -1;
         this.lastwinddir = -1;
         if(this.navCompass)
@@ -176,12 +177,8 @@ class GPS_BaseNavPage extends NavSystemPage {
             if(this.displayWeather){
                 if(this.mrangeContainer)
                     this.mrangeContainer.setAttribute("style", "visibility: hidden");
-                if(this.windDirection)
-                    this.windDirection.setAttribute("style", "visibility: hidden");
-                if(this.windVelocity)
-                    this.windVelocity.setAttribute("style", "visibility: hidden");
-                if(this.windUnit)
-                    this.windUnit.setAttribute("style", "visibility: hidden");
+                if(this.windContainer)
+                    this.windContainer.setAttribute("style", "visibility: hidden");
                 if(this.navCompass)
                     this.navCompass.setAttribute("style", "visibility: hidden;");
                 if(this.navBrg)
@@ -194,12 +191,8 @@ class GPS_BaseNavPage extends NavSystemPage {
             else {
                 if(this.mrangeContainer)
                     this.mrangeContainer.setAttribute("style", "visibility: visible");
-                if(this.windDirection)
-                    this.windDirection.setAttribute("style", "visibility: visible");
-                if(this.windVelocity)
-                    this.windVelocity.setAttribute("style", "visibility: visible");
-                if(this.windUnit)
-                    this.windUnit.setAttribute("style", "visibility: visible");
+                if(this.windContainer)
+                    this.windContainer.setAttribute("style", "visibility: visible");
                if(this.trackUp){
                     if(this.navCompass)
                         this.navCompass.setAttribute("style", "visibility: visible");
@@ -284,11 +277,11 @@ class GPS_BaseNavPage extends NavSystemPage {
             this.map.rangeIndex = 0;
     }
     toggleMapWeather() {
-        let elem = this.gps.getElementOfType(MapInstrumentElement);
+        let elem = this.gps.getElementOfType(GPS_Map);
         if(this.displayWeather){
             this.displayWeather = false;
             this.restoreRange();
-            let elem = this.element.getElementOfType(MapInstrumentElement);
+            let elem = this.element.getElementOfType(GPS_Map);
             if(elem)
                 elem.setWeather(EWeatherRadar.OFF);
         }
@@ -296,7 +289,7 @@ class GPS_BaseNavPage extends NavSystemPage {
             this.displayWeather = true;
             this.weatherModeHorizontal = true;
             this.saveRange();
-            let elem = this.element.getElementOfType(MapInstrumentElement);
+            let elem = this.element.getElementOfType(GPS_Map);
             if(elem)
                 elem.setWeather(EWeatherRadar.HORIZONTAL);
         }
@@ -307,13 +300,13 @@ class GPS_BaseNavPage extends NavSystemPage {
     toggleWeatherMode() {
         if(this.displayWeather){
             if(this.weatherModeHorizontal){
-                let elem = this.element.getElementOfType(MapInstrumentElement);
+                let elem = this.element.getElementOfType(GPS_Map);
                 if(elem)
                     elem.setWeather(EWeatherRadar.VERTICAL);
                 this.weatherModeHorizontal = false;
             }
             else {
-                let elem = this.element.getElementOfType(MapInstrumentElement);
+                let elem = this.element.getElementOfType(GPS_Map);
                 if(elem)
                     elem.setWeather(EWeatherRadar.HORIZONTAL);
                 this.weatherModeHorizontal = true;

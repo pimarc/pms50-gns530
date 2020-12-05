@@ -55,11 +55,11 @@ class AS530 extends BaseGPS {
 
     doInit(){
         var defaultNav = new GPS_DefaultNavPage(5, [3, 4, 9, 7, 10], "530");
-        defaultNav.element.addElement(new MapInstrumentElement());
+        defaultNav.element.addElement(new GPS_Map());
         var mapNav = new GPS_MapNavPage(5, [16, 3, 10, 4, 9]);
-        mapNav.element.addElement(new MapInstrumentElement());
+        mapNav.element.addElement(new GPS_Map());
         var terrainNav = new GPS_TerrainNavPage(0, []);
-        terrainNav.element.addElement(new MapInstrumentElement());
+        terrainNav.element.addElement(new GPS_Map());
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
                 defaultNav,

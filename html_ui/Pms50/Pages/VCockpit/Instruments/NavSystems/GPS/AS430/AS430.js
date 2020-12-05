@@ -68,7 +68,7 @@ class AS430 extends BaseGPS {
     doInit(){
         this.menuMaxElems = 11;
         var defaultNav = new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7], "430");
-        defaultNav.element.addElement(new MapInstrumentElement());
+        defaultNav.element.addElement(new GPS_Map());
         var PageGroupNav = null;
         // Check if we have a GNS530 in the plane (must be loaded first)
         // And disable maps in this case
@@ -81,7 +81,7 @@ class AS430 extends BaseGPS {
         }
         else {
             var mapNav = new GPS_MapNavPage(4, [16, 3, 4, 9]);
-            mapNav.element.addElement(new MapInstrumentElement());
+            mapNav.element.addElement(new GPS_Map());
             PageGroupNav = new NavSystemPageGroup("NAV", this, [
                 defaultNav,
                 mapNav,
