@@ -59,6 +59,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.map = this.gps.getChildById("MapInstrument" + this.mapnum);
         this.mapDisplayRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
         this.weatherRangeIndex = 0;
+        this.weatherLegend = true;
         this.mapSavedRanges = [];
         this.mapSavedRangeIndex = 0;
         if(this.map){
@@ -281,39 +282,47 @@ class GPS_BaseNavPage extends NavSystemPage {
         if(this.displayWeather){
             this.displayWeather = false;
             this.restoreRange();
-            let elem = this.element.getElementOfType(GPS_Map);
             if(elem)
-                elem.setWeather(EWeatherRadar.OFF);
+                elem.setWeather(EWeatherRadar.OFF, this.weatherLegend);
         }
         else {
             this.displayWeather = true;
-            this.weatherModeHorizontal = true;
             this.saveRange();
-            let elem = this.element.getElementOfType(GPS_Map);
-            if(elem)
-                elem.setWeather(EWeatherRadar.HORIZONTAL);
+            if(elem){
+                if(this.weatherModeHorizontal)
+                    elem.setWeather(EWeatherRadar.HORIZONTAL, this.weatherLegend);
+                else
+                    elem.setWeather(EWeatherRadar.VERTICAL, this.weatherLegend);
+            }
         }
         this.setDisplayElements();
-        this.gps.currentContextualMenu = null;
-        this.gps.SwitchToInteractionState(0);
     }
     toggleWeatherMode() {
         if(this.displayWeather){
+            let elem = this.element.getElementOfType(GPS_Map);
             if(this.weatherModeHorizontal){
-                let elem = this.element.getElementOfType(GPS_Map);
                 if(elem)
-                    elem.setWeather(EWeatherRadar.VERTICAL);
+                    elem.setWeather(EWeatherRadar.VERTICAL, this.weatherLegend);
                 this.weatherModeHorizontal = false;
             }
             else {
-                let elem = this.element.getElementOfType(GPS_Map);
                 if(elem)
-                    elem.setWeather(EWeatherRadar.HORIZONTAL);
+                    elem.setWeather(EWeatherRadar.HORIZONTAL, this.weatherLegend);
                 this.weatherModeHorizontal = true;
             }
         }
-        this.gps.currentContextualMenu = null;
-        this.gps.SwitchToInteractionState(0);
+    }
+    toggleWeatherLegend() {
+        if(this.displayWeather){
+            this.weatherLegend = this.weatherLegend ? false : true;
+            let elem = this.element.getElementOfType(GPS_Map);
+            if(elem){
+                if(this.weatherModeHorizontal)
+                    elem.setWeather(EWeatherRadar.HORIZONTAL, this.weatherLegend);
+                else
+                    elem.setWeather(EWeatherRadar.VERTICAL, this.weatherLegend);
+            }
+        }
     }
 }
 
@@ -561,7 +570,8 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this), this.toggleMapOrientationCB.bind(this)),
             new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this), this.restoreDefaultsCB.bind(this)),
             new ContextualMenuElement("Map/Weather", this.toggleMapWeather.bind(this), this.toggleMapWeatherCB.bind(this)),
-            new ContextualMenuElement("Horizontal/Vertical", this.toggleWeatherMode.bind(this), this.toggleWeatherModeCB.bind(this))
+            new ContextualMenuElement("Weather H/V", this.toggleWeatherMode.bind(this), this.toggleWeatherModeCB.bind(this)),
+            new ContextualMenuElement("Weather legend", this.toggleWeatherLegend.bind(this), this.toggleWeatherLegendCB.bind(this))
         ]);
         // No data displayed by default
         this.toggleDataDisplay();
@@ -609,6 +619,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     toggleWeatherModeCB(){
         return !this.displayWeather;
     }
+    toggleWeatherLegendCB(){
+        return !this.displayWeather;
+    }
     toggleMapWeatherCB(){
         return this.displayData;
     }
@@ -619,6 +632,11 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     }
     toggleWeatherMode() {
         super.toggleWeatherMode();
+        this.gps.currentContextualMenu = null;
+        this.gps.SwitchToInteractionState(0);
+    }
+    toggleWeatherLegend() {
+        super.toggleWeatherLegend();
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
     }
