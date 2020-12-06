@@ -60,7 +60,8 @@ class BaseGPS extends NavSystem {
         this.msg_t = 0;
         this.waypointDirectTo = null;
         this.attemptDeleteWpLeg = 0;
-        this.useWeatherRadar = false;
+        this.WeatherRadar = false;
+        this.WeatherRadarLegend = false;
         this.loadConfig();
     }
     parseXMLConfig() {
@@ -360,9 +361,12 @@ class BaseGPS extends NavSystem {
             var milliseconds = new Date().getTime().toString();
             this.loadFile("/VFS/Config/pms50-gns530/config.json" + "?id=" + milliseconds, (text) => {
                 let data = JSON.parse(text);
-                this.useWeatherRadar = false;
+                this.WeatherRadar = false;
+                this.WeatherRadarLegend = false;
                 if(data.weather_radar && data.weather_radar.toUpperCase() == "ON")
-                    this.useWeatherRadar = true;
+                    this.WeatherRadar = true;
+                if(data.weather_legend && data.weather_legend.toUpperCase() == "ON")
+                    this.WeatherRadarLegend = true;
                 resolve();
             });
         });

@@ -59,7 +59,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.map = this.gps.getChildById("MapInstrument" + this.mapnum);
         this.mapDisplayRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
         this.weatherRangeIndex = 0;
-        this.weatherLegend = true;
+        this.weatherLegend = this.gps.WeatherRadarLegend;
         this.mapSavedRanges = [];
         this.mapSavedRangeIndex = 0;
         if(this.map){
@@ -569,10 +569,11 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         menu_elements.push(new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this), this.toggleMapOrientationCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this), this.restoreDefaultsCB.bind(this)));
-        if(this.gps.useWeatherRadar) {
+        if(this.gps.WeatherRadar) {
             menu_elements.push(new ContextualMenuElement("Map/Weather", this.toggleMapWeather.bind(this), this.toggleMapWeatherCB.bind(this)));
             menu_elements.push(new ContextualMenuElement("Weather H/V", this.toggleWeatherMode.bind(this), this.toggleWeatherModeCB.bind(this)));
-            menu_elements.push(new ContextualMenuElement("Weather legend", this.toggleWeatherLegend.bind(this), this.toggleWeatherLegendCB.bind(this)));
+            if(this.gps.WeatherRadarLegend)
+                menu_elements.push(new ContextualMenuElement("Weather legend", this.toggleWeatherLegend.bind(this), this.toggleWeatherLegendCB.bind(this)));
         }
         this.defaultMenu = new ContextualMenu("PAGE MENU", menu_elements);
         // No data displayed by default
