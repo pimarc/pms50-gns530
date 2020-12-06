@@ -564,15 +564,17 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     init() {
         super.init(2, false, "110%", "66%", 1.47, 1.53, 2000);
         this.displayData = true;
-        this.defaultMenu = new ContextualMenu("PAGE MENU", [
-            new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)),
-            new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)),
-            new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this), this.toggleMapOrientationCB.bind(this)),
-            new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this), this.restoreDefaultsCB.bind(this)),
-            new ContextualMenuElement("Map/Weather", this.toggleMapWeather.bind(this), this.toggleMapWeatherCB.bind(this)),
-            new ContextualMenuElement("Weather H/V", this.toggleWeatherMode.bind(this), this.toggleWeatherModeCB.bind(this)),
-            new ContextualMenuElement("Weather legend", this.toggleWeatherLegend.bind(this), this.toggleWeatherLegendCB.bind(this))
-        ]);
+        var menu_elements = [];
+        menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
+        menu_elements.push(new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)));
+        menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this), this.toggleMapOrientationCB.bind(this)));
+        menu_elements.push(new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this), this.restoreDefaultsCB.bind(this)));
+        if(this.gps.useWeatherRadar) {
+            menu_elements.push(new ContextualMenuElement("Map/Weather", this.toggleMapWeather.bind(this), this.toggleMapWeatherCB.bind(this)));
+            menu_elements.push(new ContextualMenuElement("Weather H/V", this.toggleWeatherMode.bind(this), this.toggleWeatherModeCB.bind(this)));
+            menu_elements.push(new ContextualMenuElement("Weather legend", this.toggleWeatherLegend.bind(this), this.toggleWeatherLegendCB.bind(this)));
+        }
+        this.defaultMenu = new ContextualMenu("PAGE MENU", menu_elements);
         // No data displayed by default
         this.toggleDataDisplay();
     }
