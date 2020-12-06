@@ -19,6 +19,9 @@ First release features:
 # Change log
 ## V 1.0.18
 - Bug correction on procedures maps display
+- Added NEXRAD in map NAV page menu
+- Added a config file
+- Added weather radar as an option in the config file. See note.
 ## V 1.0.17
 - Added initialization screen with software version
 - Bug correction: freeze or CTDs when using a POI into the flight plan
