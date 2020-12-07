@@ -590,7 +590,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.gps.closePopUpElement();
             this.gps.currentContextualMenu = null;
             this.gps.SwitchToInteractionState(0);
-            if(this.displayWeather)
+            if(this.displayWeather && this.gps.weatherRadarLegend)
                 this.toggleWeatherLegend();
         }
         if (_event == "ENT_Push")  {
