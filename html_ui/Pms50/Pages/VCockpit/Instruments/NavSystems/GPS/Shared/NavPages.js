@@ -573,16 +573,11 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     init() {
         super.init(2, false, "110%", "66%", 1.47, 1.53, 2000);
         this.displayData = true;
+        this.savedDisplayData = this.displayData;
         var menu_elements = [];
         menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
-        menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this), this.toggleMapOrientationCB.bind(this)));
+        menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)));
         menu_elements.push(new ContextualMenuElement("Nexrad on/off", this.toggleNexrad.bind(this), this.toggleNexradCB.bind(this)));
-        if(this.gps.weatherRadar && this.gps.gpsType == "530") {
-            menu_elements.push(new ContextualMenuElement("Map/Weather", this.toggleMapWeather.bind(this), this.toggleMapWeatherCB.bind(this)));
-            menu_elements.push(new ContextualMenuElement("Weather H/V", this.toggleWeatherMode.bind(this), this.toggleWeatherModeCB.bind(this)));
-            if(this.gps.weatherRadarLegend)
-                menu_elements.push(new ContextualMenuElement("Weather legend", this.toggleWeatherLegend.bind(this), this.toggleWeatherLegendCB.bind(this)));
-        }
         menu_elements.push(new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this), this.restoreDefaultsCB.bind(this)));
         this.defaultMenu = new ContextualMenu("PAGE MENU", menu_elements);
@@ -595,6 +590,22 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.gps.closePopUpElement();
             this.gps.currentContextualMenu = null;
             this.gps.SwitchToInteractionState(0);
+            if(this.displayWeather)
+                this.toggleWeatherLegend();
+        }
+        if (_event == "ENT_Push")  {
+            if(!this.gps.currentContextualMenu)
+            {
+                if(this.displayWeather)
+                    this.toggleWeatherMode();
+            }
+        }
+        if (_event == "NavigationPush")  {
+            if(this.gps.weatherRadar && this.gps.gpsType == "530")
+            {
+                if(!this.gps.currentContextualMenu)
+                    this.toggleMapWeather();
+            }
         }
         if (_event == "MENU_Push")  {
             // Unblock declutter when leving menu
@@ -626,22 +637,23 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
     }
-    toggleMapOrientationCB(){
-        return this.displayWeather;
-    }
     toggleWeatherModeCB(){
-        return !this.displayWeather;
-    }
-    toggleWeatherLegendCB(){
         return !this.displayWeather;
     }
     toggleNexradCB(){
         return this.displayWeather;
     }
-    toggleMapWeatherCB(){
-        return this.displayData;
-    }
     toggleMapWeather() {
+        if(this.displayWeather){
+            if(this.savedDisplayData)
+                this.toggleDataDisplay();
+        }
+        else
+        {
+            this.savedDisplayData = this.displayData;
+            if(this.displayData)
+                this.toggleDataDisplay();
+        }
         super.toggleMapWeather();
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
