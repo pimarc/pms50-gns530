@@ -18,10 +18,10 @@ First release features:
 
 # Change log
 ## V 1.0.18
-- Bug correction on procedures maps display
 - Added NEXRAD in map NAV page menu
 - Added a config file
 - Added weather radar as an option in the config file. See notes.
+- Bug correction on procedures maps display
 ## V 1.0.17
 - Added initialization screen with software version
 - Bug correction: freeze or CTDs when using a POI into the flight plan
@@ -178,5 +178,5 @@ When there are messages available, the MSG indicator is set. It blinks if there 
 The config file is named config.json and is located in the directory Config/pms50-gns530 directory of the MOD. This file is not distributed but a file named example_config.json is available in this same directory. You can copy it or rename it to be your current config.json file.
 
 ## Weather radar
-This is a not standard feature (not available in original GNS530) so by default it's not activated. In order to activate it, you must set the entry "weather_radar: on" into the config.json file. When the weather radar is activated, you can add a legend by setting the entry "weather_legend: on" into the config.json file.
+This is a not standard feature (not available in original GNS530) so by default it's not activated. In order to activate it, you must set the entry "weather_radar: on" into the config.json file. When the weather radar is activated, you can display a legend by setting the entry "weather_legend: on" into the config.json file.
 The weather radar is then available in the GNS530 from the map NAV page (second NAV page). Push the right knob button for switching between radar mode and map mode. While in radar mode, use the "ENT" button to toggle horizontal and vertical modes. If you have activated the legend, you can toggle its display with the "CLR" button.
