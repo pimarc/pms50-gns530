@@ -177,7 +177,13 @@ class GPS_Annunciations extends PFD_Annunciations {
         this.isActive = false;
     }
     init(root) {
-        super.init(root);
+        // We have rebuilt all the init in order to discard XML engine alert messages. They should not be displayed in these GPS.
+//        super.init(root);
+        this.engineType = Simplane.getEngineType();
+        if (this.rootElementName != "")
+            this.annunciations = this.gps.getChildById(this.rootElementName);
+        this.newAnnunciations = this.gps.getChildById("newAnnunciations");
+        this.acknowledged = this.gps.getChildById("acknowledged");
         this.addMessage(Annunciation_MessageType.CAUTION, "Invalid waypoint index", this.invalidIndex);
         this.addMessage(Annunciation_MessageType.ADVISORY, "Set course to", this.chekCourse);
         this.addMessage(Annunciation_MessageType.ADVISORY, "Arrival at waypoint", this.arrivalWp);

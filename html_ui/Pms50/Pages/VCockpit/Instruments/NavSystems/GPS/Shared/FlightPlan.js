@@ -699,6 +699,8 @@ class GPS_FPLCatalog extends NavSystemElement {
         super();
         this.name = "FPLCatalog";
         this.nbElemsMax = 7;
+        if(_type == "430")
+            this.nbElemsMax = 5;
         this.fplList = new FPLCatalog();
     }
     init() {

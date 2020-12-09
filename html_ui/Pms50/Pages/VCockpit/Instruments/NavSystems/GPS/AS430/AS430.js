@@ -12,7 +12,7 @@ class AS430 extends BaseGPS {
         this.initScreen = this.getChildById("InitScreen");
         this.initScreenBottomInfo = this.getChildById("InitScreenBottomInfo");
         this.NbLoopInitScreen = 150;
-        this.initScreen.setAttribute("style", "display: flex");
+        this.initScreen.setAttribute("style", "display: none");
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
                 new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7], "430"),
@@ -26,7 +26,11 @@ class AS430 extends BaseGPS {
     }
     onUpdate(_deltaTime) {
         // Normal start
+        if(!this.isStarted){
+            this.initScreen.setAttribute("style", "display: none");
+        }
         if(this.isStarted && this.toInit) {
+            this.initScreen.setAttribute("style", "display: flex");
             this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br /> Initializing...";
             this.cnt++;
             if(this.cnt > this.NbLoopInitScreen || this.superCnt > 0){
@@ -114,7 +118,11 @@ class AS430 extends BaseGPS {
             ])
         ];
         this.addEventLinkedPageGroup("DirectTo_Push", new NavSystemPageGroup("DRCT", this, [new NavSystemPage("DRCT", "DRCT", new GPS_DirectTo())]));
-        this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("430"))]));
+        this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [
+            new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("430")),
+            new NavSystemPage("FPLCatalog", "FPLCatalog", new GPS_FPLCatalog("430"))
+        ]));
+//        this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("430"))]));
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", this.messageList)]));
         if(!this.state530)

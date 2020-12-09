@@ -10,7 +10,7 @@ class AS530 extends BaseGPS {
         this.initScreen = this.getChildById("InitScreen");
         this.initScreenBottomInfo = this.getChildById("InitScreenBottomInfo");
         this.NbLoopInitScreen = 150;
-        this.initScreen.setAttribute("style", "display: flex");
+        this.initScreen.setAttribute("style", "display: none");
         this.pageGroups = [
             new NavSystemPageGroup("AUX", this, [
                 new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
@@ -22,7 +22,11 @@ class AS530 extends BaseGPS {
 
     onUpdate(_deltaTime) {
         // Normal start
+        if(!this.isStarted){
+            this.initScreen.setAttribute("style", "display: none");
+        }
         if(this.isStarted && this.toInit) {
+            this.initScreen.setAttribute("style", "display: flex");
             this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br /> Initializing...";
             this.cnt++;
             // Init delayed after 50 updates

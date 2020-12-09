@@ -17,6 +17,10 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.19
+- But correction in init screen.
+- Added flight plan load in GNS430.
+- Engine alert messages no more displayed (the GPS is not the place to display them).
 ## V 1.0.18
 - Added NEXRAD in map NAV page menu
 - Added a config file
