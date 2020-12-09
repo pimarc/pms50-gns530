@@ -17,6 +17,8 @@ First release features:
 - Adding a declutter level
 
 # Change log
+## V 1.0.20
+- Radar mode: switch now made by ENT button
 ## V 1.0.19
 - Bug in init screen fixed
 - Added flight plan load in GNS430
@@ -183,4 +185,4 @@ The config file is named config.json and is located in the directory Config/pms5
 
 ## Weather radar
 This is a not standard feature (not available in original GNS530) so by default it's not activated. In order to activate it, you must set the entry "weather_radar: on" into the config.json file. When the weather radar is activated, you can display a legend by setting the entry "weather_legend: on" into the config.json file.
-The weather radar is then available in the GNS530 from the map NAV page (second NAV page). Push the right knob button for switching between radar mode and map mode. While in radar mode, use the "ENT" button to toggle horizontal and vertical modes. If you have activated the legend, you can toggle its display with the "CLR" button.
+The weather radar is then available in the GNS530 from the map NAV page (second NAV page). Push the "ENT" button to toggle between map, radar horizontal and radar vertical modes. While in radar mode, and if you have activated the legend, you can toggle its display with the "CLR" button.

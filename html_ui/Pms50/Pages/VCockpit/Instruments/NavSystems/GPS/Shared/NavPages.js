@@ -594,18 +594,21 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.toggleWeatherLegend();
         }
         if (_event == "ENT_Push")  {
-            if(!this.gps.currentContextualMenu)
-            {
-                if(this.displayWeather)
-                    this.toggleWeatherMode();
-            }
-        }
-        if (_event == "NavigationPush")  {
             if(this.gps.weatherRadar && this.gps.gpsType == "530")
             {
                 if(!this.gps.currentContextualMenu)
-                    this.toggleMapWeather();
-            }
+                    if(!this.displayWeather || !this.weatherModeHorizontal) {
+                        if(!this.weatherModeHorizontal)
+                            this.toggleWeatherMode();
+                        this.toggleMapWeather();
+                    }
+                    else
+                        this.toggleWeatherMode();
+                }
+        }
+        if (_event == "NavigationPush")  {
+            if(this.gps.currentInteractionState != 2)
+                this.gps.currentContextualMenu = null;
         }
         if (_event == "MENU_Push")  {
             // Unblock declutter when leving menu
