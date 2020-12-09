@@ -1,4 +1,5 @@
 {
   "weather_radar": "on",
-  "weather_legend": "on"
+  "weather_legend": "on",
+  "debug": "on"
 }

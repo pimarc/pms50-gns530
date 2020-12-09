@@ -62,7 +62,16 @@ class BaseGPS extends NavSystem {
         this.attemptDeleteWpLeg = 0;
         this.weatherRadar = false;
         this.weatherRadarLegend = false;
-        this.loadConfig();
+        this.debug = false;
+        //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
+        this.loadConfig(() => {
+            if(this.debug) {
+                Include.addScript("/JS/debug.js", function () {
+                    g_modDebugMgr.AddConsole(null);
+                });
+            }
+        });
+        //PM Modif: End Add debugging tool WebUI-DevKit (must be on the community folder)
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -356,17 +365,21 @@ class BaseGPS extends NavSystem {
             });
         });
     }
-    loadConfig() {
+    loadConfig(callback) {
         return new Promise((resolve) => {
             var milliseconds = new Date().getTime().toString();
             this.loadFile("/VFS/Config/pms50-gns530/config.json" + "?id=" + milliseconds, (text) => {
                 let data = JSON.parse(text);
                 this.weatherRadar = false;
                 this.weatherRadarLegend = false;
+                this.debug = false;
                 if(data.weather_radar && data.weather_radar.toUpperCase() == "ON")
                     this.weatherRadar = true;
                 if(data.weather_legend && data.weather_legend.toUpperCase() == "ON")
                     this.weatherRadarLegend = true;
+                if(data.debug && data.debug.toUpperCase() == "ON")
+                    this.debug = true;
+                callback();
                 resolve();
             });
         });
