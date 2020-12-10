@@ -63,6 +63,7 @@ class BaseGPS extends NavSystem {
         this.weatherRadar = false;
         this.weatherRadarLegend = false;
         this.debug = false;
+        this.icaoFromMap = null;
         //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
         this.loadConfig(() => {
             if(this.debug) {

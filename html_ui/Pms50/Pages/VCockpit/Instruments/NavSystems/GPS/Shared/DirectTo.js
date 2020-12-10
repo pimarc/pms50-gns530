@@ -41,6 +41,9 @@ class GPS_DirectTo extends NavSystemElement {
         if (this.gps.lastRelevantICAO) {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
         }
+        else if (this.gps.icaoFromMap) {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+        }
         else if(this.gps.currFlightPlanManager.getIsDirectTo() && this.gps.currFlightPlanManager.getDirectToTarget()) {
             var infos = this.gps.currFlightPlanManager.getDirectToTarget().GetInfos();
             if(infos)

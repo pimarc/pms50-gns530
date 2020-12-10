@@ -568,7 +568,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         super("MapNav", "MapNav", new NavSystemElementGroup([baseElem, cdiElem]));
         this.cdiElement = cdiElem;
         this.baseElem = baseElem;
-
     }
     init() {
         super.init(2, false, "110%", "66%", 1.47, 1.53, 2000);
@@ -583,7 +582,11 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.defaultMenu = new ContextualMenu("PAGE MENU", menu_elements);
         // No data displayed by default
         this.toggleDataDisplay();
+        this.nearestIntersectionList = new NearestIntersectionList(this.map.instrument);
+        this._t = 0;
+        this.gps.icaoFromMap = null;
     }
+
     onEvent(_event){
         if(this.map && !this.displayWeather && this.map.eBingMode == EBingMode.CURSOR) {
             if(_event == "RNG_Zoom" || _event == "RNG_Dezoom") {
@@ -601,21 +604,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             else if(_event == "NavigationLargeDec" ) {
                 this.map.onEvent("PanLeft");
             }
-            else if (_event == "DirectTo_Push" 
-                || _event == "MENU_Push"
-                || _event == "CLR_Push_Long"
-                || _event == "PROC_Push"
-                || _event == "VNAV_Push"
-                || _event == "FPL_Push"
-                || _event == "MSG_Push")  {
-                if(this.map && !this.displayWeather && this.map.eBingMode === EBingMode.CURSOR) {
-                    this.map.deactivateCursor();
-                    this.gps.SwitchToInteractionState(0);
-                    if(this.windContainer)
-                       this.windContainer.setAttribute("style", "visibility: visible");
-               }
-                super.onEvent(_event);
-            }
             else if (_event == "CLR_Push")  {
                 super.onEvent(_event);
                 return;
@@ -624,7 +612,24 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.map.scrollDisp.x = 2 * (50-this.map.cursorX);
                 this.map.scrollDisp.y = 2 * (50-this.map.cursorY);
                 this.map.setCursorPos(50, 50);
+                this.UpdateNearests();
                 return;
+            }
+            if(_event == "DirectTo_Push" 
+                || _event == "MENU_Push"
+                || _event == "CLR_Push_Long"
+                || _event == "PROC_Push"
+                || _event == "VNAV_Push"
+                || _event == "FPL_Push"
+                || _event == "MSG_Push")  {
+                if(this.map && !this.displayWeather && this.map.eBingMode === EBingMode.CURSOR) {
+                    this.map.deactivateCursor();
+                    this.gps.icaoFromMap = null;
+                    this.gps.SwitchToInteractionState(0);
+                    if(this.windContainer)
+                       this.windContainer.setAttribute("style", "visibility: visible");
+               }
+                super.onEvent(_event);
             }
         }
         else
@@ -666,6 +671,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     }
                     else if (this.map.eBingMode === EBingMode.CURSOR) {
                         this.map.deactivateCursor();
+                        this.gps.icaoFromMap = null;
                         this.gps.SwitchToInteractionState(0);
                         if(this.windContainer)
                             this.windContainer.setAttribute("style", "visibility: visible");
@@ -680,8 +686,36 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        console.log("cursor: " + this.map.cursorX + " - " + this.map.cursorY);
-        console.log("scroll: " + this.map.scrollDisp.x + " - " + this.map.scrollDisp.y);
+        if(this.map && !this.displayWeather && this.map.eBingMode == EBingMode.CURSOR) {
+            if(this.gps.currentInteractionState != 3) {
+                // This situation may occur after a direcTo from map and then CLR
+                this.map.deactivateCursor();
+                this.gps.icaoFromMap = null;
+                this.gps.SwitchToInteractionState(0);
+                if(this.windContainer)
+                    this.windContainer.setAttribute("style", "visibility: visible");
+                return;
+            }
+            this._t++;
+            if(this._t > 20)
+            {
+                this._t = 0;
+                this.UpdateNearests();
+            }
+        }
+    }
+    UpdateNearests() {
+        let distance = 1000;
+        this.gps.icaoFromMap = null;
+        let icao = null;
+        this.nearestIntersectionList.Update(1, 10, this.map.navMap.centerCoordinates);
+        if(this.nearestIntersectionList.intersections.length)
+            icao = this.nearestIntersectionList.intersections[0].icao;
+        if(icao) {
+            this.gps.lastRelevantICAO = icao;
+            this.gps.lastRelevantICAOType = icao[0];
+            this.gps.icaoFromMap = this.gps.lastRelevantICAO;
+        }
     }
     restoreDefaultsCB(){
         return !this.displayData;
@@ -1223,3 +1257,4 @@ class GPS_Position extends NavSystemElement {
         });
     }
 }
+
