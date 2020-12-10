@@ -585,7 +585,51 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.toggleDataDisplay();
     }
     onEvent(_event){
-        super.onEvent(_event);
+        if(this.map && !this.displayWeather && this.map.eBingMode == EBingMode.CURSOR) {
+            if(_event == "RNG_Zoom" || _event == "RNG_Dezoom") {
+                this.map.onEvent(_event);
+            }
+            else if(_event == "NavigationSmallInc" ) {
+                this.map.onEvent("PanUp");
+            }
+            else if(_event == "NavigationSmallDec" ) {
+                this.map.onEvent("PanDown");
+            }
+            else if(_event == "NavigationLargeInc" ) {
+                this.map.onEvent("PanRight");
+            }
+            else if(_event == "NavigationLargeDec" ) {
+                this.map.onEvent("PanLeft");
+            }
+            else if (_event == "DirectTo_Push" 
+                || _event == "MENU_Push"
+                || _event == "CLR_Push_Long"
+                || _event == "PROC_Push"
+                || _event == "VNAV_Push"
+                || _event == "FPL_Push"
+                || _event == "MSG_Push")  {
+                if(this.map && !this.displayWeather && this.map.eBingMode === EBingMode.CURSOR) {
+                    this.map.deactivateCursor();
+                    this.gps.SwitchToInteractionState(0);
+                    if(this.windContainer)
+                       this.windContainer.setAttribute("style", "visibility: visible");
+               }
+                super.onEvent(_event);
+            }
+            else if (_event == "CLR_Push")  {
+                super.onEvent(_event);
+                return;
+            }
+            else if (_event == "ENT_Push")  {
+                this.map.scrollDisp.x = 2 * (50-this.map.cursorX);
+                this.map.scrollDisp.y = 2 * (50-this.map.cursorY);
+                this.map.setCursorPos(50, 50);
+                return;
+            }
+        }
+        else
+            super.onEvent(_event);
+
         if (_event == "CLR_Push")  {
             this.gps.closePopUpElement();
             this.gps.currentContextualMenu = null;
@@ -607,8 +651,27 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 }
         }
         if (_event == "NavigationPush")  {
-            if(this.gps.currentInteractionState != 2)
+            if(this.gps.currentInteractionState != 2) {
                 this.gps.currentContextualMenu = null;
+                if(this.map && !this.displayWeather) {
+                    if (this.map.eBingMode === EBingMode.PLANE || this.map.eBingMode === EBingMode.VFR) {
+                        this.map.cursorSvg.setAttribute("height", "5%");
+                        this.map.activateCursor();
+                        // We block the nav page mecanism by setting interaction state to 3
+                        // (normaly used for search field)
+                        this.gps.currentSearchFieldWaypoint = null;
+                        this.gps.SwitchToInteractionState(3);
+                        if(this.windContainer)
+                            this.windContainer.setAttribute("style", "visibility: hidden");
+                    }
+                    else if (this.map.eBingMode === EBingMode.CURSOR) {
+                        this.map.deactivateCursor();
+                        this.gps.SwitchToInteractionState(0);
+                        if(this.windContainer)
+                            this.windContainer.setAttribute("style", "visibility: visible");
+                    }
+                }
+            }
         }
         if (_event == "MENU_Push")  {
             // Unblock declutter when leving menu
@@ -617,6 +680,8 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        console.log("cursor: " + this.map.cursorX + " - " + this.map.cursorY);
+        console.log("scroll: " + this.map.scrollDisp.x + " - " + this.map.scrollDisp.y);
     }
     restoreDefaultsCB(){
         return !this.displayData;

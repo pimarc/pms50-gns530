@@ -19,6 +19,7 @@ First release features:
 # Change log
 ## V 1.0.20
 - Radar mode: switch now made by ENT button
+- Added a cursor mode in MAP NAV page
 ## V 1.0.19
 - Bug in init screen fixed
 - Added flight plan load in GNS430
@@ -186,3 +187,6 @@ The config file is named config.json and is located in the directory Config/pms5
 ## Weather radar
 This is a not standard feature (not available in original GNS530) so by default it's not activated. In order to activate it, you must set the entry "weather_radar: on" into the config.json file. When the weather radar is activated, you can display a legend by setting the entry "weather_legend: on" into the config.json file.
 The weather radar is then available in the GNS530 from the map NAV page (second NAV page). Push the "ENT" button to toggle between map, radar horizontal and radar vertical modes. While in radar mode, and if you have activated the legend, you can toggle its display with the "CLR" button.
+
+## Cursor mode
+When in MAP NAV page (second NAV page) you can toggle the cursor mode by pressing the right navigation knob. Using this knob you can move the cursor. While in cursor mode, pressing the "ENT" button centers the map on the cursor position. The declutter and range buttons are available in cursor mode. Any other button closes the cursor mode and centers the map on the plane.

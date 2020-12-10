@@ -178,7 +178,10 @@ class NavSystem extends BaseInstrument {
                     }
                     break;
                 case 3:
-                    this.currentSearchFieldWaypoint.onInteractionEvent([_event]);
+// PM Modif: Cursor mode uses a fake interaction state 3
+                    if(this.currentSearchFieldWaypoint)
+                        this.currentSearchFieldWaypoint.onInteractionEvent([_event]);
+// PM Modif: End Cursor mode uses a fake interaction state 3
                     break;
                 case 0:
                     if (_event == "MENU_Push") {
