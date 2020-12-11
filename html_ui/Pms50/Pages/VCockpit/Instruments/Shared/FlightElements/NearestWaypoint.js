@@ -179,6 +179,9 @@ class NearestAirportList {
     constructor(_instrument) {
         this.instrument = _instrument;
         this.airports = [];
+//PM Modif: Nearest from specific coordinates
+        this.coordinates = null;
+//PM Modif: End Nearest from specific coordinates
         this.airportLineBatch = new SimVar.SimVarBatch("C:fs9gps:NearestAirportItemsNumber", "C:fs9gps:NearestAirportCurrentLine");
         this.airportLineBatch.add("C:fs9gps:NearestAirportSelectedLatitude", "degree latitude");
         this.airportLineBatch.add("C:fs9gps:NearestAirportSelectedLongitude", "degree longitude");
@@ -198,7 +201,16 @@ class NearestAirportList {
         this.airportSelectedBatch.add("C:fs9gps:NearestAirportSelectedLatitude", "degree latitude");
         this.airportSelectedBatch.add("C:fs9gps:NearestAirportSelectedLongitude", "degree longitude");
     }
-    Update(_nbMax = 20, _milesDistance = 200) {
+
+//PM Modif: Nearest from specific coordinates
+    Update(_nbMax = 20, _milesDistance = 200, _coordinates = null) {
+        this.coordinates = _coordinates;
+        var instrId = this.instrument.instrumentIdentifier;
+        if(this.coordinates == null) {
+            let lat = SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude", instrId);
+            let long = SimVar.GetSimVarValue("GPS POSITION LON", "degree latitude", instrId);
+            this.coordinates = new LatLongAlt(lat, long);
+        }
         this.nbMax = _nbMax;
         this.milesDistance = _milesDistance;
         if (NearestAirportList.readManager.AddToQueue(this.instrument, this)) {
@@ -209,6 +221,7 @@ class NearestAirportList {
             this.needUpdate = true;
         }
     }
+//PM Modif: End Nearest from specific coordinates
     GetTable(_startIndex, _prefix) {
         var html = "";
         var index;
@@ -244,8 +257,10 @@ class NearestAirportList {
         var instrId = this.instrument.instrumentIdentifier;
         switch (this.loadState) {
             case 0:
-                SimVar.SetSimVarValue("C:fs9gps:NearestAirportCurrentLatitude", "degree latitude", SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude", instrId), instrId);
-                SimVar.SetSimVarValue("C:fs9gps:NearestAirportCurrentLongitude", "degree longitude", SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude", instrId), instrId);
+//PM Modif: Nearest from specific coordinates
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirportCurrentLatitude", "degree latitude", this.coordinates.lat, instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirportCurrentLongitude", "degree longitude", this.coordinates.long, instrId);
+//PM Modif: End Nearest from specific coordinates
                 SimVar.SetSimVarValue("C:fs9gps:NearestAirportMaximumItems", "number", this.nbMax, instrId);
                 SimVar.SetSimVarValue("C:fs9gps:NearestAirportMaximumDistance", "nautical miles", this.milesDistance, instrId);
                 SimVar.GetSimVarArrayValues(this.airportLineBatch, function (_Values) {
@@ -324,13 +339,16 @@ class NearestIntersectionList {
         this.lastDistance = 0;
         this.instrument = _instrument;
         this.intersections = [];
+//PM Modif: Nearest from specific coordinates
         this.coordinates = null;
+//PM Modif: End Nearest from specific coordinates
         this.batch = new SimVar.SimVarBatch("C:fs9gps:NearestIntersectionItemsNumber", "C:fs9gps:NearestIntersectionCurrentLine");
         this.batch.add("C:fs9gps:NearestIntersectionCurrentICAO", "string", "string");
         this.batch.add("C:fs9gps:NearestIntersectionCurrentIdent", "string", "string");
         this.batch.add("C:fs9gps:NearestIntersectionCurrentDistance", "nautical miles", "number");
         this.batch.add("C:fs9gps:NearestIntersectionCurrentTrueBearing", "degrees", "number");
     }
+//PM Modif: Nearest from specific coordinates
     Update(_nbMax = 20, _milesDistance = 200, _coordinates = null) {
         this.coordinates = _coordinates;
         var instrId = this.instrument.instrumentIdentifier;
@@ -349,6 +367,7 @@ class NearestIntersectionList {
             this.needUpdate = true;
         }
     }
+//PM Modif: End Nearest from specific coordinates
     GetTable(_startIndex, _prefix) {
         var html = "";
         var index;
@@ -372,8 +391,10 @@ class NearestIntersectionList {
         var instrId = this.instrument.instrumentIdentifier;
         switch (this.loadState) {
             case 0:
+//PM Modif: Nearest from specific coordinates
                 SimVar.SetSimVarValue("C:fs9gps:NearestIntersectionCurrentLatitude", "degree latitude", this.coordinates.lat, instrId);
                 SimVar.SetSimVarValue("C:fs9gps:NearestIntersectionCurrentLongitude", "degree longitude", this.coordinates.long, instrId);
+//PM Modif: End Nearest from specific coordinates
                 SimVar.SetSimVarValue("C:fs9gps:NearestIntersectionMaximumItems", "number", this.nbMax, instrId);
                 SimVar.SetSimVarValue("C:fs9gps:NearestIntersectionMaximumDistance", "nautical miles", this.milesDistance, instrId);
                 this.loadState++;
@@ -431,6 +452,9 @@ class NearestNDBList {
     constructor(_instrument) {
         this.instrument = _instrument;
         this.ndbs = [];
+//PM Modif: Nearest from specific coordinates
+        this.coordinates = null;
+//PM Modif: End Nearest from specific coordinates
         this.ndbLinesBatch = new SimVar.SimVarBatch("C:fs9gps:NearestNdbItemsNumber", "C:fs9gps:NearestNdbCurrentLine");
         this.ndbLinesBatch.add("C:fs9gps:NearestNdbCurrentICAO", "string", "string");
         this.ndbLinesBatch.add("C:fs9gps:NearestNdbCurrentIdent", "string", "string");
@@ -441,7 +465,15 @@ class NearestNDBList {
         this.ndbSelectedBatch = new SimVar.SimVarBatch("C:fs9gps:NearestNdbItemsNumber", "C:fs9gps:NearestNdbSelectedNdb");
         this.ndbSelectedBatch.add("C:fs9gps:NearestNdbSelectedNdbName", "string", "string");
     }
-    Update(_nbMax = 9, _milesDistance = 200) {
+//PM Modif: Nearest from specific coordinates
+    Update(_nbMax = 9, _milesDistance = 200, _coordinates = null) {
+        this.coordinates = _coordinates;
+        var instrId = this.instrument.instrumentIdentifier;
+        if(this.coordinates == null) {
+            let lat = SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude", instrId);
+            let long = SimVar.GetSimVarValue("GPS POSITION LON", "degree latitude", instrId);
+            this.coordinates = new LatLongAlt(lat, long);
+        }
         this.nbMax = _nbMax;
         this.milesDistance = _milesDistance;
         if (NearestNDBList.readManager.AddToQueue(this.instrument, this)) {
@@ -452,6 +484,7 @@ class NearestNDBList {
             this.needUpdate = true;
         }
     }
+//PM Modif: End Nearest from specific coordinates
     GetTable(_startIndex, _prefix) {
         var html = "";
         var index;
@@ -476,8 +509,10 @@ class NearestNDBList {
         var instrId = this.instrument.instrumentIdentifier;
         switch (this.loadState) {
             case 0:
-                SimVar.SetSimVarValue("C:fs9gps:NearestNdbCurrentLatitude", "degree latitude", SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude", instrId), instrId);
-                SimVar.SetSimVarValue("C:fs9gps:NearestNdbCurrentLongitude", "degree longitude", SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude", instrId), instrId);
+//PM Modif: Nearest from specific coordinates
+                SimVar.SetSimVarValue("C:fs9gps:NearestNdbCurrentLatitude", "degree latitude", this.coordinates.lat, instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestNdbCurrentLongitude", "degree longitude", this.coordinates.long, instrId);
+//PM Modif: End Nearest from specific coordinates
                 SimVar.SetSimVarValue("C:fs9gps:NearestNdbMaximumItems", "number", this.nbMax, instrId);
                 SimVar.SetSimVarValue("C:fs9gps:NearestNdbMaximumDistance", "nautical miles", this.milesDistance, instrId);
                 SimVar.GetSimVarArrayValues(this.ndbLinesBatch, function (_Values) {
@@ -554,6 +589,9 @@ class NearestVORList {
     constructor(_instrument) {
         this.instrument = _instrument;
         this.vors = [];
+//PM Modif: Nearest from specific coordinates
+        this.coordinates = null;
+//PM Modif: End Nearest from specific coordinates
         this.vorLinesBatch = new SimVar.SimVarBatch("C:fs9gps:NearestVorItemsNumber", "C:fs9gps:NearestVorCurrentLine");
         this.vorLinesBatch.add("C:fs9gps:NearestVorCurrentICAO", "string", "string");
         this.vorLinesBatch.add("C:fs9gps:NearestVorCurrentIdent", "string", "string");
@@ -565,7 +603,15 @@ class NearestVORList {
         this.vorSelectedBatch = new SimVar.SimVarBatch("C:fs9gps:NearestVorItemsNumber", "C:fs9gps:NearestVorSelectedVor");
         this.vorSelectedBatch.add("C:fs9gps:NearestVorSelectedVorName", "string", "string");
     }
-    Update(_nbMax = 9, _milesDistance = 200) {
+//PM Modif: Nearest from specific coordinates
+    Update(_nbMax = 9, _milesDistance = 200, _coordinates = null) {
+        this.coordinates = _coordinates;
+        var instrId = this.instrument.instrumentIdentifier;
+        if(this.coordinates == null) {
+            let lat = SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude", instrId);
+            let long = SimVar.GetSimVarValue("GPS POSITION LON", "degree latitude", instrId);
+            this.coordinates = new LatLongAlt(lat, long);
+        }
         this.nbMax = _nbMax;
         this.milesDistance = _milesDistance;
         if (NearestVORList.readManager.AddToQueue(this.instrument, this)) {
@@ -576,6 +622,7 @@ class NearestVORList {
             this.needUpdate = true;
         }
     }
+//PM Modif: End Nearest from specific coordinates
     GetTable(_startIndex, _prefix) {
         var html = "";
         var index;
@@ -600,8 +647,10 @@ class NearestVORList {
         var instrId = this.instrument.instrumentIdentifier;
         switch (this.loadState) {
             case 0:
-                SimVar.SetSimVarValue("C:fs9gps:NearestVorCurrentLatitude", "degree latitude", SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude", instrId), instrId);
-                SimVar.SetSimVarValue("C:fs9gps:NearestVorCurrentLongitude", "degree longitude", SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude", instrId), instrId);
+//PM Modif: Nearest from specific coordinates
+                SimVar.SetSimVarValue("C:fs9gps:NearestVorCurrentLatitude", "degree latitude", this.coordinates.lat, instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestVorCurrentLongitude", "degree longitude", this.coordinates.long, instrId);
+//PM Modif: End Nearest from specific coordinates
                 SimVar.SetSimVarValue("C:fs9gps:NearestVorMaximumItems", "number", this.nbMax, instrId);
                 SimVar.SetSimVarValue("C:fs9gps:NearestVorMaximumDistance", "nautical miles", this.milesDistance, instrId);
                 SimVar.GetSimVarArrayValues(this.vorLinesBatch, function (_Values) {

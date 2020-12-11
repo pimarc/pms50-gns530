@@ -190,3 +190,4 @@ The weather radar is then available in the GNS530 from the map NAV page (second 
 
 ## Cursor mode
 When in MAP NAV page (second NAV page) you can toggle the cursor mode by pressing the right navigation knob. Using this knob you can move the cursor. While in cursor mode, pressing the "ENT" button centers the map on the cursor position. The declutter and range buttons are available in cursor mode. Any other button closes the cursor mode and centers the map on the plane.
+When you have centered the map with the "ENT" button, the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.

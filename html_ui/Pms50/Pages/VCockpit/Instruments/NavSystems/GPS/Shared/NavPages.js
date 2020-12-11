@@ -583,8 +583,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         // No data displayed by default
         this.toggleDataDisplay();
         this.nearestIntersectionList = new NearestIntersectionList(this.map.instrument);
+        this.nearestNDBList = new NearestNDBList(this.map.instrument);
+        this.nearestVORList = new NearestVORList(this.map.instrument);
+        this.nearestAirportList = new NearestAirportList(this.map.instrument);
         this._t = 0;
         this.gps.icaoFromMap = null;
+        this.selectedsvgMapElement = null;
     }
 
     onEvent(_event){
@@ -612,6 +616,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.map.scrollDisp.x = 2 * (50-this.map.cursorX);
                 this.map.scrollDisp.y = 2 * (50-this.map.cursorY);
                 this.map.setCursorPos(50, 50);
+                this.clearSelectedElement();
                 this.UpdateNearests();
                 return;
             }
@@ -624,6 +629,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 || _event == "MSG_Push")  {
                 if(this.map && !this.displayWeather && this.map.eBingMode === EBingMode.CURSOR) {
                     this.map.deactivateCursor();
+                    this.clearSelectedElement();
                     this.gps.icaoFromMap = null;
                     this.gps.SwitchToInteractionState(0);
                     if(this.windContainer)
@@ -671,6 +677,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     }
                     else if (this.map.eBingMode === EBingMode.CURSOR) {
                         this.map.deactivateCursor();
+                        this.clearSelectedElement();
                         this.gps.icaoFromMap = null;
                         this.gps.SwitchToInteractionState(0);
                         if(this.windContainer)
@@ -690,6 +697,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             if(this.gps.currentInteractionState != 3) {
                 // This situation may occur after a direcTo from map and then CLR
                 this.map.deactivateCursor();
+                this.clearSelectedElement();
                 this.gps.icaoFromMap = null;
                 this.gps.SwitchToInteractionState(0);
                 if(this.windContainer)
@@ -697,7 +705,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 return;
             }
             this._t++;
-            if(this._t > 20)
+            if(this._t > 5)
             {
                 this._t = 0;
                 this.UpdateNearests();
@@ -705,17 +713,111 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         }
     }
     UpdateNearests() {
+        let mapSvgElements = [];
+        for (let i = 0; i < this.map.navMap.mapElements.length; i++) {
+            let svgElement = this.map.navMap.mapElements[i];
+            if (svgElement.source && svgElement.source.icao)
+                mapSvgElements.push(svgElement);
+        }
+        if(!mapSvgElements.length) {
+            this.clearSelectedElement();
+            return;
+        }
+console.log("numel:" + mapSvgElements.length);
+        let cc = this.getCursorCoordinates();
         let distance = 1000;
         this.gps.icaoFromMap = null;
         let icao = null;
-        this.nearestIntersectionList.Update(1, 10, this.map.navMap.centerCoordinates);
-        if(this.nearestIntersectionList.intersections.length)
+        let svgMapElement = null;
+        let maxdistance = this.mapDisplayRanges[this.map.rangeIndex] / 5;
+        this.nearestIntersectionList.Update(1, maxdistance, cc);
+        if(this.nearestIntersectionList.intersections.length) {
             icao = this.nearestIntersectionList.intersections[0].icao;
+            distance = this.nearestIntersectionList.intersections[0].distance;
+            for (let i = 0; i < mapSvgElements.length; i++) {
+                let svgElement = mapSvgElements[i];
+                if (svgElement.source && svgElement.source.icao && svgElement.source.icao == icao){
+                    svgMapElement = svgElement;
+                    break;
+                }
+            }
+        }
+        this.nearestNDBList.Update(1, maxdistance, cc);
+        if(this.nearestNDBList.ndbs.length) {
+            if(!icao || this.nearestNDBList.ndbs[0].distance < distance) {
+                icao = this.nearestNDBList.ndbs[0].icao;
+                distance = this.nearestNDBList.ndbs[0].distance;
+                for (let i = 0; i < mapSvgElements.length; i++) {
+                    let svgElement = mapSvgElements[i];
+                    if (svgElement.source && svgElement.source.icao && svgElement.source.icao == icao){
+                        svgMapElement = svgElement;
+                        break;
+                    }
+                }
+            }
+        }
+        this.nearestVORList.Update(1, maxdistance, cc);
+        if(this.nearestVORList.vors.length) {
+            if(!icao || this.nearestVORList.vors[0].distance < distance) {
+                icao = this.nearestVORList.vors[0].icao;
+                distance = this.nearestVORList.vors[0].distance;
+                for (let i = 0; i < mapSvgElements.length; i++) {
+                    let svgElement = mapSvgElements[i];
+                    if (svgElement.source && svgElement.source.icao && svgElement.source.icao == icao){
+                        svgMapElement = svgElement;
+                        break;
+                    }
+                }
+            }
+        }
+        this.nearestAirportList.Update(1, maxdistance, cc);
+        if(this.nearestAirportList.airports.length) {
+            if(!icao || this.nearestAirportList.airports[0].distance < distance) {
+                icao = this.nearestAirportList.airports[0].icao;
+                distance = this.nearestAirportList.airports[0].distance;
+                for (let i = 0; i < mapSvgElements.length; i++) {
+                    let svgElement = mapSvgElements[i];
+                    if (svgElement.source && svgElement.source.icao && svgElement.source.icao == icao){
+                        svgMapElement = svgElement;
+                        break;
+                    }
+                }
+            }
+        }
+if(svgMapElement)
+    console.log("Selected icao:" + svgMapElement.source.icao);
+        if(svgMapElement && svgMapElement != this.selectedsvgMapElement)
+            this.clearSelectedElement();
+        if(svgMapElement) {
+            this.selectedsvgMapElement = svgMapElement;
+            this.selectedsvgMapElement.selected = true;
+            this.selectedsvgMapElement._refreshLabel(this.map.navMap, false);
+        }
+        else if (!svgMapElement)
+            this.clearSelectedElement();
         if(icao) {
             this.gps.lastRelevantICAO = icao;
             this.gps.lastRelevantICAOType = icao[0];
             this.gps.icaoFromMap = this.gps.lastRelevantICAO;
         }
+    }
+    clearSelectedElement() {
+        if(this.selectedsvgMapElement) {
+            this.selectedsvgMapElement.selected = false;
+            this.selectedsvgMapElement._refreshLabel(this.map.navMap, false);
+        }
+    }
+    getCursorCoordinates() {
+//        console.log("center: " + this.map.navMap.centerCoordinates.lat + ":" + this.map.navMap.centerCoordinates.long);
+        let xy = this.map.navMap.coordinatesToXY(this.map.navMap.centerCoordinates);
+//        console.log("centerxy: " + xy.x + ":" + xy.y);
+//        console.log("mapcursorxy: " + this.map.cursorX + ":" + this.map.cursorY);
+        xy.x =  10 * this.map.cursorX;
+        xy.y = 10 * this.map.cursorY;
+//        console.log("newxy: " + xy.x + ":" + xy.y);
+        let nc = this.map.navMap.XYToCoordinates(xy);
+//        console.log("curosor: " + nc.lat + ":" + nc.long);
+        return nc;
     }
     restoreDefaultsCB(){
         return !this.displayData;
