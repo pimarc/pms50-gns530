@@ -589,35 +589,67 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this._t = 0;
         this.gps.icaoFromMap = null;
         this.selectedsvgMapElement = null;
+        this.cursorChanged = false;
     }
 
     onEvent(_event){
         if(this.map && !this.displayWeather && this.map.eBingMode == EBingMode.CURSOR) {
+            let cursorSpeed = 2;
+            let mapSpeed = 4;
             if(_event == "RNG_Zoom" || _event == "RNG_Dezoom") {
                 this.map.onEvent(_event);
+                this.cursorChanged = true;
             }
             else if(_event == "NavigationSmallInc" ) {
-                this.map.onEvent("PanUp");
+                if (this.map.cursorY > 10) {
+                    this.map.setCursorPos(this.map.cursorX, this.map.cursorY - cursorSpeed);
+                }
+                else {
+                    let offset = new Vec2(0, +mapSpeed);
+                    this.moveMap(offset);
+                }
+                this.cursorChanged = true;
             }
             else if(_event == "NavigationSmallDec" ) {
-                this.map.onEvent("PanDown");
+                if (this.map.cursorY < 90) {
+                    this.map.setCursorPos(this.map.cursorX, this.map.cursorY + cursorSpeed);
+                }
+                else {
+                    let offset = new Vec2(0, -mapSpeed);
+                    this.moveMap(offset);
+                }
+                this.cursorChanged = true;
             }
             else if(_event == "NavigationLargeInc" ) {
-                this.map.onEvent("PanRight");
+                if (this.map.cursorX < 90) {
+                    this.map.setCursorPos(this.map.cursorX + cursorSpeed, this.map.cursorY);
+                }
+                else {
+                    let offset = new Vec2(-mapSpeed, 0);
+                    this.moveMap(offset);
+                }
+                this.cursorChanged = true;
             }
             else if(_event == "NavigationLargeDec" ) {
-                this.map.onEvent("PanLeft");
+                if (this.map.cursorX > 10) {
+                    this.map.setCursorPos(this.map.cursorX - cursorSpeed, this.map.cursorY);
+                }
+                else {
+                    let offset = new Vec2(+mapSpeed, 0);
+                    this.moveMap(offset);
+                }
+                this.cursorChanged = true;
             }
             else if (_event == "CLR_Push")  {
                 super.onEvent(_event);
+                this.cursorChanged = true;
                 return;
             }
             else if (_event == "ENT_Push")  {
-                this.map.scrollDisp.x = 2 * (50-this.map.cursorX);
-                this.map.scrollDisp.y = 2 * (50-this.map.cursorY);
+                this.map.setNavMapCenter(this.getCursorCoordinates());
                 this.map.setCursorPos(50, 50);
                 this.clearSelectedElement();
-                this.UpdateNearests();
+                this.cursorChanged = true;
                 return;
             }
             if(_event == "DirectTo_Push" 
@@ -629,6 +661,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 || _event == "MSG_Push")  {
                 if(this.map && !this.displayWeather && this.map.eBingMode === EBingMode.CURSOR) {
                     this.map.deactivateCursor();
+                    this.cursorChanged = false;
                     this.clearSelectedElement();
                     this.gps.icaoFromMap = null;
                     this.gps.SwitchToInteractionState(0);
@@ -668,6 +701,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     if (this.map.eBingMode === EBingMode.PLANE || this.map.eBingMode === EBingMode.VFR) {
                         this.map.cursorSvg.setAttribute("height", "5%");
                         this.map.activateCursor();
+                        this.cursorChanged = true;
                         // We block the nav page mecanism by setting interaction state to 3
                         // (normaly used for search field)
                         this.gps.currentSearchFieldWaypoint = null;
@@ -677,6 +711,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     }
                     else if (this.map.eBingMode === EBingMode.CURSOR) {
                         this.map.deactivateCursor();
+                        this.cursorChanged = false;
                         this.clearSelectedElement();
                         this.gps.icaoFromMap = null;
                         this.gps.SwitchToInteractionState(0);
@@ -713,6 +748,10 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         }
     }
     UpdateNearests() {
+        if(!this.cursorChanged)
+            return;
+        this.cursorChanged = false;
+
         let mapSvgElements = [];
         for (let i = 0; i < this.map.navMap.mapElements.length; i++) {
             let svgElement = this.map.navMap.mapElements[i];
@@ -723,78 +762,49 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.clearSelectedElement();
             return;
         }
-console.log("numel:" + mapSvgElements.length);
+
+        this.gps.lastRelevantICAO = null;
+        this.gps.lastRelevantICAOType = "";
+        this.gps.icaoFromMap = this.gps.lastRelevantICAO;
         let cc = this.getCursorCoordinates();
         let distance = 1000;
-        this.gps.icaoFromMap = null;
         let icao = null;
         let svgMapElement = null;
         let maxdistance = this.mapDisplayRanges[this.map.rangeIndex] / 5;
-        this.nearestIntersectionList.Update(1, maxdistance, cc);
-        if(this.nearestIntersectionList.intersections.length) {
-            icao = this.nearestIntersectionList.intersections[0].icao;
-            distance = this.nearestIntersectionList.intersections[0].distance;
-            for (let i = 0; i < mapSvgElements.length; i++) {
-                let svgElement = mapSvgElements[i];
-                if (svgElement.source && svgElement.source.icao && svgElement.source.icao == icao){
+        // Calulate distance
+        for (let i = 0; i < mapSvgElements.length; i++) {
+            let svgElement = mapSvgElements[i];
+            let coordinates = svgElement.coordinates;
+            if(!coordinates && svgElement.source)
+            {
+                let wp = new WayPoint(this.gps);
+                wp.icao = svgElement.source.icao;
+                wp.ident = wp.icao.substr(7);
+                if(wp.icao.replace(/\s+/g, '').length){
+                    wp.UpdateInfos();
+                    coordinates = wp.infos.coordinates;
+                }
+            }
+            if(coordinates) {
+                let distanceFromCursor = Avionics.Utils.computeDistance(coordinates, cc);
+                if(distanceFromCursor < distance && distanceFromCursor < maxdistance) {
+                    distance = distanceFromCursor;
                     svgMapElement = svgElement;
-                    break;
                 }
             }
         }
-        this.nearestNDBList.Update(1, maxdistance, cc);
-        if(this.nearestNDBList.ndbs.length) {
-            if(!icao || this.nearestNDBList.ndbs[0].distance < distance) {
-                icao = this.nearestNDBList.ndbs[0].icao;
-                distance = this.nearestNDBList.ndbs[0].distance;
-                for (let i = 0; i < mapSvgElements.length; i++) {
-                    let svgElement = mapSvgElements[i];
-                    if (svgElement.source && svgElement.source.icao && svgElement.source.icao == icao){
-                        svgMapElement = svgElement;
-                        break;
-                    }
-                }
-            }
-        }
-        this.nearestVORList.Update(1, maxdistance, cc);
-        if(this.nearestVORList.vors.length) {
-            if(!icao || this.nearestVORList.vors[0].distance < distance) {
-                icao = this.nearestVORList.vors[0].icao;
-                distance = this.nearestVORList.vors[0].distance;
-                for (let i = 0; i < mapSvgElements.length; i++) {
-                    let svgElement = mapSvgElements[i];
-                    if (svgElement.source && svgElement.source.icao && svgElement.source.icao == icao){
-                        svgMapElement = svgElement;
-                        break;
-                    }
-                }
-            }
-        }
-        this.nearestAirportList.Update(1, maxdistance, cc);
-        if(this.nearestAirportList.airports.length) {
-            if(!icao || this.nearestAirportList.airports[0].distance < distance) {
-                icao = this.nearestAirportList.airports[0].icao;
-                distance = this.nearestAirportList.airports[0].distance;
-                for (let i = 0; i < mapSvgElements.length; i++) {
-                    let svgElement = mapSvgElements[i];
-                    if (svgElement.source && svgElement.source.icao && svgElement.source.icao == icao){
-                        svgMapElement = svgElement;
-                        break;
-                    }
-                }
-            }
-        }
-if(svgMapElement)
-    console.log("Selected icao:" + svgMapElement.source.icao);
-        if(svgMapElement && svgMapElement != this.selectedsvgMapElement)
+
+        if (!svgMapElement) {
             this.clearSelectedElement();
-        if(svgMapElement) {
-            this.selectedsvgMapElement = svgMapElement;
-            this.selectedsvgMapElement.selected = true;
-            this.selectedsvgMapElement._refreshLabel(this.map.navMap, false);
+            return;
         }
-        else if (!svgMapElement)
+        if(svgMapElement != this.selectedsvgMapElement)
             this.clearSelectedElement();
+        this.selectedsvgMapElement = svgMapElement;
+        this.selectedsvgMapElement.selected = true;
+        this.selectedsvgMapElement._refreshLabel(this.map.navMap, false);
+        if(svgMapElement.source)
+            icao = svgMapElement.source.icao;
         if(icao) {
             this.gps.lastRelevantICAO = icao;
             this.gps.lastRelevantICAOType = icao[0];
@@ -805,19 +815,56 @@ if(svgMapElement)
         if(this.selectedsvgMapElement) {
             this.selectedsvgMapElement.selected = false;
             this.selectedsvgMapElement._refreshLabel(this.map.navMap, false);
+            this.gps.lastRelevantICAO = null;
+            this.gps.lastRelevantICAOType = "";
+            this.gps.icaoFromMap = this.gps.lastRelevantICAO;
         }
     }
-    getCursorCoordinates() {
-//        console.log("center: " + this.map.navMap.centerCoordinates.lat + ":" + this.map.navMap.centerCoordinates.long);
-        let xy = this.map.navMap.coordinatesToXY(this.map.navMap.centerCoordinates);
-//        console.log("centerxy: " + xy.x + ":" + xy.y);
-//        console.log("mapcursorxy: " + this.map.cursorX + ":" + this.map.cursorY);
-        xy.x =  10 * this.map.cursorX;
-        xy.y = 10 * this.map.cursorY;
-//        console.log("newxy: " + xy.x + ":" + xy.y);
+    getCursorCoordinates(offset = null) {
+        let xyc = this.map.navMap.coordinatesToXY(this.map.navMap.centerCoordinates);
+        let xy = new Vec2();
+        if(offset){
+            xy.x =  10 * (this.map.cursorX + offset.x);
+            xy.y = 10 * (this.map.cursorY + offset.y);
+        }
+        else {
+            xy.x =  10 * this.map.cursorX;
+            xy.y = 10 * this.map.cursorY;
+        }
+        if(this.trackUp) {
+            let trk = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
+            xy = this.getTrkRotation(xy, xyc, 360-trk);
+        }
         let nc = this.map.navMap.XYToCoordinates(xy);
-//        console.log("curosor: " + nc.lat + ":" + nc.long);
+        xy = this.map.navMap.coordinatesToXY(nc);
         return nc;
+    }
+    getTrkRotation (M, O, angle) {
+        var xM, yM, x, y;
+        angle *= Math.PI / 180;
+        xM = M.x - O.x;
+        yM = M.y - O.y;
+        x = xM * Math.cos (angle) + yM * Math.sin (angle) + O.x;
+        y = - xM * Math.sin (angle) + yM * Math.cos (angle) + O.y;
+        return ({x:Math.round (x), y:Math.round (y)});
+    }
+    moveMap(offset) {
+        if(this.trackUp){
+            let cursorbefore = this.getCursorCoordinates();
+            let cursorafter = this.getCursorCoordinates(offset);
+            let difflat = cursorafter.lat - cursorbefore.lat;
+            let difflong = cursorafter.long - cursorbefore.long;
+            let center = this.map.navMap.centerCoordinates;
+            center.lat -= difflat;
+            center.long -= difflong;
+            this.map.setNavMapCenter(center);
+        }
+        else {
+            this.map.scrollDisp.y += offset.y;
+            this.map.scrollDisp.x += offset.x;
+            this.map.svgSmooth = this.map.SVG_SMOOTH_CURSOR;
+        }
+        this.map.svgSmooth = this.map.SVG_SMOOTH_CURSOR;
     }
     restoreDefaultsCB(){
         return !this.displayData;

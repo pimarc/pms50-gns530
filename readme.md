@@ -176,7 +176,7 @@ Activate approach is not selectable if not relevant (ex already activated or no 
 There are 3 maps available (1 for GNS430). You can use the CLR button to declutter map information. The first declutter level hides roads and airspaces. The third map is a terrain map using 4 colors:  red below 500AGL, yellow between 500AGL and 1000AGL, green between 1000AGL and 1500AGL, black above 1500AGL.
 
 ## Flight plan loading
-19 flight plans can be loaded. The flight plan files must be named "flx.pln" where x is a number between 1 and 19. The files must reside in the folder named fpl530 at the root of the MOD folder. Only the PLN format is accepted. If the PLN file comes from MSFS2020 (save option in world map) the MOD will recognize SID, STARS and APPR. If your PLN file comes from another software, the result may differ from the original flight plan because the producer software may not use the same database and SID, STARS or APPROCH may be not recognized (for example little navmap doesn't save procedures).
+19 flight plans can be loaded. The flight plan files must be named "fplx.pln" where x is a number between 1 and 19. The files must reside in the folder named fpl530 at the root of the MOD folder. Only the PLN format is accepted. If the PLN file comes from MSFS2020 (save option in world map) the MOD will recognize SID, STARS and APPR. If your PLN file comes from another software, the result may differ from the original flight plan because the producer software may not use the same database so SID, STAR or APPROACH may be not recognized (for example little navmap doesn't save procedures).
 
 ## Messages
 When there are messages available, the MSG indicator is set. It blinks if there are new messages not acknowledged. In order to view and acknowledge the messages, press the MSG button. There are 3 kind of messages: Advise in green, warning in yellow and caution in red.
@@ -190,4 +190,4 @@ The weather radar is then available in the GNS530 from the map NAV page (second 
 
 ## Cursor mode
 When in MAP NAV page (second NAV page) you can toggle the cursor mode by pressing the right navigation knob. Using this knob you can move the cursor. While in cursor mode, pressing the "ENT" button centers the map on the cursor position. The declutter and range buttons are available in cursor mode. Any other button closes the cursor mode and centers the map on the plane.
-When you have centered the map with the "ENT" button, the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.
+In cursor mode the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.
