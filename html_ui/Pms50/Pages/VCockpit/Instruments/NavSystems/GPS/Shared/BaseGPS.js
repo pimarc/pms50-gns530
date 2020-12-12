@@ -342,11 +342,11 @@ class BaseGPS extends NavSystem {
     latitudeFormat(_latitude) {
         var format = "";
         if (_latitude < 0) {
-            format += "S";
+            format += "S ";
             _latitude = Math.abs(_latitude);
         }
         else {
-            format += "N";
+            format += "N ";
         }
         var degrees = Math.floor(_latitude);
         var minutes = ((_latitude - degrees) * 60);

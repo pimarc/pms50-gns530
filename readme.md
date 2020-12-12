@@ -20,6 +20,7 @@ First release features:
 ## V 1.0.20
 - Radar mode: switch now made by ENT button
 - Added a cursor mode in MAP NAV page
+- Waypoint page frequencies: more space to display ILS runway
 ## V 1.0.19
 - Bug in init screen fixed
 - Added flight plan load in GNS430

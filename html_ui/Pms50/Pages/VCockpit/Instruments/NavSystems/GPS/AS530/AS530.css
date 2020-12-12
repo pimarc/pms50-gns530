@@ -564,6 +564,30 @@ as530-element {
               }
 /* PM Modif: End Wind display */
 /* PM Modif: NavCompass display */
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode {
+            position: absolute;
+            display: flex;
+            font-size: 4vh;
+            justify-content: space-between;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 11%;
+            background-color: black;
+            overflow: hidden;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode #CursorModeLeft .unit {
+            font-size: 2vh;
+            line-height: 2vh; }
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode  #CursorModeLeft {
+            text-align: left;
+            padding-left: 1vw;
+          }
+          as530-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode  #CursorModeRight {
+            text-align: right;
+            padding-right: 1vw;
+          }
+
           as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavCompass1, as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavBrg1 {
             position: absolute;
             display: flex;
@@ -1229,7 +1253,7 @@ as530-element {
           border: calc(0.4273504274vh) solid #6ecdee;
           width: 100%;
           height: 100%;
-          font-size: 7.8vh; }
+          font-size: 7vh; }
           as530-element #Electricity #TopDisplay #GpsPart #AirportFrequency #APTFreqMain .Hidden {
             display: none; }
           as530-element #Electricity #TopDisplay #GpsPart #AirportFrequency #APTFreqMain .FrecDecimals {

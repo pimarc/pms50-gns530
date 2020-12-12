@@ -574,14 +574,18 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.displayData = true;
         this.savedDisplayData = this.displayData;
         var menu_elements = [];
-        menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
+        // GNS430 always have data displayed
+        if(this.gps.gpsType == "530")
+            menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)));
         menu_elements.push(new ContextualMenuElement("Nexrad on/off", this.toggleNexrad.bind(this), this.toggleNexradCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this), this.restoreDefaultsCB.bind(this)));
         this.defaultMenu = new ContextualMenu("PAGE MENU", menu_elements);
-        // No data displayed by default
+        // No data displayed by default for GNS530
         this.toggleDataDisplay();
+        if(this.gps.gpsType == "430")
+            this.toggleDataDisplay();
         this.nearestIntersectionList = new NearestIntersectionList(this.map.instrument);
         this.nearestNDBList = new NearestNDBList(this.map.instrument);
         this.nearestVORList = new NearestVORList(this.map.instrument);
@@ -590,6 +594,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.gps.icaoFromMap = null;
         this.selectedsvgMapElement = null;
         this.cursorChanged = false;
+        this.cursorData = this.gps.getChildById("CursorMode");
+        if(this.cursorData)
+            this.cursorData.setAttribute("style", "display: none");
+        this.cursorDataLeft = this.gps.getChildById("CursorModeLeft");
+        this.cursorDataRight = this.gps.getChildById("CursorModeRight");
+        this.wasInTrackUp = false;
     }
 
     onEvent(_event){
@@ -601,7 +611,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.cursorChanged = true;
             }
             else if(_event == "NavigationSmallInc" ) {
-                if (this.map.cursorY > 10) {
+                if (this.map.cursorY > 15) {
                     this.map.setCursorPos(this.map.cursorX, this.map.cursorY - cursorSpeed);
                 }
                 else {
@@ -611,7 +621,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.cursorChanged = true;
             }
             else if(_event == "NavigationSmallDec" ) {
-                if (this.map.cursorY < 90) {
+                if (this.map.cursorY < 95) {
                     this.map.setCursorPos(this.map.cursorX, this.map.cursorY + cursorSpeed);
                 }
                 else {
@@ -621,7 +631,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.cursorChanged = true;
             }
             else if(_event == "NavigationLargeInc" ) {
-                if (this.map.cursorX < 90) {
+                if (this.map.cursorX < 95) {
                     this.map.setCursorPos(this.map.cursorX + cursorSpeed, this.map.cursorY);
                 }
                 else {
@@ -631,7 +641,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.cursorChanged = true;
             }
             else if(_event == "NavigationLargeDec" ) {
-                if (this.map.cursorX > 10) {
+                if (this.map.cursorX > 5) {
                     this.map.setCursorPos(this.map.cursorX - cursorSpeed, this.map.cursorY);
                 }
                 else {
@@ -667,7 +677,13 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     this.gps.SwitchToInteractionState(0);
                     if(this.windContainer)
                        this.windContainer.setAttribute("style", "visibility: visible");
-               }
+//                    if(this.northIndicator && this.trackUp)
+//                       this.northIndicator.setAttribute("style", "visibility: visible");
+                    if(this.cursorData)
+                        this.cursorData.setAttribute("style", "display: none");
+                    if(this.wasInTrackUp)
+                        this.toggleMapOrientation();
+                }
                 super.onEvent(_event);
             }
         }
@@ -699,6 +715,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.gps.currentContextualMenu = null;
                 if(this.map && !this.displayWeather) {
                     if (this.map.eBingMode === EBingMode.PLANE || this.map.eBingMode === EBingMode.VFR) {
+                        this.wasInTrackUp = this.trackUp;
+                        if(this.trackUp)
+                            this.toggleMapOrientation();
                         this.map.cursorSvg.setAttribute("height", "5%");
                         this.map.activateCursor();
                         this.cursorChanged = true;
@@ -708,6 +727,10 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                         this.gps.SwitchToInteractionState(3);
                         if(this.windContainer)
                             this.windContainer.setAttribute("style", "visibility: hidden");
+                        if(this.northIndicator)
+                            this.northIndicator.setAttribute("style", "visibility: hidden");
+                        if(this.cursorData)
+                            this.cursorData.setAttribute("style", "display: flex");
                     }
                     else if (this.map.eBingMode === EBingMode.CURSOR) {
                         this.map.deactivateCursor();
@@ -717,6 +740,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                         this.gps.SwitchToInteractionState(0);
                         if(this.windContainer)
                             this.windContainer.setAttribute("style", "visibility: visible");
+//                        if(this.northIndicator && this.trackUp)
+//                            this.northIndicator.setAttribute("style", "visibility: visible");
+                        if(this.cursorData)
+                            this.cursorData.setAttribute("style", "display: none");
+                        if(this.wasInTrackUp)
+                            this.toggleMapOrientation();
                     }
                 }
             }
@@ -737,6 +766,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.gps.SwitchToInteractionState(0);
                 if(this.windContainer)
                     this.windContainer.setAttribute("style", "visibility: visible");
+//                if(this.northIndicator && this.trackUp)
+//                    this.northIndicator.setAttribute("style", "visibility: visible");
+                if(this.cursorData)
+                    this.cursorData.setAttribute("style", "display: none");
+                if(this.wasInTrackUp)
+                    this.toggleMapOrientation();
                 return;
             }
             this._t++;
@@ -744,7 +779,36 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             {
                 this._t = 0;
                 this.UpdateNearests();
+                if(this.displayData) {
+                    this.cursorDataRight.setAttribute("style", "margin-right: 30%");
+                }
+                else {
+                    this.cursorDataRight.setAttribute("style", "");
+                }
             }
+            let cc = this.getCursorCoordinates();
+            this.cursorDataRight.innerHTML = this.gps.latitudeFormat(cc.lat) + "<br />" + this.gps.longitudeFormat(cc.long);
+            let text = "MAP CURSOR";
+            if(this.selectedsvgMapElement && this.selectedsvgMapElement.selected && this.selectedsvgMapElement.source) {
+                text = this.selectedsvgMapElement.source.ident;
+                let coordinates = this.selectedsvgMapElement.coordinates;
+                if(!coordinates && this.selectedsvgMapElement.source)
+                {
+                    let wp = new WayPoint(this.gps);
+                    wp.icao = this.selectedsvgMapElement.source.icao;
+                    wp.ident = wp.icao.substr(7);
+                    if(wp.icao.replace(/\s+/g, '').length){
+                        wp.UpdateInfos();
+                        coordinates = wp.infos.coordinates;
+                    }
+                }
+                if(coordinates)
+                    cc = coordinates;
+            }
+            text += "<br />";
+            text += fastToFixed(Avionics.Utils.computeGreatCircleHeading(new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")), cc) - SimVar.GetSimVarValue("MAGVAR", "degrees"), 0) + "°";
+            text += " " + fastToFixed(Avionics.Utils.computeGreatCircleDistance(new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")), cc), 1) + '<div class="Align unit">n<br />m</div>';
+            this.cursorDataLeft.innerHTML = text;
         }
     }
     UpdateNearests() {
@@ -831,10 +895,10 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             xy.x =  10 * this.map.cursorX;
             xy.y = 10 * this.map.cursorY;
         }
-        if(this.trackUp) {
-            let trk = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
-            xy = this.getTrkRotation(xy, xyc, 360-trk);
-        }
+//        if(this.trackUp) {
+//            let trk = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
+//            xy = this.getTrkRotation(xy, xyc, 360-trk);
+//        }
         let nc = this.map.navMap.XYToCoordinates(xy);
         xy = this.map.navMap.coordinatesToXY(nc);
         return nc;
@@ -849,22 +913,21 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         return ({x:Math.round (x), y:Math.round (y)});
     }
     moveMap(offset) {
-        if(this.trackUp){
-            let cursorbefore = this.getCursorCoordinates();
-            let cursorafter = this.getCursorCoordinates(offset);
-            let difflat = cursorafter.lat - cursorbefore.lat;
-            let difflong = cursorafter.long - cursorbefore.long;
-            let center = this.map.navMap.centerCoordinates;
-            center.lat -= difflat;
-            center.long -= difflong;
-            this.map.setNavMapCenter(center);
-        }
-        else {
+        // if(this.trackUp){
+        //     let cursorbefore = this.getCursorCoordinates();
+        //     let cursorafter = this.getCursorCoordinates(offset);
+        //     let difflat = cursorafter.lat - cursorbefore.lat;
+        //     let difflong = cursorafter.long - cursorbefore.long;
+        //     let center = this.map.navMap.centerCoordinates;
+        //     center.lat -= difflat;
+        //     center.long -= difflong;
+        //     this.map.setNavMapCenter(center);
+        // }
+        // else {
             this.map.scrollDisp.y += offset.y;
             this.map.scrollDisp.x += offset.x;
             this.map.svgSmooth = this.map.SVG_SMOOTH_CURSOR;
-        }
-        this.map.svgSmooth = this.map.SVG_SMOOTH_CURSOR;
+        // }
     }
     restoreDefaultsCB(){
         return !this.displayData;

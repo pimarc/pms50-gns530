@@ -354,6 +354,29 @@ as430-element {
             transform-origin: center;
           }
 /* PM Modif: End Wind display */
+        as430-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode {
+          position: absolute;
+          display: flex;
+          font-size: 5vh;
+          justify-content: space-between;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 16%;
+          background-color: black;
+          overflow: hidden;
+        }
+        as430-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode #CursorModeLeft .unit {
+          font-size: 2vh;
+          line-height: 2vh; }
+        as430-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode  #CursorModeLeft {
+          text-align: left;
+          padding-left: 1vw;
+        }
+        as430-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode  #CursorModeRight {
+          text-align: right;
+          padding-right: 1vw;
+        }
 /* PM Modif: North indicator */
         as430-element #Electricity #TopDisplay #GpsPart #MapNav #NorthIndicator2 {
           position: absolute;
