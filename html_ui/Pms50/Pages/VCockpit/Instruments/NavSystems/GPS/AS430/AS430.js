@@ -12,6 +12,8 @@ class AS430 extends BaseGPS {
         this.initScreen = this.getChildById("InitScreen");
         this.initScreenBottomInfo = this.getChildById("InitScreenBottomInfo");
         this.NbLoopInitScreen = 150;
+        this.maxCnt = 50;
+        this.maxSuperCnt = 15;
         this.initScreen.setAttribute("style", "display: none");
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
@@ -30,14 +32,19 @@ class AS430 extends BaseGPS {
             this.initScreen.setAttribute("style", "display: none");
         }
         if(this.isStarted && this.toInit) {
+            if(this.debug) {
+                this.NbLoopInitScreen = 5;
+                this.maxCnt = 5;
+                this.maxSuperCnt = 5;
+            }
             this.initScreen.setAttribute("style", "display: flex");
             this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br /> Initializing...";
             this.cnt++;
             if(this.cnt > this.NbLoopInitScreen || this.superCnt > 0){
                 // Init delayed after 50 updates
-                if(this.cnt > 50 || this.superCnt > 15){
+                if(this.cnt > this.maxCnt || this.superCnt > this.maxSuperCnt){
                     this.state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
-                    if(this.state530 || this.superCnt > 15) {
+                    if(this.state530 || this.superCnt > this.maxSuperCnt) {
                         this.toInit = false;
                         this.hotStart = false;
                         this.doInit();

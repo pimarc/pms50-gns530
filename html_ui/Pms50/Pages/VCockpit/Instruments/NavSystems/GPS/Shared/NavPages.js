@@ -574,9 +574,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.displayData = true;
         this.savedDisplayData = this.displayData;
         var menu_elements = [];
-        // GNS430 always have data displayed
-        if(this.gps.gpsType == "530")
-            menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
+        menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)));
         menu_elements.push(new ContextualMenuElement("Nexrad on/off", this.toggleNexrad.bind(this), this.toggleNexradCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)));
@@ -584,8 +582,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.defaultMenu = new ContextualMenu("PAGE MENU", menu_elements);
         // No data displayed by default for GNS530
         this.toggleDataDisplay();
-        if(this.gps.gpsType == "430")
-            this.toggleDataDisplay();
         this.nearestIntersectionList = new NearestIntersectionList(this.map.instrument);
         this.nearestNDBList = new NearestNDBList(this.map.instrument);
         this.nearestVORList = new NearestVORList(this.map.instrument);
@@ -719,6 +715,8 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                         if(this.trackUp)
                             this.toggleMapOrientation();
                         this.map.cursorSvg.setAttribute("height", "5%");
+                        if(this.gps.gpsType == "430")
+                            this.map.cursorSvg.setAttribute("height", "8%");
                         this.map.activateCursor();
                         this.cursorChanged = true;
                         // We block the nav page mecanism by setting interaction state to 3
@@ -885,6 +883,20 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         }
     }
     getCursorCoordinates(offset = null) {
+        let ratio = this.map.getWidth() / this.map.getHeight();
+
+if(this.selectedsvgMapElement)
+    console.log(this.gps.lastRelevantICAO + ":" + this.selectedsvgMapElement.source.coordinates.lat + "," + this.selectedsvgMapElement.source.coordinates.long);
+console.log("mapwidth:" + this.map.getWidth() + " - mapHeight:" + this.map.getHeight());
+console.log("cursorX:" + this.map.cursorX + " - cursorY:" + this.map.cursorY);
+if(offset)
+    console.log("offsetX:" + offset.x + " - offsetY:" + offset.y);
+let ctr = this.map.navMap.topRightCoordinates;
+console.log("ctrLAT:" + ctr.lat + " - ctrLONG:" + ctr.long);
+let cbl = this.map.navMap.bottomLeftCoordinates;
+console.log("cbrLAT:" + cbl.lat + " - cbrLONG:" + cbl.long);
+let xyDM05A = this.map.navMap.coordinatesToXY(new LatLong(49.22016, -0.55216));
+console.log("xyDM05AX:" + xyDM05A.x + " - xyDM05AY:" + xyDM05A.y);
         let xyc = this.map.navMap.coordinatesToXY(this.map.navMap.centerCoordinates);
         let xy = new Vec2();
         if(offset){
@@ -895,13 +907,30 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             xy.x =  10 * this.map.cursorX;
             xy.y = 10 * this.map.cursorY;
         }
+        if(ratio > 1) {
+            xy.y = xy.y / ratio + (this.map.getWidth() - this.map.getHeight())*4/2;
+        }
+        if(ratio < 1) {
+            xy.x = xy.x * ratio + (this.map.getHeight() - this.map.getWidth())*4/2;
+        }
 //        if(this.trackUp) {
 //            let trk = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
 //            xy = this.getTrkRotation(xy, xyc, 360-trk);
 //        }
+console.log("xycursor:" + xy.x + " - xycursor:" + xy.y);
         let nc = this.map.navMap.XYToCoordinates(xy);
         xy = this.map.navMap.coordinatesToXY(nc);
+console.log("xycursor2:" + xy.x + " - xycursor2:" + xy.y);
         return nc;
+    }
+    getTrkRotation (M, O, angle) {
+        var xM, yM, x, y;
+        angle *= Math.PI / 180;
+        xM = M.x - O.x;
+        yM = M.y - O.y;
+        x = xM * Math.cos (angle) + yM * Math.sin (angle) + O.x;
+        y = - xM * Math.sin (angle) + yM * Math.cos (angle) + O.y;
+        return ({x:Math.round (x), y:Math.round (y)});
     }
     getTrkRotation (M, O, angle) {
         var xM, yM, x, y;
