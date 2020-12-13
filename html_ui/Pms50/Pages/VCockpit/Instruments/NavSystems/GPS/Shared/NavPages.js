@@ -111,6 +111,8 @@ class GPS_BaseNavPage extends NavSystemPage {
             let direction = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"), 0);
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
             if(trk != this.lasttrk || direction != this.lastwinddir) {
+                // Wind display from true north
+                trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree"), 1);
                 this.lastwinddir = direction;
                 direction = ((direction - 180 + 360) % 360);
                 if(this.trackUp){
@@ -589,13 +591,11 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this._t = 0;
         this.gps.icaoFromMap = null;
         this.selectedsvgMapElement = null;
-        this.cursorChanged = false;
         this.cursorData = this.gps.getChildById("CursorMode");
         if(this.cursorData)
             this.cursorData.setAttribute("style", "display: none");
         this.cursorDataLeft = this.gps.getChildById("CursorModeLeft");
         this.cursorDataRight = this.gps.getChildById("CursorModeRight");
-        this.wasInTrackUp = false;
     }
 
     onEvent(_event){
@@ -604,7 +604,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             let mapSpeed = 4;
             if(_event == "RNG_Zoom" || _event == "RNG_Dezoom") {
                 this.map.onEvent(_event);
-                this.cursorChanged = true;
             }
             else if(_event == "NavigationSmallInc" ) {
                 if (this.map.cursorY > 15) {
@@ -614,7 +613,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     let offset = new Vec2(0, +mapSpeed);
                     this.moveMap(offset);
                 }
-                this.cursorChanged = true;
             }
             else if(_event == "NavigationSmallDec" ) {
                 if (this.map.cursorY < 95) {
@@ -624,7 +622,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     let offset = new Vec2(0, -mapSpeed);
                     this.moveMap(offset);
                 }
-                this.cursorChanged = true;
             }
             else if(_event == "NavigationLargeInc" ) {
                 if (this.map.cursorX < 95) {
@@ -634,7 +631,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     let offset = new Vec2(-mapSpeed, 0);
                     this.moveMap(offset);
                 }
-                this.cursorChanged = true;
             }
             else if(_event == "NavigationLargeDec" ) {
                 if (this.map.cursorX > 5) {
@@ -644,18 +640,15 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     let offset = new Vec2(+mapSpeed, 0);
                     this.moveMap(offset);
                 }
-                this.cursorChanged = true;
             }
             else if (_event == "CLR_Push")  {
                 super.onEvent(_event);
-                this.cursorChanged = true;
                 return;
             }
             else if (_event == "ENT_Push")  {
                 this.map.setNavMapCenter(this.getCursorCoordinates());
                 this.map.setCursorPos(50, 50);
                 this.clearSelectedElement();
-                this.cursorChanged = true;
                 return;
             }
             if(_event == "DirectTo_Push" 
@@ -667,18 +660,15 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 || _event == "MSG_Push")  {
                 if(this.map && !this.displayWeather && this.map.eBingMode === EBingMode.CURSOR) {
                     this.map.deactivateCursor();
-                    this.cursorChanged = false;
                     this.clearSelectedElement();
                     this.gps.icaoFromMap = null;
                     this.gps.SwitchToInteractionState(0);
                     if(this.windContainer)
                        this.windContainer.setAttribute("style", "visibility: visible");
-//                    if(this.northIndicator && this.trackUp)
-//                       this.northIndicator.setAttribute("style", "visibility: visible");
+                   if(this.northIndicator && this.trackUp)
+                      this.northIndicator.setAttribute("style", "visibility: visible");
                     if(this.cursorData)
                         this.cursorData.setAttribute("style", "display: none");
-                    if(this.wasInTrackUp)
-                        this.toggleMapOrientation();
                 }
                 super.onEvent(_event);
             }
@@ -711,14 +701,10 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.gps.currentContextualMenu = null;
                 if(this.map && !this.displayWeather) {
                     if (this.map.eBingMode === EBingMode.PLANE || this.map.eBingMode === EBingMode.VFR) {
-                        this.wasInTrackUp = this.trackUp;
-                        if(this.trackUp)
-                            this.toggleMapOrientation();
                         this.map.cursorSvg.setAttribute("height", "5%");
                         if(this.gps.gpsType == "430")
                             this.map.cursorSvg.setAttribute("height", "8%");
                         this.map.activateCursor();
-                        this.cursorChanged = true;
                         // We block the nav page mecanism by setting interaction state to 3
                         // (normaly used for search field)
                         this.gps.currentSearchFieldWaypoint = null;
@@ -732,18 +718,21 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     }
                     else if (this.map.eBingMode === EBingMode.CURSOR) {
                         this.map.deactivateCursor();
-                        this.cursorChanged = false;
                         this.clearSelectedElement();
                         this.gps.icaoFromMap = null;
                         this.gps.SwitchToInteractionState(0);
-                        if(this.windContainer)
+                        if(this.windContainer) {
                             this.windContainer.setAttribute("style", "visibility: visible");
-//                        if(this.northIndicator && this.trackUp)
-//                            this.northIndicator.setAttribute("style", "visibility: visible");
+                            if(this.displayData) {
+                                this.gps.getChildById("Wind2").setAttribute("style", "right: 30%;");
+                            }
+                            else
+                                this.gps.getChildById("Wind2").setAttribute("style", "right: 2%;");
+                        }
+                       if(this.northIndicator && this.trackUp)
+                           this.northIndicator.setAttribute("style", "visibility: visible");
                         if(this.cursorData)
                             this.cursorData.setAttribute("style", "display: none");
-                        if(this.wasInTrackUp)
-                            this.toggleMapOrientation();
                     }
                 }
             }
@@ -764,12 +753,10 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.gps.SwitchToInteractionState(0);
                 if(this.windContainer)
                     this.windContainer.setAttribute("style", "visibility: visible");
-//                if(this.northIndicator && this.trackUp)
-//                    this.northIndicator.setAttribute("style", "visibility: visible");
+               if(this.northIndicator && this.trackUp)
+                   this.northIndicator.setAttribute("style", "visibility: visible");
                 if(this.cursorData)
                     this.cursorData.setAttribute("style", "display: none");
-                if(this.wasInTrackUp)
-                    this.toggleMapOrientation();
                 return;
             }
             this._t++;
@@ -810,9 +797,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         }
     }
     UpdateNearests() {
-        if(!this.cursorChanged)
-            return;
-        this.cursorChanged = false;
 
         let mapSvgElements = [];
         for (let i = 0; i < this.map.navMap.mapElements.length; i++) {
@@ -884,19 +868,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     }
     getCursorCoordinates(offset = null) {
         let ratio = this.map.getWidth() / this.map.getHeight();
-
-if(this.selectedsvgMapElement)
-    console.log(this.gps.lastRelevantICAO + ":" + this.selectedsvgMapElement.source.coordinates.lat + "," + this.selectedsvgMapElement.source.coordinates.long);
-console.log("mapwidth:" + this.map.getWidth() + " - mapHeight:" + this.map.getHeight());
-console.log("cursorX:" + this.map.cursorX + " - cursorY:" + this.map.cursorY);
-if(offset)
-    console.log("offsetX:" + offset.x + " - offsetY:" + offset.y);
-let ctr = this.map.navMap.topRightCoordinates;
-console.log("ctrLAT:" + ctr.lat + " - ctrLONG:" + ctr.long);
-let cbl = this.map.navMap.bottomLeftCoordinates;
-console.log("cbrLAT:" + cbl.lat + " - cbrLONG:" + cbl.long);
-let xyDM05A = this.map.navMap.coordinatesToXY(new LatLong(49.22016, -0.55216));
-console.log("xyDM05AX:" + xyDM05A.x + " - xyDM05AY:" + xyDM05A.y);
         let xyc = this.map.navMap.coordinatesToXY(this.map.navMap.centerCoordinates);
         let xy = new Vec2();
         if(offset){
@@ -913,14 +884,11 @@ console.log("xyDM05AX:" + xyDM05A.x + " - xyDM05AY:" + xyDM05A.y);
         if(ratio < 1) {
             xy.x = xy.x * ratio + (this.map.getHeight() - this.map.getWidth())*4/2;
         }
-//        if(this.trackUp) {
-//            let trk = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
-//            xy = this.getTrkRotation(xy, xyc, 360-trk);
-//        }
-console.log("xycursor:" + xy.x + " - xycursor:" + xy.y);
+        if(this.trackUp) {
+           let trk = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+           xy = this.getTrkRotation(xy, xyc, 360-trk);
+        }
         let nc = this.map.navMap.XYToCoordinates(xy);
-        xy = this.map.navMap.coordinatesToXY(nc);
-console.log("xycursor2:" + xy.x + " - xycursor2:" + xy.y);
         return nc;
     }
     getTrkRotation (M, O, angle) {
@@ -932,31 +900,22 @@ console.log("xycursor2:" + xy.x + " - xycursor2:" + xy.y);
         y = - xM * Math.sin (angle) + yM * Math.cos (angle) + O.y;
         return ({x:Math.round (x), y:Math.round (y)});
     }
-    getTrkRotation (M, O, angle) {
-        var xM, yM, x, y;
-        angle *= Math.PI / 180;
-        xM = M.x - O.x;
-        yM = M.y - O.y;
-        x = xM * Math.cos (angle) + yM * Math.sin (angle) + O.x;
-        y = - xM * Math.sin (angle) + yM * Math.cos (angle) + O.y;
-        return ({x:Math.round (x), y:Math.round (y)});
-    }
     moveMap(offset) {
-        // if(this.trackUp){
-        //     let cursorbefore = this.getCursorCoordinates();
-        //     let cursorafter = this.getCursorCoordinates(offset);
-        //     let difflat = cursorafter.lat - cursorbefore.lat;
-        //     let difflong = cursorafter.long - cursorbefore.long;
-        //     let center = this.map.navMap.centerCoordinates;
-        //     center.lat -= difflat;
-        //     center.long -= difflong;
-        //     this.map.setNavMapCenter(center);
-        // }
-        // else {
+        if(this.trackUp){
+            let cursorbefore = this.getCursorCoordinates();
+            let cursorafter = this.getCursorCoordinates(offset);
+            let difflat = cursorafter.lat - cursorbefore.lat;
+            let difflong = cursorafter.long - cursorbefore.long;
+            let center = this.map.navMap.centerCoordinates;
+            center.lat -= difflat;
+            center.long -= difflong;
+            this.map.setNavMapCenter(center);
+        }
+        else {
             this.map.scrollDisp.y += offset.y;
             this.map.scrollDisp.x += offset.x;
             this.map.svgSmooth = this.map.SVG_SMOOTH_CURSOR;
-        // }
+        }
     }
     restoreDefaultsCB(){
         return !this.displayData;
@@ -972,9 +931,11 @@ console.log("xycursor2:" + xy.x + " - xycursor2:" + xy.y);
             // We must readjust width after changing the height in toggle map orientation
             if(this.displayData){
                 this.gps.getChildById("MapInstrument2").setAttribute("style", "width: 70%;");
+                this.gps.getChildById("Wind2").setAttribute("style", "right: 30%;");
             }
             else{
                 this.gps.getChildById("MapInstrument2").setAttribute("style", "width: 100%;");
+                this.gps.getChildById("Wind2").setAttribute("style", "right: 2%;");
             }
         }
         this.gps.currentContextualMenu = null;

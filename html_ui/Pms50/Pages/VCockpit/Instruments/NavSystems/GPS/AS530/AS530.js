@@ -26,6 +26,9 @@ class AS530 extends BaseGPS {
             this.initScreen.setAttribute("style", "display: none");
         }
         if(this.isStarted && this.toInit) {
+            if(this.debug) {
+                this.NbLoopInitScreen = 50;
+            }
             this.initScreen.setAttribute("style", "display: flex");
             this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br /> Initializing...";
             this.cnt++;
