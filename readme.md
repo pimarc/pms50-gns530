@@ -1,10 +1,18 @@
 # Documentation for the GNS530 MOD Package
 
-This package corrects some bugs of the built-in GNS530 GPS.
+This package is an enhancement of the built-in GNS530 GPS.
 
+If you enjoyed this software, you can participate in the development effort by clicking on the following link:
 
-First release features:
+https://pms50.com/fs2020/donateGNS530mod.html
 
+I cannot thank each of you individually so thank you to everyone who supports me.
+
+# Installation
+
+Unzip the file in your Community folder and restart the sim.
+
+# First release features
 - Better logic for approach loading and activation
 - Correcting the crazy U-turn bug
 - Activate leg now works on approach waypoints
@@ -18,9 +26,10 @@ First release features:
 
 # Change log
 ## V 1.0.20
-- Radar mode: switch now made by ENT button
+- Radar mode: switch now made by the ENT button
 - Added a cursor mode in MAP NAV page
 - Waypoint page frequencies: more space to display ILS runway
+- Message "Invalid waypoint index" not displayed any more in case of direct TO
 ## V 1.0.19
 - Bug in init screen fixed
 - Added flight plan load in GNS430
@@ -126,9 +135,12 @@ First release features:
 ## V 1.0.1
 - World4Fly Mod integration (Wrong radial and Rounded DME)
 - NAV page now displays ETE to next waypoint instead of ETE to destination
-# Installation
 
-Unzip the file in your Community directory.
+# Current MSFS bugs
+- Waypoint insertion is broken since November update especially if there is an approach loaded. I cannot do anything here since it's in the sim's kernel.
+- U-turn bug: The airplane operates a 180° turn to come back to the last enroute waypoint if you activate an approach after the last enroute waypoint. I implemented a workaround in this MOD that consists of removing all enroute waypoints before activating the approach.
+- Fancy approaches. Sometimes the approach route is very strange. This is a sim's issue and I cannot do anything here. The GPS just displays what the sim's does.
+- Remove an approach waypoint doesn't work so I had to disable it until ASOBO fixes that.
 
 # Details
 ## Approach loading and activation
@@ -176,8 +188,22 @@ Activate approach is not selectable if not relevant (ex already activated or no 
 ## Maps
 There are 3 maps available (1 for GNS430). You can use the CLR button to declutter map information. The first declutter level hides roads and airspaces. The third map is a terrain map using 4 colors:  red below 500AGL, yellow between 500AGL and 1000AGL, green between 1000AGL and 1500AGL, black above 1500AGL.
 
+All procedures have now an associated map that displays all the procedure waypoints.
+
+Note: there is a bug in the sim if the airplane has more than 4 maps (CTD). So in case of dual combination GNS530/GNS430, I had to remove the GNS430 maps from display.
+
 ## Flight plan loading
-19 flight plans can be loaded. The flight plan files must be named "fplx.pln" where x is a number between 1 and 19. The files must reside in the folder named fpl530 at the root of the MOD folder. Only the PLN format is accepted. If the PLN file comes from MSFS2020 (save option in world map) the MOD will recognize SID, STARS and APPR. If your PLN file comes from another software, the result may differ from the original flight plan because the producer software may not use the same database so SID, STAR or APPROACH may be not recognized (for example little navmap doesn't save procedures).
+19 flight plans can be loaded.
+
+The flight plan files must be named "fplx.pln" where x is a number between 1 and 19.
+
+The files must reside in the folder named fpl530 at the root of the MOD folder.
+
+Only the PLN format is accepted.
+
+If the PLN file comes from MSFS2020 (save option in world map) the MOD will recognize SID, STARS and APPR.
+
+If your PLN file comes from another software, the result may differ from the original flight plan because the producer software may not use the same database so SID, STAR or APPROACH may be not recognized (for example little navmap doesn't save procedures).
 
 ## Messages
 When there are messages available, the MSG indicator is set. It blinks if there are new messages not acknowledged. In order to view and acknowledge the messages, press the MSG button. There are 3 kind of messages: Advise in green, warning in yellow and caution in red.

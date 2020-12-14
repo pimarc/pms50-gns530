@@ -244,6 +244,8 @@ class GPS_Annunciations extends PFD_Annunciations {
             return false;
         if(this.gps.currFlightPlanManager.getActiveWaypointIndex() >= 0)
             return false;
+        if(this.gps.currFlightPlanManager.getIsDirectTo())
+            return false;
         this.Text = "Invalid waypoint index";
         let nextWaypoint = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
         if(nextWaypoint && nextWaypoint.length)
