@@ -178,6 +178,9 @@ class AS530_VorInfos extends NavSystemElement {
                 radial = radial.slice(0,8);
             }
         }
+        else {
+            distance = (SimVar.GetSimVarValue("NAV HAS DME:1", "bool") ? (Math.round((SimVar.GetSimVarValue("NAV DME:1", "Nautical Miles")*10))/10).toFixed(1) : "__._");
+        }
         Avionics.Utils.diffAndSet(this.vor, ident);
         Avionics.Utils.diffAndSet(this.typ, type);
         Avionics.Utils.diffAndSet(this.rad, radial);

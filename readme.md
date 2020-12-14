@@ -25,6 +25,8 @@ Unzip the file in your Community folder and restart the sim.
 - Adding a declutter level
 
 # Change log
+## V 1.0.21
+- Bug fix: distance for DME-only station was not displayed
 ## V 1.0.20
 - Radar mode: switch now made by the ENT button
 - Added a cursor mode in MAP NAV page
