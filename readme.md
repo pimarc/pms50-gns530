@@ -12,6 +12,12 @@ I cannot thank each of you individually so thank you to everyone who supports me
 
 Unzip the file in your Community folder and restart the sim.
 
+Sometimes users reported that it was necessary to reboot the machine (maybe after a MSFS patch?).
+
+If you have set a config file and/or loadable flight plans, be careful to save them before the update and to restore them after.
+
+You can also use the alternate data MOD to fix this situation (see note below).
+
 # First release features
 - Better logic for approach loading and activation
 - Correcting the crazy U-turn bug
@@ -27,6 +33,7 @@ Unzip the file in your Community folder and restart the sim.
 # Change log
 ## V 1.0.21
 - Bug fix: distance for DME-only station was not displayed
+- Added a dedicated second MOD for managing config and loadable flight plans (see note below)
 ## V 1.0.20
 - Radar mode: switch now made by the ENT button
 - Added a cursor mode in MAP NAV page
@@ -214,9 +221,34 @@ When there are messages available, the MSG indicator is set. It blinks if there 
 The config file is named config.json and is located in the directory Config/pms50-gns530 directory of the MOD. This file is not distributed but a file named example_config.json is available in this same directory. You can copy it or rename it to be your current config.json file.
 
 ## Weather radar
-This is a not standard feature (not available in original GNS530) so by default it's not activated. In order to activate it, you must set the entry "weather_radar: on" into the config.json file. When the weather radar is activated, you can display a legend by setting the entry "weather_legend: on" into the config.json file.
-The weather radar is then available in the GNS530 from the map NAV page (second NAV page). Push the "ENT" button to toggle between map, radar horizontal and radar vertical modes. While in radar mode, and if you have activated the legend, you can toggle its display with the "CLR" button.
+This is a not standard feature (not available in original GNS530) so by default it's not activated.
+
+In order to activate it, you must set the entry "weather_radar: on" into the config.json file.
+
+When the weather radar is activated, you can display a legend by setting the entry "weather_legend: on" into the config.json file.
+
+The weather radar is then available in the GNS530 from the map NAV page (second NAV page).
+
+Push the "ENT" button to toggle between map, radar horizontal and radar vertical modes. While in radar mode, and if you have activated the legend, you can toggle its display with the "CLR" button.
+
+## data MOD
+I publish releases very often because I think it's important to be reactive.
+
+When you override a previous installation by a new release, you loose your config file and the flight plans available in dedicated folders.
+
+To overcome this situation there is second MOD used only for this data.
+
+It's available at : https://pms50.com/fs2020/gns530/pms50-gns530-data.zip
+
+Just install it in your community folder and set the config files and flight plan files in this directory instead of the main MOD directory.
+
+What is inside this data MOD has priority against main MOD.
+
+This data MOD will not be affected by an update of the main MOD.
 
 ## Cursor mode
-When in MAP NAV page (second NAV page) you can toggle the cursor mode by pressing the right navigation knob. Using this knob you can move the cursor. While in cursor mode, pressing the "ENT" button centers the map on the cursor position. The declutter and range buttons are available in cursor mode. Any other button closes the cursor mode and centers the map on the plane.
+When in MAP NAV page (second NAV page) you can toggle the cursor mode by pressing the right navigation knob.
+
+Using this knob you can move the cursor. While in cursor mode, pressing the "ENT" button centers the map on the cursor position. The declutter and range buttons are available in cursor mode. Any other button closes the cursor mode and centers the map on the plane.
+
 In cursor mode the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.
