@@ -32,8 +32,10 @@ You can also use the alternate data MOD to fix this situation (see note below).
 
 # Change log
 ## V 1.0.21
+- Workaround for the MSFS issue with adding waypoints (see note below)
 - Bug fix: distance for DME-only station was not displayed
 - Added a dedicated second MOD for managing config and loadable flight plans (see note below)
+- Last selected waypoint in map is available as default waypoint to insert in flight plan
 ## V 1.0.20
 - Radar mode: switch now made by the ENT button
 - Added a cursor mode in MAP NAV page
@@ -252,3 +254,10 @@ When in MAP NAV page (second NAV page) you can toggle the cursor mode by pressin
 Using this knob you can move the cursor. While in cursor mode, pressing the "ENT" button centers the map on the cursor position. The declutter and range buttons are available in cursor mode. Any other button closes the cursor mode and centers the map on the plane.
 
 In cursor mode the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.
+
+## Adding waypoints
+Adding a waypoint in the flight plan is currently broken in the sim when there is an approach loaded. I found a workaround to this situation so inserting a waypoint should just work now.
+
+However I've set some limitations in order to avoid bugs. For example, you cannot insert a waypoint in a procedure. This makes sense since a procedure is a whole. If you want to bypass some waypoints of a procedure and/or fly somewhere else you can use direct To and activate leg.
+
+For this workaround, I completely rebuild the flight plan while inserting a waypoint. Although not necessary, I recommend to switch to HDG mode before inserting a waypoint.

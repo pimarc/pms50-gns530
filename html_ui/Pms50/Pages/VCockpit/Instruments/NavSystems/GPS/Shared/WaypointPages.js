@@ -28,6 +28,10 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
         }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "A") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
+        }
         var infos = this.icaoSearchField.getUpdatedInfos();
         if(!infos || !infos.icao) {
             let destination = this.gps.currFlightPlanManager.getDestination();
@@ -376,6 +380,10 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
         }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "A") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
+        }
         var infos = this.icaoSearchField.getUpdatedInfos();
         if(!infos || !infos.icao) {
             let destination = this.gps.currFlightPlanManager.getDestination();
@@ -688,6 +696,10 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
         }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "A") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
+        }
         var infos = this.icaoSearchField.getUpdatedInfos();
         if(!infos || !infos.icao) {
             let destination = this.gps.currFlightPlanManager.getDestination();
@@ -801,6 +813,11 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
+            this.icaoSearchField.getWaypoint().UpdateApproaches();
+        }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "A") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
             this.icaoSearchField.getWaypoint().UpdateApproaches();
         }
         var infos = this.icaoSearchField.getUpdatedInfos();
@@ -1101,6 +1118,10 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
+        }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "A") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
         }
         var infos = this.icaoSearchField.getUpdatedInfos();
         if(!infos || !infos.icao) {
@@ -1453,6 +1474,10 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
         }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "A") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
+        }
         var infos = this.icaoSearchField.getUpdatedInfos();
         if(!infos || !infos.icao) {
             let origin = this.gps.currFlightPlanManager.getOrigin();
@@ -1779,6 +1804,10 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
         }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "W") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
+        }
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
@@ -1847,6 +1876,10 @@ class GPS_NDBWaypoint extends NavSystemElement {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "N") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
+        }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "N") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
         }
     }
     onUpdate(_deltaTime) {
@@ -1927,6 +1960,10 @@ class GPS_VORWaypoint extends NavSystemElement {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "V") {
             this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
             this.initialIcao = this.gps.lastRelevantICAO;
+        }
+        else if (this.gps.icaoFromMap && this.gps.icaoFromMap[0] == "V") {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+            this.initialIcao = this.gps.icaoFromMap;
         }
     }
     onUpdate(_deltaTime) {

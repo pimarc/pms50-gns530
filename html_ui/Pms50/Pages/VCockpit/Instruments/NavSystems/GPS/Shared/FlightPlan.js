@@ -523,6 +523,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
     }
     onWaypointSelectionEnd() {
         if (this.gps.lastRelevantICAO) {
+            // Workaraound to the insert waypoint broken in sim
             this.savedFpl.save();
             if(this.savedFpl.canAdd(this.selectedIndex)) {
                 this.gps.confirmWindow.element.setTexts("Add waypoint ?");
@@ -535,6 +536,12 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
                             if(SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "boolean"))
                                 navmode = 2;
                             this.savedFpl.load(navmode);
+                            // Try restoring cursor
+                            // Must press manually the navigation button to get it back
+                            this.gps.SwitchToInteractionState(0);
+                            setTimeout(() => {
+                                this.fplSelectable.onEvent("NavigationLargeInc");
+                            }, 2000);
                         }
                     }
                 });
@@ -598,6 +605,12 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
         this.initialUpdate = true;
     }
     onEnter() {
+        if (this.gps.lastRelevantICAO) {
+            this.icaoSearchField.SetWaypoint(this.gps.lastRelevantICAOType, this.gps.lastRelevantICAO);
+        }
+        else if (this.gps.icaoFromMap) {
+            this.icaoSearchField.SetWaypoint(this.gps.icaoFromMap[0], this.gps.icaoFromMap);
+        }
         this.gps.closeConfirmWindow();
         this.gps.closeAlertWindow();
         this.preventRemove = false;
