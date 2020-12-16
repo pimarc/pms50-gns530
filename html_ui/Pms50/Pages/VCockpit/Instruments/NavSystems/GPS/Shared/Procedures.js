@@ -98,7 +98,7 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
 
         this.gps.cursorIndex = 0;
         let infos = this.icaoSearchField.getUpdatedInfos();
-        if ((infos == null) || (infos.icao == "") || (!infos.approaches.length)) {
+        if ((infos == null) || (infos.icao == "") || (!infos.approaches) || (!infos.approaches.length)) {
             this.gps.cursorIndex = 2;
         }
     }
@@ -162,7 +162,7 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
     loadApproach(_event) {
         if (_event == "ENT_Push") {
             let infos = this.icaoSearchField.getUpdatedInfos();
-            if (infos && infos.icao && infos.approaches.length) {
+            if (infos && infos.icao && infos.approaches && infos.approaches.length) {
                 this.gps.currFlightPlanManager.setApproachIndex(this.selectedApproach, () => {
                     let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
                     if (elem) {

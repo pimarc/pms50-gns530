@@ -1,18 +1,24 @@
 class GPS_WaypointLine extends MFD_WaypointLine {
     getString() {
+        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
-            this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
-            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 8) : this.waypoint.ident.slice(0, 8)) + '</td><td>'
+            if(infos && infos.ident) {
+                return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 8) : this.waypoint.ident.slice(0, 8)) + '</td><td>'
                 + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
                 + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
                 + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
+            }
+            else if (this.element.emptyLine != "")
+                return this.element.emptyLine;
+            else
+                return this.emptyLine;
         }
         else if (this.element.emptyLine != "") {
             return this.element.emptyLine;
         }
         else {
-            return '<td class="SelectableElement Select0"></td><td> </td><td> </td><td> </td>';
+            return this.emptyLine;
         }
     }
     onEvent(_subindex, _event) {
@@ -80,12 +86,14 @@ class GPS_WaypointLine extends MFD_WaypointLine {
                 }
                 else if(this.index > activeIndex) {
                     var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
-                    distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
+                    if(this.index < wayPointList.length)
+                        distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
                 }
             }
-            if(activeIndex == -1 && this.index > 0) {
+            if(activeIndex == -1) {
                 var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
-                distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
+                if(this.index > 0 && this.index < wayPointList.length)
+                    distance = Avionics.Utils.computeDistance(wayPointList[this.index].infos.coordinates, wayPointList[this.index-1].infos.coordinates);
             }
         }
         return isNaN(distance) ? "__._" : distance.toFixed(1);
@@ -100,8 +108,10 @@ class GPS_WaypointLine extends MFD_WaypointLine {
                     if(this.index > activeIndex) {
                         var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
                         for(var i=this.index; i > activeIndex; i--) {
-                            var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
-                            cumDistance += distance;
+                            if(i < wayPointList.length && i > 0) {
+                                var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
+                                cumDistance += distance;
+                            }
                         }
                     }
                 }
@@ -110,8 +120,10 @@ class GPS_WaypointLine extends MFD_WaypointLine {
                 var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
                 cumDistance = 0;
                 for(var i=this.index; i > 0; i--) {
-                    var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
-                    cumDistance += distance;
+                    if(i < wayPointList.length && i > 0) {
+                        var distance = Avionics.Utils.computeDistance(wayPointList[i].infos.coordinates, wayPointList[i-1].infos.coordinates);
+                        cumDistance += distance;
+                    }
                 }
             }
         }
@@ -120,19 +132,25 @@ class GPS_WaypointLine extends MFD_WaypointLine {
 }
 class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
     getString() {
+        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
-            this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
-            return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 8) : this.waypoint.ident.slice(0, 8)) + '</td><td>'
-                + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
-                + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
-                + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
+            if(infos && infos.ident) {
+                return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 8) : this.waypoint.ident.slice(0, 8)) + '</td><td>'
+                    + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
+                    + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
+                    + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
+            }
+            else if (this.element.emptyLine != "")
+                return this.element.emptyLine;
+            else
+                return this.emptyLine;
         }
         else if (this.element.emptyLine != "") {
             return this.element.emptyLine;
         }
         else {
-            return '<td class="SelectableElement Select0"></td><td> </td><td> </td><td> </td>';
+            return this.emptyLine;
         }
     }
     onEvent(_subindex, _event) {
@@ -272,7 +290,7 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 if(wayPointList.length)
                     cumDistance = Avionics.Utils.computeDistance(ll, wayPointList[0].infos.coordinates);
                 var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
-                if(activeIndex >= 0) {
+                if(activeIndex >= 0 && wayPointList.length) {
                     var wayPointListEnroute = this.element.gps.currFlightPlanManager.getWaypoints();
                     if(wayPointListEnroute.length > 2 && (activeIndex != wayPointListEnroute.length-1)) {
                         // Calculate last enroute WP cum distance
@@ -329,6 +347,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.newWaypointPage.pageGroup = (this.container).pageGroup;
         this.newWaypointPage.gps = this.gps;
         this.waypointWindow = this.newWaypointPage;
+        this.savedFpl = new GPS_FlightPlanForSave(this.gps);
     }
     onEnter() {
         this.gps.closeConfirmWindow();
@@ -504,18 +523,34 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
     }
     onWaypointSelectionEnd() {
         if (this.gps.lastRelevantICAO) {
-            this.gps.confirmWindow.element.setTexts("Add waypoint ?");
-            this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
-                if (this.gps.confirmWindow.element.Result == 1) {
-                    this.gps.currFlightPlanManager.addWaypoint(this.gps.lastRelevantICAO, this.selectedIndex, () => {
-                        if (!this.gps.popUpElement) {
-                            this.updateWaypoints();
-                            this.gps.ActiveSelection(this.defaultSelectables);
-                            this.fplSelectable.incrementIndex();
+            this.savedFpl.save();
+            if(this.savedFpl.canAdd(this.selectedIndex)) {
+                this.gps.confirmWindow.element.setTexts("Add waypoint ?");
+                this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+                    if (this.gps.confirmWindow.element.Result == 1) {
+                        if(this.savedFpl.AddWaypoint(this.gps.lastRelevantICAO, this.selectedIndex)) {
+                            let navmode = 0;
+                            if(SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "boolean"))
+                                navmode = 1;
+                            if(SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "boolean"))
+                                navmode = 2;
+                            this.savedFpl.load(navmode);
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
+            // this.gps.confirmWindow.element.setTexts("Add waypoint ?");
+            // this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
+            //     if (this.gps.confirmWindow.element.Result == 1) {
+            //         this.gps.currFlightPlanManager.addWaypoint(this.gps.lastRelevantICAO, this.selectedIndex, () => {
+            //             if (!this.gps.popUpElement) {
+            //                 this.updateWaypoints();
+            //                 this.gps.ActiveSelection(this.defaultSelectables);
+            //                 this.fplSelectable.incrementIndex();
+            //             }
+            //         });
+            //     }
+            // });
         }
         if (!this.gps.popUpElement) {
             this.gps.ActiveSelection(this.defaultSelectables);
@@ -1077,3 +1112,292 @@ class FPLCatalogItem {
         httpRequest.send();
     }
 }
+
+// Used to save and restore flight plan in memory
+class GPS_FlightPlanForSave {
+    constructor(_gps) {
+        this.gps = _gps;
+        this.origin;
+        this.destination;
+        this.enrouteWaypoints;
+        this.departureIndex;
+        this.departureTransitionIndex;
+        this.departureRunwayIndex;
+        this.arrivalIndex;
+        this.arrivalTransitionIndex;
+        this.arrivalRunwayIndex;
+        this.approachIndex;
+        this.approachTransitionIndex;
+        this.activateNav = 0;   // 1 is NAV and 2 is APPROACH
+        this.indexInEnroute = -1;
+        this.changeOrigin = false;
+        this.changeDestination = false;
+        this.message = "";
+    }
+    save() {
+        this.origin = this.gps.currFlightPlanManager.getOrigin();
+        this.destination = this.gps.currFlightPlanManager.getDestination();
+        this.enrouteWaypoints = this.gps.currFlightPlanManager.getEnRouteWaypoints();
+        this.departureIndex = this.gps.currFlightPlanManager.getDepartureProcIndex();
+        this.departureTransitionIndex = this.gps.currFlightPlanManager.getDepartureEnRouteTransitionIndex();
+        this.departureRunwayIndex = this.gps.currFlightPlanManager.getDepartureRunwayIndex();
+        this.arrivalIndex = this.gps.currFlightPlanManager.getArrivalProcIndex();
+        this.arrivalTransitionIndex = this.gps.currFlightPlanManager.getArrivalTransitionIndex();
+        this.arrivalRunwayIndex = 0;
+        this.approachIndex = this.gps.currFlightPlanManager.getApproachIndex();
+        this.approachTransitionIndex = this.gps.currFlightPlanManager.getApproachTransitionIndex();
+    }
+    load(activateNav = 0) {
+        this.activateNav = activateNav;
+        this.clearFlightPlan(this.onClearFlightPlan.bind(this));
+    }
+
+    clearFlightPlan(callback = EmptyCallback.Void) {
+        if(this.gps.currFlightPlanManager.getDestination())
+            this.gps.currFlightPlanManager.setApproachIndex(-1);
+        Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN").then(() => {
+            this.gps.currFlightPlanManager.updateFlightPlan(() => {
+                this.gps.currFlightPlanManager.updateCurrentApproach(() => {
+                    this.gps.currFlightPlanManager.instrument.requestCall(callback);
+                });
+            });
+        });
+    }
+    onClearFlightPlan() {
+        this.addWaypoints(this.onAfterAddWaypoints.bind(this));
+    }
+    addWaypoints(callback = EmptyCallback.Void) {
+        var indexfpl= 0;
+        if(this.origin) {
+            Coherent.call("ADD_WAYPOINT", this.origin.icao, 0, true).then(() => {
+            });
+            indexfpl++;
+        }
+        for(var i= 0; i<this.enrouteWaypoints.length; i++, indexfpl++) {
+            Coherent.call("ADD_WAYPOINT", this.enrouteWaypoints[i].icao, indexfpl, true).then(() => {
+            });
+        }
+        if(this.destination) {
+            Coherent.call("ADD_WAYPOINT", this.destination.icao, indexfpl, true).then(() => {
+            });
+        }
+        this.gps.currFlightPlanManager.instrument.requestCall(callback);
+    }
+
+    // To be called before load
+    AddWaypoint(icao, index) {
+        if(!this.canAdd(index))
+            return false;
+        if(this.changeOrigin) {
+            // If changing origin, the old origin becomes the first enroute wp 
+            let newicao = "";
+            if (this.origin)
+                newicao = this.origin.icao;
+            else
+                this.origin = new WayPoint(this.gps);
+            this.origin.icao = icao;
+            this.origin.UpdateInfos();
+            icao = newicao;
+            if(!icao.length)
+                return true;
+            this.indexInEnroute = 0;
+        }
+        if(this.changeDestination) {
+            // If changing destination, the old destination becomes the last enroute wp 
+            let newicao = "";
+            if (this.destination)
+                newicao = this.destination.icao;
+            this.destination.icao = icao;
+            this.destination.UpdateInfos();
+            icao = newicao;
+            if(!icao.length)
+                return true;
+            this.indexInEnroute = this.enrouteWaypoints.length;
+        }
+        if(this.indexInEnroute >= 0 && icao.length) {
+            var waypoint = new WayPoint(this.gps);
+            waypoint.icao = icao;
+            waypoint.UpdateInfos();
+            if(this.indexInEnroute >= this.enrouteWaypoints.length) {
+                // Add at the end of enroute
+                this.enrouteWaypoints.push(waypoint);
+                return true;
+            }
+            else {
+                // Insert at given index
+                this.enrouteWaypoints.splice(this.indexInEnroute, 0, waypoint);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    canAdd(index) {
+        this.indexInEnroute = -1;
+        this.changeOrigin = false;
+        this.changeDestination = false;
+        this.message = "";
+//        console.log("index:" + index);
+        // If no origin , the flight plan is empty
+        // We can add at index 0
+        if(!this.origin)
+        {
+//            console.log("no origin");
+            if(index == 0) {
+//                console.log("no origin, adding origin");
+                this.changeOrigin = true;
+                return true;
+            }
+            this.message = "Add waypoint: bad index";
+//            console.log("no origin, can only add at index 0");
+            return false;
+        }
+        // If no destination , the flight plan has just one item
+        // We can add at index 0 and 1
+        if(!this.destination)
+        {
+//            console.log("no destination");
+            if(index > 1) {
+                this.message = "Add waypoint: bad index";
+//                console.log("no destination, can only add at index 0 and 1");
+                return false;
+            }
+            if(index == 0) {
+                this.changeOrigin = true;
+//                console.log("no destination, changing origin and destination");
+            }
+            if(index == 1) {
+//                console.log("no destination, adding destination");
+                this.indexInEnroute = 0;
+            }
+            return true;
+        }
+        // Now we have origin and destination
+
+        // Case insert before origin (new origin)
+        if(index == 0) {
+            if(this.departureIndex >= 0) {
+                this.message = "Add waypoint: remove departure first";
+//                console.log("cannot change origin if departure");
+                return false;
+            }
+//            console.log("new origin");
+            this.changeOrigin = true;
+            return true;
+        }
+//        console.log("depwpcount:" + this.gps.currFlightPlanManager.getDepartureWaypointsCount());
+//        console.log("enroutewpcount:" + this.gps.currFlightPlanManager.getEnRouteWaypoints().length);
+        let firstIndex = this.gps.currFlightPlanManager.getDepartureWaypointsCount()+1;
+        let lastIndex = firstIndex + this.gps.currFlightPlanManager.getEnRouteWaypoints().length+1;
+//        console.log("firstIndex:" + firstIndex);
+//        console.log("lastIndex:" + lastIndex);
+        // Case insert after destination
+        if(index >= lastIndex){
+            if(this.arrivalIndex >= 0 || this.approachIndex >= 0) {
+                this.message = "Add waypoint: remove dep/arr first";
+//                console.log("cannot add after destination if arrival or approach");
+                return false;
+            }
+            if(index > lastIndex + 1) {
+                this.message = "Add waypoint: bad index";
+//                console.log("index greater than last index");
+                return false;
+            }
+        }
+//        console.log("depwpcount:" + this.gps.currFlightPlanManager.getDepartureWaypointsCount());
+//        console.log("enroutewpcount:" + this.gps.currFlightPlanManager.getEnRouteWaypoints().length);
+        // We can add to enroute only, not in procedure
+        if(index < firstIndex || index > lastIndex) {
+            this.message = "Add waypoint: bad index";
+//            console.log("can add only into enroute");
+            return false;
+        }
+        this.indexInEnroute = index-firstIndex;
+        if(this.indexInEnroute > this.gps.currFlightPlanManager.getEnRouteWaypoints().length) {
+//            console.log("Changing destination");
+            this.changeDestination = true;
+            this.indexInEnroute = -1;
+        }
+//        console.log("numenroutewp:" + this.gps.currFlightPlanManager.getEnRouteWaypoints().length);
+//        console.log("indexInEnroute:" + this.indexInEnroute);
+        return true;
+    }
+    onAfterAddWaypoints() {
+        this.gps.currFlightPlanManager.updateFlightPlan(this.onFinalProcess.bind(this));
+    }
+    onFinalProcess() {
+        this.setDeparture();
+        this.setArrival();
+        this.setApproach(this.setNav.bind(this));
+    }
+
+    setNav() {
+        if(this.activateNav) {
+            if (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "boolean"))
+                return;
+            SimVar.SetSimVarValue("L:AP_LNAV_ACTIVE", "number", 1);
+            if(this.activateNav == 1)
+                SimVar.SetSimVarValue("K:AP_NAV1_HOLD_ON", "number", 1);
+            if(this.activateNav == 2)
+                SimVar.SetSimVarValue("K:AP_APR_HOLD_ON", "number", 1);
+        }
+    }
+
+    setDeparture() {
+        if(!this.origin)
+            return;
+        let infos = this.origin.GetInfos();
+        if(infos instanceof AirportInfo && this.departureIndex >= 0)
+        {
+            this.gps.currFlightPlanManager.setDepartureProcIndex(this.departureIndex);
+            this.gps.currFlightPlanManager.setDepartureRunwayIndex(this.departureRunwayIndex);
+            this.gps.currFlightPlanManager.setDepartureEnRouteTransitionIndex(this.departureTransitionIndex, () => {
+                let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                if (elem) {
+                    elem.updateWaypoints();
+                }
+            });
+        }
+    }
+    setArrival() {
+        if(!this.destination)
+            return;
+        let infos = this.destination.GetInfos();
+        if(infos instanceof AirportInfo && this.arrivalIndex >= 0)
+        {
+            this.gps.currFlightPlanManager.setArrivalProcIndex(this.arrivalIndex);
+            this.gps.currFlightPlanManager.setArrivalRunwayIndex(this.arrivalRunwayIndex);
+            this.gps.currFlightPlanManager.setArrivalEnRouteTransitionIndex(this.arrivalTransitionIndex, () => {
+                let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                if (elem) {
+                    elem.updateWaypoints();
+                }
+            });
+        }
+    }
+
+    setApproach(callback = EmptyCallback.Void) {
+        if(!this.destination) {
+            if(callback)
+                callback();
+            return;
+        }
+        let infos = this.destination.GetInfos();
+        if(infos instanceof AirportInfo && this.approachIndex >= 0 && this.approachTransitionIndex >= 0)
+        {
+            this.gps.currFlightPlanManager.setApproachIndex(this.approachIndex, () => {
+                let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
+                if (elem) {
+                    elem.updateWaypoints();
+                }
+                if(callback)
+                    callback();
+            }, this.approachTransitionIndex);
+        }
+        else {
+            if(callback)
+                callback();
+        }
+    }
+}
+
