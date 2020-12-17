@@ -1,3 +1,4 @@
 *.pln
 .vscode/launch.json
 Config/pms50-gns530/config.json
+html_ui/Official/*

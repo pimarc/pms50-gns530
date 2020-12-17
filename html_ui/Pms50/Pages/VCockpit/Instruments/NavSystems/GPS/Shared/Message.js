@@ -188,6 +188,8 @@ class GPS_Annunciations extends PFD_Annunciations {
         this.addMessage(Annunciation_MessageType.ADVISORY, "Set course to", this.chekCourse);
         this.addMessage(Annunciation_MessageType.ADVISORY, "Arrival at waypoint", this.arrivalWp);
         this.addMessage(Annunciation_MessageType.WARNING, "Attempt to delete active waypoint", this.deleteWpLeg);
+        this.addMessage(Annunciation_MessageType.WARNING, "Attempt to delete proc waypoint", this.deleteWpProc);
+        this.addMessage(Annunciation_MessageType.WARNING, "Cannot add waypoint at this place", this.addWp);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.ADVISORY, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.sayTrue);
@@ -270,6 +272,12 @@ class GPS_Annunciations extends PFD_Annunciations {
     }
     deleteWpLeg() {
         return this.gps.attemptDeleteWpLeg;      
+    }
+    deleteWpProc() {
+        return this.gps.attemptDeleteWpProc;      
+    }
+    addWp() {
+        return this.gps.attemptAddWp;      
     }
     arrivalWp() {
         if(!SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean"))

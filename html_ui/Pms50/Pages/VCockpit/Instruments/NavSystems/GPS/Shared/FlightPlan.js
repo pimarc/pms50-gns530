@@ -14,55 +14,140 @@ class GPS_WaypointLine extends MFD_WaypointLine {
             else
                 return this.emptyLine;
         }
-        else if (this.element.emptyLine != "") {
+        else if (this.element && this.element.emptyLine != "") {
             return this.element.emptyLine;
         }
         else {
             return this.emptyLine;
         }
     }
-    onEvent(_subindex, _event) {
-        super.onEvent(_subindex, _event);
-        switch (_event) {
-            case "MENU_Push":
-                this.element.selectedLine = this;
-                break;
-            case "ActivateWaypoint":
-                SimVar.SetSimVarValue("C:fs9gps:FlightPlanActiveWaypoint", "number", this.index);
-                break;
-            case "ENT_Push":
-                if(this.waypoint) {
-                    switch (this.waypoint.icao[0]) {
-                        case "A":
-                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
-                            this.element.gps.lastRelevantICAOType = "A";
-                            this.element.gps.SwitchToInteractionState(0);
-                            this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
-                            break;
-                        case "V":
-                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
-                            this.element.gps.lastRelevantICAOType = "V";
-                            this.element.gps.SwitchToInteractionState(0);
-                            this.element.gps.SwitchToPageName("WPT", "VOR", true);
-                            break;
-                        case "N":
-                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
-                            this.element.gps.lastRelevantICAOType = "N";
-                            this.element.gps.SwitchToInteractionState(0);
-                            this.element.gps.SwitchToPageName("WPT", "NDB", true);
-                            break;
-                        case "W":
-                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
-                            this.element.gps.lastRelevantICAOType = "W";
-                            this.element.gps.SwitchToInteractionState(0);
-                            this.element.gps.SwitchToPageName("WPT", "Intersection", true);
-                            break;
+    onEvent(_subIndex, _event) {
+        if (this.element.gps.popUpElement == null) {
+            switch (_event) {
+                case "MENU_Push":
+                    this.element.selectedLine = this;
+                    break;
+                case "ActivateWaypoint":
+                    SimVar.SetSimVarValue("C:fs9gps:FlightPlanActiveWaypoint", "number", this.index);
+                    break;
+                case "ENT_Push":
+                    if(this.waypoint) {
+                        switch (this.waypoint.icao[0]) {
+                            case "A":
+                                this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                                this.element.gps.lastRelevantICAOType = "A";
+                                this.element.gps.SwitchToInteractionState(0);
+                                this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
+                                break;
+                            case "V":
+                                this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                                this.element.gps.lastRelevantICAOType = "V";
+                                this.element.gps.SwitchToInteractionState(0);
+                                this.element.gps.SwitchToPageName("WPT", "VOR", true);
+                                break;
+                            case "N":
+                                this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                                this.element.gps.lastRelevantICAOType = "N";
+                                this.element.gps.SwitchToInteractionState(0);
+                                this.element.gps.SwitchToPageName("WPT", "NDB", true);
+                                break;
+                            case "W":
+                                this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                                this.element.gps.lastRelevantICAOType = "W";
+                                this.element.gps.SwitchToInteractionState(0);
+                                this.element.gps.SwitchToPageName("WPT", "Intersection", true);
+                                break;
+                        }
                     }
-                }
-            break;
+                    break;
+                case "NavigationSmallInc":
+                case "NavigationSmallDec":
+                    if(this.element.savedFpl.canAdd(this.index)) {
+                        this.element.gps.switchToPopUpPage(this.element.waypointWindow, this.element.onWaypointSelectionEnd.bind(this.element));
+                        this.element.selectedIndex = this.index;
+                        break;
+                    }
+                    return true;
+                case "CLR":
+                case "CLR_Push":
+// PM Modif: Prevent removing a waypoint after a clear on waypoint window
+// And discard removing first waypoint
+                    if(!this.waypoint)
+                        break;
+                    if(!this.element.waypointWindow.element || (this.element.waypointWindow.element.preventRemove == false)) {
+                        if(this.index >= 0) {
+                            var curIndex  = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
+                            var gsr = fastToFixed(SimVar.GetSimVarValue("SURFACE RELATIVE GROUND SPEED", "knots"), 0);
+                            // Do not remove current leg if aircraft is moving and in nav or approach mode
+                            let navmode = 0;
+                            if(SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "boolean"))
+                                navmode = 1;
+                            if(SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "boolean"))
+                                navmode = 2;
+                            if(gsr > 0 && navmode && (this.index == curIndex || ((this.index + 1) == curIndex))) {
+                                // Cannot remove the current leg waypoints
+                                // Set a message for 20 seconds
+                                this.element.gps.attemptDeleteWpLeg++;
+                                setTimeout(() => {
+                                    this.element.gps.attemptDeleteWpLeg--;
+                                    if(this.element.gps.attemptDeleteWpLeg < 0)
+                                        this.element.gps.attemptDeleteWpLeg = 0;
+                                }, 20000);
+                                this.element.gps.SwitchToInteractionState(1);
+                            }
+                            else {
+                                // Check if this is a enroute waypoint
+                                let firstIndex = this.element.gps.currFlightPlanManager.getDepartureWaypointsCount()+1;
+                                let lastIndex = firstIndex + this.element.gps.currFlightPlanManager.getEnRouteWaypoints().length;
+                                if(this.element.gps.currFlightPlanManager.getArrivalProcIndex() >= 0)
+                                    lastIndex--;
+                                if((this.index == 0 && firstIndex > 1) || (this.index > 0 && (this.index < firstIndex || this.index > lastIndex)))
+                                {
+                                    // Cannot remove a procedure waypoint
+                                    // Set a message for 20 seconds
+                                    this.element.gps.attemptDeleteWpProc++;
+                                    setTimeout(() => {
+                                        this.element.gps.attemptDeleteWpProc--;
+                                        if(this.element.gps.attemptDeleteWpProc < 0)
+                                            this.element.gps.attemptDeleteWpProc = 0;
+                                    }, 20000);
+                                    this.element.gps.SwitchToInteractionState(1);
+                                }
+                                else if(this.index > 0 && (this.index < firstIndex || this.index > lastIndex))
+                                {
+                                    // Cannot remove a procedure waypoint
+                                    // Set a message for 20 seconds
+                                    this.element.gps.attemptDeleteWpProc++;
+                                    setTimeout(() => {
+                                        this.element.gps.attemptDeleteWpProc--;
+                                        if(this.element.gps.attemptDeleteWpProc < 0)
+                                            this.element.gps.attemptDeleteWpProc = 0;
+                                    }, 20000);
+                                    this.element.gps.SwitchToInteractionState(1);
+                                }
+                                else {
+                                    this.element.gps.confirmWindow.element.setTexts("Remove Waypoint ?");
+                                    this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
+                                        if (this.element.gps.confirmWindow.element.Result == 1) {
+                                            this.element.removeWaypoint(this.index);
+                                            this.element.gps.SwitchToInteractionState(0);
+                                        }
+                                        this.element.gps.SwitchToInteractionState(0);
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        this.element.waypointWindow.element.preventRemove = false;
+                    }
+// PM Modif: Prevent removing a waypoint after a clear on waypoint window
+                    break;
+            }
         }
         return false;
     }
+
     getDtk() {
         var dtk = "___";
         if(!this.element.gps.currFlightPlanManager.isActiveApproach() && !this.element.gps.currFlightPlanManager.getIsDirectTo()) {
@@ -146,46 +231,69 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
             else
                 return this.emptyLine;
         }
-        else if (this.element.emptyLine != "") {
+        else if (this.element && this.element.emptyLine != "") {
             return this.element.emptyLine;
         }
         else {
             return this.emptyLine;
         }
     }
-    onEvent(_subindex, _event) {
-        super.onEvent(_subindex, _event);
-        switch (_event) {
-            case "ENT_Push":
-                if(this.waypoint) {
-                    switch (this.waypoint.icao[0]) {
-                        case "A":
-                            this.element.gps.lastRelevantICAO =this.waypoint.icao;
-                            this.element.gps.lastRelevantICAOType = "A";
-                            this.element.gps.SwitchToInteractionState(0);
-                            this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
-                            break;
-                        case "V":
-                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
-                            this.element.gps.lastRelevantICAOType = "V";
-                            this.element.gps.SwitchToInteractionState(0);
-                            this.element.gps.SwitchToPageName("WPT", "VOR", true);
-                            break;
-                        case "N":
-                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
-                            this.element.gps.lastRelevantICAOType = "N";
-                            this.element.gps.SwitchToInteractionState(0);
-                            this.element.gps.SwitchToPageName("WPT", "NDB", true);
-                            break;
-                        case "W":
-                            this.element.gps.lastRelevantICAO = this.waypoint.icao;
-                            this.element.gps.lastRelevantICAOType = "W";
-                            this.element.gps.SwitchToInteractionState(0);
-                            this.element.gps.SwitchToPageName("WPT", "Intersection", true);
-                            break;
+    onEvent(_subIndex, _event) {
+        if (this.element.gps.popUpElement == null) {
+            switch (_event) {
+                case "ENT_Push":
+                    if(this.waypoint) {
+                        switch (this.waypoint.icao[0]) {
+                            case "A":
+                                this.element.gps.lastRelevantICAO =this.waypoint.icao;
+                                this.element.gps.lastRelevantICAOType = "A";
+                                this.element.gps.SwitchToInteractionState(0);
+                                this.element.gps.SwitchToPageName("WPT", "AirportLocation", true);
+                                break;
+                            case "V":
+                                this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                                this.element.gps.lastRelevantICAOType = "V";
+                                this.element.gps.SwitchToInteractionState(0);
+                                this.element.gps.SwitchToPageName("WPT", "VOR", true);
+                                break;
+                            case "N":
+                                this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                                this.element.gps.lastRelevantICAOType = "N";
+                                this.element.gps.SwitchToInteractionState(0);
+                                this.element.gps.SwitchToPageName("WPT", "NDB", true);
+                                break;
+                            case "W":
+                                this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                                this.element.gps.lastRelevantICAOType = "W";
+                                this.element.gps.SwitchToInteractionState(0);
+                                this.element.gps.SwitchToPageName("WPT", "Intersection", true);
+                                break;
+                        }
                     }
-                }
-            break;
+                    break;
+                case "NavigationSmallInc":
+                case "NavigationSmallDec":
+// PM Modif: Prevent adding an approach waypoint for now
+//                    this.element.gps.switchToPopUpPage(this.element.waypointWindow, this.element.onWaypointSelectionEnd.bind(this.element));
+//                    this.element.selectedIndex = this.index;
+//                  return true;
+// PM Modif: End Prevent adding an approach waypoint for now
+                    break;
+                case "CLR":
+                case "CLR_Push":
+                    // Cannot remove a procedure waypoint
+                    // Set a message for 20 seconds
+                    this.element.gps.attemptDeleteWpProc++;
+                    setTimeout(() => {
+                        this.element.gps.attemptDeleteWpProc--;
+                        if(this.element.gps.attemptDeleteWpProc < 0)
+                            this.element.gps.attemptDeleteWpProc = 0;
+                    }, 20000);
+// PM Modif: Prevent removing an approach waypoint
+//                    this.element.removeWaypoint(this.index);
+// PM Modif: End Prevent removing an approach waypoint
+                    break;
+            }
         }
         return false;
     }
@@ -348,6 +456,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.newWaypointPage.gps = this.gps;
         this.waypointWindow = this.newWaypointPage;
         this.savedFpl = new GPS_FlightPlanForSave(this.gps);
+        this._t = 0;
     }
     onEnter() {
         this.gps.closeConfirmWindow();
@@ -363,6 +472,11 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        this._t++;
+        if(this._t > 30) {
+            this._t = 0;
+            this.savedFpl.save();
+        }
         if (this.gps.currentInteractionState != 2) {
             this.selectedLine = null;
         }
@@ -489,7 +603,10 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.confirmWindow.element.setTexts("Remove Approach ?");
         this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
             if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getApproach() != null)) {
-                this.gps.currFlightPlanManager.setApproachIndex(-1);
+                this.gps.currFlightPlanManager.setApproachIndex(-1, () => {
+                    // This is to remove some kind of undefined display
+                    this.fplSelectable.onSelection("NavigationLargeDec");
+                });
             }
             this.gps.SwitchToInteractionState(0);
         });
@@ -498,7 +615,10 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.confirmWindow.element.setTexts("Remove Arrival ?");
         this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
             if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getArrival() != null)) {
-                this.gps.currFlightPlanManager.removeArrival();
+                this.gps.currFlightPlanManager.removeArrival(() => {
+                    // This is to remove some kind of undefined display
+                    this.fplSelectable.onSelection("NavigationLargeDec");
+                });
             }
             this.gps.SwitchToInteractionState(0);
         });
@@ -507,9 +627,25 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.confirmWindow.element.setTexts("Remove Departure ?");
         this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
             if ((this.gps.confirmWindow.element.Result == 1) && (this.gps.currFlightPlanManager.getDeparture() != null)) {
-                this.gps.currFlightPlanManager.removeDeparture();
+                this.gps.currFlightPlanManager.removeDeparture(() => {
+                    // This is to remove some kind of undefined display
+                    this.fplSelectable.onSelection("NavigationLargeDec");
+                });
             }
             this.gps.SwitchToInteractionState(0);
+        });
+    }
+    removeWaypoint(_index) {
+        let savedIndex = this.fplSelectable.index;
+        let savedOffset = this.fplSelectable.offset;
+        this.gps.currFlightPlanManager.removeWaypoint(_index, true, () => {
+            this.updateWaypoints.bind(this);
+            // This is to remove some kind of undefined display
+            this.fplSelectable.onSelection("NavigationLargeDec");
+            setTimeout(() => {
+                this.fplSelectable.index = savedIndex;
+                this.fplSelectable.offset = savedOffset;
+            }, 2000);
         });
     }
     FPLClosestPoint_CB() {
@@ -525,10 +661,12 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         if (this.gps.lastRelevantICAO) {
             // Workaraound to the insert waypoint broken in sim
             this.savedFpl.save();
-            if(this.savedFpl.canAdd(this.selectedIndex)) {
+            if(this.savedFpl.canAdd(this.selectedIndex, true)) {
                 this.gps.confirmWindow.element.setTexts("Add waypoint ?");
                 this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
                     if (this.gps.confirmWindow.element.Result == 1) {
+                        let savedIndex = this.fplSelectable.index;
+                        let savedOffset = this.fplSelectable.offset;
                         if(this.savedFpl.AddWaypoint(this.gps.lastRelevantICAO, this.selectedIndex)) {
                             let navmode = 0;
                             if(SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "boolean"))
@@ -540,6 +678,8 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
                             // Must press manually the navigation button to get it back
                             this.gps.SwitchToInteractionState(0);
                             setTimeout(() => {
+                                this.fplSelectable.index = savedIndex;
+                                this.fplSelectable.offset = savedOffset;
                                 this.fplSelectable.onEvent("NavigationLargeInc");
                             }, 2000);
                         }
@@ -1245,7 +1385,7 @@ class GPS_FlightPlanForSave {
         return false;
     }
 
-    canAdd(index) {
+    canAdd(index, withMessage = false) {
         this.indexInEnroute = -1;
         this.changeOrigin = false;
         this.changeDestination = false;
@@ -1263,6 +1403,8 @@ class GPS_FlightPlanForSave {
             }
             this.message = "Add waypoint: bad index";
 //            console.log("no origin, can only add at index 0");
+            if(withMessage)
+                this.setMessage();
             return false;
         }
         // If no destination , the flight plan has just one item
@@ -1273,6 +1415,8 @@ class GPS_FlightPlanForSave {
             if(index > 1) {
                 this.message = "Add waypoint: bad index";
 //                console.log("no destination, can only add at index 0 and 1");
+                if(withMessage)
+                    this.setMessage();
                 return false;
             }
             if(index == 0) {
@@ -1292,6 +1436,8 @@ class GPS_FlightPlanForSave {
             if(this.departureIndex >= 0) {
                 this.message = "Add waypoint: remove departure first";
 //                console.log("cannot change origin if departure");
+                if(withMessage)
+                    this.setMessage();
                 return false;
             }
 //            console.log("new origin");
@@ -1309,11 +1455,15 @@ class GPS_FlightPlanForSave {
             if(this.arrivalIndex >= 0 || this.approachIndex >= 0) {
                 this.message = "Add waypoint: remove dep/arr first";
 //                console.log("cannot add after destination if arrival or approach");
+                if(withMessage)
+                    this.setMessage();
                 return false;
             }
             if(index > lastIndex + 1) {
                 this.message = "Add waypoint: bad index";
 //                console.log("index greater than last index");
+                if(withMessage)
+                    this.setMessage();
                 return false;
             }
         }
@@ -1323,6 +1473,8 @@ class GPS_FlightPlanForSave {
         if(index < firstIndex || index > lastIndex) {
             this.message = "Add waypoint: bad index";
 //            console.log("can add only into enroute");
+            if(withMessage)
+                this.setMessage();
             return false;
         }
         this.indexInEnroute = index-firstIndex;
@@ -1335,6 +1487,15 @@ class GPS_FlightPlanForSave {
 //        console.log("indexInEnroute:" + this.indexInEnroute);
         return true;
     }
+    setMessage() {
+        this.gps.attemptAddWp++;
+        setTimeout(() => {
+            this.gps.attemptAddWp--;
+            if(this.gps.attemptAddWp < 0)
+                this.gps.attemptAddWp = 0;
+        }, 20000);
+    }
+
     onAfterAddWaypoints() {
         this.gps.currFlightPlanManager.updateFlightPlan(this.onFinalProcess.bind(this));
     }

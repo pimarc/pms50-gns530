@@ -60,6 +60,8 @@ class BaseGPS extends NavSystem {
         this.msg_t = 0;
         this.waypointDirectTo = null;
         this.attemptDeleteWpLeg = 0;
+        this.attemptDeleteWpProc = 0;
+        this.attemptAddWp = 0;
         this.weatherRadar = false;
         this.weatherRadarLegend = false;
         this.debug = false;

@@ -1604,20 +1604,14 @@ class MFD_DepartureLine extends MFD_FlightPlanLine {
         return '<td class="Select0 SelectableWhite" colspan="' + this.element.nbColumn + '">Departure - ' + this.name + '</td>';
     }
     onEvent(_subIndex, _event) {
-//PM Modif: Add confirmation window
+//PM Modif: Call element function
         switch (_event) {
             case "CLR":
             case "CLR_Push":
-                this.element.gps.confirmWindow.element.setTexts("Remove Departure ?");
-                this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
-                    if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getDeparture() != null)) {
-                        this.element.gps.currFlightPlanManager.removeDeparture();
-                    }
-                    this.element.gps.SwitchToInteractionState(0);
-                });
+                this.element.FPLRemoveDeparture_CB();
                 break;
         }
-//PM Modif: End Add confirmation window
+//PM Modif: End Call element function
         return false;
     }
 }
@@ -1631,20 +1625,14 @@ class MFD_ArrivalLine extends MFD_FlightPlanLine {
         return '<td class="Select0 SelectableWhite" colspan="' + this.element.nbColumn + '">Arrival - ' + this.name + '</td>';
     }
     onEvent(_subIndex, _event) {
-//PM Modif: Add confirmation window
+//PM Modif: Call element function
         switch (_event) {
             case "CLR":
             case "CLR_Push":
-                this.element.gps.confirmWindow.element.setTexts("Remove Arrival ?");
-                this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
-                    if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getArrival() != null)) {
-                        this.element.gps.currFlightPlanManager.removeArrival();
-                    }
-                    this.element.gps.SwitchToInteractionState(0);
-                });
+                this.element.FPLRemoveArrival_CB();
                 break;
         }
-//PM Modif: End Add confirmation window
+//PM Modif: End Call element function
         return false;
     }
 }
@@ -1661,16 +1649,10 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
         switch (_event) {
             case "CLR":
             case "CLR_Push":
-//PM Modif: Add confirmation window
-                this.element.gps.confirmWindow.element.setTexts("Remove Approach ?");
-                this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
-                    if ((this.element.gps.confirmWindow.element.Result == 1) && (this.element.gps.currFlightPlanManager.getApproach() != null)) {
-                        this.element.gps.currFlightPlanManager.setApproachIndex(-1);
-                    }
-                    this.element.gps.SwitchToInteractionState(0);
-                });
-//PM Modif: End Add confirmation window
-            break;
+//PM Modif: Call element function
+                this.element.FPLRemoveApproach_CB();
+//PM Modif: End Call element function
+                break;
             case "ENT_Push":
                 if(this.element.gps.currFlightPlanManager.getApproach() != null) {
                     this.element.gps.lastRelevantICAO =this.element.gps.currFlightPlanManager.getDestination().icao;
@@ -1753,41 +1735,7 @@ class MFD_WaypointLine extends MFD_FlightPlanLine {
                     return true;
                 case "CLR":
                 case "CLR_Push":
-// PM Modif: Prevent removing a waypoint after a clear on waypoint window
-// And discard removing first waypoint
-                    if(!this.element.waypointWindow.element || (this.element.waypointWindow.element.preventRemove == false)) {
-                        if(this.index >= 0) {
-                            var curIndex  = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
-                            var gsr = fastToFixed(SimVar.GetSimVarValue("SURFACE RELATIVE GROUND SPEED", "knots"), 0);
-                            // Do not remove current leg if aircraft is moving
-                            if(gsr > 0 && (this.index == curIndex || ((this.index + 1) == curIndex))) {
-                                // Cannot remove the current leg waypoints
-                                // Set a message for 20 seconds
-                                this.element.gps.attemptDeleteWpLeg++;
-                                setTimeout(() => {
-                                    this.element.gps.attemptDeleteWpLeg--;
-                                    if(this.element.gps.attemptDeleteWpLeg < 0)
-                                        this.element.gps.attemptDeleteWpLeg = 0;
-                                }, 20000);
-                                this.element.gps.SwitchToInteractionState(1);
-                            }
-                            else {
-                                this.element.gps.confirmWindow.element.setTexts("Remove Waypoint ?");
-                                this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
-                                    if (this.element.gps.confirmWindow.element.Result == 1) {
-                                        this.element.removeWaypoint(this.index);
-                                        this.element.gps.SwitchToInteractionState(0);
-                                    }
-                                    else
-                                        this.element.gps.SwitchToInteractionState(1);
-                                });
-                            }
-                        }
-                    }
-                    else{
-                        this.element.waypointWindow.element.preventRemove = false;
-                    }
-// PM Modif: Prevent removing a waypoint after a clear on waypoint window
+                    this.element.removeWaypoint(this.index);
                     break;
             }
         }
@@ -1829,16 +1777,12 @@ class MFD_ApproachWaypointLine extends MFD_FlightPlanLine {
             switch (_event) {
                 case "NavigationSmallInc":
                 case "NavigationSmallDec":
-// PM Modif: Prevent adding an approach waypoint for now
-//                    this.element.gps.switchToPopUpPage(this.element.waypointWindow, this.element.onWaypointSelectionEnd.bind(this.element));
-//                    this.element.selectedIndex = this.index;
-//                  return true;
-// PM Modif: End Prevent adding an approach waypoint for now
+                    this.element.gps.switchToPopUpPage(this.element.waypointWindow, this.element.onWaypointSelectionEnd.bind(this.element));
+                    this.element.selectedIndex = this.index;
+                    return true;
                 case "CLR":
                 case "CLR_Push":
-// PM Modif: Prevent removing an approach waypoint
-//                    this.element.removeWaypoint(this.index);
-// PM Modif: End Prevent removing an approach waypoint
+                    this.element.removeWaypoint(this.index);
                     break;
             }
         }

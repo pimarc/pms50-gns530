@@ -33,9 +33,11 @@ You can also use the alternate data MOD to fix this situation (see note below).
 # Change log
 ## V 1.0.21
 - Workaround for the MSFS issue with adding waypoints (see note below)
+- Prevent removing and adding procedure waypoints
 - Bug fix: distance for DME-only station was not displayed
 - Added a dedicated second MOD for managing config and loadable flight plans (see note below)
 - Last selected waypoint in map is available as default waypoint to insert in flight plan
+- Current leg can be removed form flight plan if not in NAV mode
 ## V 1.0.20
 - Radar mode: switch now made by the ENT button
 - Added a cursor mode in MAP NAV page
@@ -255,9 +257,11 @@ Using this knob you can move the cursor. While in cursor mode, pressing the "ENT
 
 In cursor mode the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.
 
-## Adding waypoints
+## Adding and deleting waypoints
 Adding a waypoint in the flight plan is currently broken in the sim when there is an approach loaded. I found a workaround to this situation so inserting a waypoint should just work now.
 
 However I've set some limitations in order to avoid bugs. For example, you cannot insert a waypoint in a procedure. This makes sense since a procedure is a whole. If you want to bypass some waypoints of a procedure and/or fly somewhere else you can use direct To and activate leg.
 
-For this workaround, I completely rebuild the flight plan while inserting a waypoint. Although not necessary, I recommend to switch to HDG mode before inserting a waypoint.
+There are also some limitations on removing waypoints. You cannot remove a procedure waypoint. The current leg waypoint can be removed only if you are not in autopilot NAV mode.
+
+For this workaround, I'm completely rebuilding the flight plan while inserting a waypoint. Although not necessary, I recommend to switch to HDG mode before inserting a waypoint.
