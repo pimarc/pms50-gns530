@@ -190,6 +190,7 @@ class GPS_Annunciations extends PFD_Annunciations {
         this.addMessage(Annunciation_MessageType.WARNING, "Attempt to delete active waypoint", this.deleteWpLeg);
         this.addMessage(Annunciation_MessageType.WARNING, "Attempt to delete proc waypoint", this.deleteWpProc);
         this.addMessage(Annunciation_MessageType.WARNING, "Cannot add waypoint at this place", this.addWp);
+        this.addMessage(Annunciation_MessageType.WARNING, "Approach is not active", this.approachNotActive);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.ADVISORY, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.sayTrue);
@@ -278,6 +279,22 @@ class GPS_Annunciations extends PFD_Annunciations {
     }
     addWp() {
         return this.gps.attemptAddWp;      
+    }
+    approachNotActive() {
+        // Check if next point is destination and if approach is loaded
+        if(this.gps.currFlightPlanManager.isLoadedApproach() && !this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getDestination()) {
+            if(this.gps.currFlightPlanManager.getActiveWaypointIdent() == this.gps.currFlightPlanManager.getDestination().ident) {
+                let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+                let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+                let ll = new LatLong(lat, long);
+                let distance = Avionics.Utils.computeDistance(ll, this.gps.currFlightPlanManager.getDestination().infos.coordinates);
+                if(distance < 30) {
+                    // Set the message
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     arrivalWp() {
         if(!SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean"))
