@@ -38,6 +38,7 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Added a dedicated second MOD for managing config and loadable flight plans (see note below)
 - Last selected waypoint in map is available as default waypoint to insert in flight plan
 - Current leg can be removed form flight plan if not in NAV mode
+- Added a message if an approach is loaded but not activated less than 30nm from destination.
 ## V 1.0.20
 - Radar mode: switch now made by the ENT button
 - Added a cursor mode in MAP NAV page
