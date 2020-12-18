@@ -167,7 +167,7 @@ class GPS_WaypointLine extends MFD_WaypointLine {
             var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
             if(activeIndex >= 0) {
                 if(activeIndex == this.index) {
-                    distance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                    distance = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
                 }
                 else if(this.index > activeIndex) {
                     var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
@@ -189,7 +189,7 @@ class GPS_WaypointLine extends MFD_WaypointLine {
             var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
             if(activeIndex >= 0) {
                 if(this.index >= activeIndex) {
-                    cumDistance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                    cumDistance = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
                     if(this.index > activeIndex) {
                         var wayPointList = this.element.gps.currFlightPlanManager.getWaypoints();
                         for(var i=this.index; i > activeIndex; i--) {
@@ -331,7 +331,7 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
                 if(activeIndex >= 0) {
                     if(activeIndex == this.index) {
-                        distance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                        distance = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
                     }
                     else if(this.index > activeIndex) {
                         var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
@@ -374,7 +374,7 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                 var activeIndex = this.element.gps.currFlightPlanManager.getActiveWaypointIndex();
                 if(activeIndex >= 0) {
                     if(this.index >= activeIndex) {
-                        cumDistance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                        cumDistance = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
                         if(this.index > activeIndex) {
                             var wayPointList = this.element.gps.currFlightPlanManager.getApproachWaypoints();
                             for(var i=this.index; i > activeIndex; i--) {
@@ -403,7 +403,7 @@ class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
                     if(wayPointListEnroute.length > 2 && (activeIndex != wayPointListEnroute.length-1)) {
                         // Calculate last enroute WP cum distance
                         // Start from active WP
-                        cumDistance = this.element.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+                        cumDistance = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
                         // Add distance fromlast enroute to first approach WP
                         cumDistance += Avionics.Utils.computeDistance(wayPointListEnroute[wayPointListEnroute.length - 2].infos.coordinates, wayPointList[0].infos.coordinates);
                         for(var i=wayPointListEnroute.length-2; i > activeIndex; i--) {
