@@ -299,6 +299,8 @@ class GPS_Annunciations extends PFD_Annunciations {
     arrivalWp() {
         if(!SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean"))
             return false;
+        if(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 20)
+            return false;
         if(SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
             this.Text = "Arrival at waypoint " + this.gps.currFlightPlanManager.getActiveWaypointIdent();
             return true;

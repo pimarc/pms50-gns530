@@ -123,7 +123,7 @@ class GPS_NearestIntersection extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        this.nearestIntersectionList.Update();
+        this.nearestIntersectionList.Update(50, 100);
         var lines = [];
         for (var i = 0; i < this.nearestIntersectionList.intersections.length; i++) {
             var line = "";

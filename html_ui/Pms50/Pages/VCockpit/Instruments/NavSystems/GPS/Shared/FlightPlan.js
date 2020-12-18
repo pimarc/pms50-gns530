@@ -645,7 +645,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
             setTimeout(() => {
                 this.fplSelectable.index = savedIndex;
                 this.fplSelectable.offset = savedOffset;
-            }, 2000);
+            }, 1000);
         });
     }
     FPLClosestPoint_CB() {
@@ -681,7 +681,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
                                 this.fplSelectable.index = savedIndex;
                                 this.fplSelectable.offset = savedOffset;
                                 this.fplSelectable.onEvent("NavigationLargeInc");
-                            }, 2000);
+                            }, 1000);
                         }
                     }
                 });

@@ -37,9 +37,10 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Bug fix: distance for DME-only station was not displayed
 - Added a dedicated second MOD for managing config and loadable flight plans (see note below)
 - Last selected waypoint in map is available as default waypoint to insert in flight plan (insert from map)
-- Current leg can be removed from flight plan if not in NAV mode
+- Current leg can be removed from flight plan if not in NAV mode (blocked before)
 - Added a message if an approach is loaded but not activated less than 30nm from destination.
 - Bug fix: distance calculation on flight plan for some waypoints
+- More waypoints displayed in nearest intersection page
 ## V 1.0.20
 - Radar mode: switch now made by the ENT button
 - Added a cursor mode in MAP NAV page
