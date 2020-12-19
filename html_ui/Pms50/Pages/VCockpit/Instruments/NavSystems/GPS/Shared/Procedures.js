@@ -168,6 +168,9 @@ class GPS_ApproachSelection extends MFD_ApproachSelection {
                     if (elem) {
                         elem.updateWaypoints();
                     }
+                    setTimeout(() => {
+                        this.gps.setApproachFrequency();
+                    }, 2000);
                 }, this.selectedTransition);
             }
             this.gps.closePopUpElement();

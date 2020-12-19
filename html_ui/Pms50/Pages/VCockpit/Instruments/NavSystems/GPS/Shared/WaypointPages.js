@@ -976,6 +976,9 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
                 if (elem) {
                     elem.updateWaypoints();
                 }
+                setTimeout(() => {
+                    this.gps.setApproachFrequency();
+                }, 2000);
             }, this.selectedTransition);
             this.gps.closePopUpElement();
             this.gps.SwitchToInteractionState(0);

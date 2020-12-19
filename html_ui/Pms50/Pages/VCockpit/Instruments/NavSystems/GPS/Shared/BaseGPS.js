@@ -296,9 +296,35 @@ class BaseGPS extends NavSystem {
                     Coherent.call("ACTIVATE_APPROACH").then(() => {
                         this.currFlightPlanManager._approachActivated = true;
                         this.currFlightPlanManager.updateCurrentApproach();
+                        this.setApproachFrequency();
                     });
             });
         callback();
+    }
+
+    setApproachFrequency() {
+        let approachType = SimVar.GetSimVarValue("GPS APPROACH APPROACH TYPE", "number");
+        if(!approachType)
+            return;
+        if(approachType == 2 || approachType == 8) {
+            // VOR approach
+            // Try to use the last VOR frequency 
+            let approachWaypoints = this.currFlightPlanManager.getApproachWaypoints();
+            for(var i=approachWaypoints.length-1; i >= 0; i--)
+            {
+                let waypoint = approachWaypoints[i];
+                if(waypoint.infos.getWaypointType() == "V" && waypoint.infos.frequencyBcd16) {
+                    SimVar.SetSimVarValue("K:NAV" + this.navIndex + "_STBY_SET", "Frequency BCD16", waypoint.infos.frequencyBcd16);
+                    break;
+                }
+            }
+        }
+        else {
+            let approachFrequency = this.currFlightPlanManager.getApproachNavFrequency();
+            if (!isNaN(approachFrequency)) {
+                SimVar.SetSimVarValue("K:NAV" + this.navIndex + "_STBY_SET_HZ", "hertz", approachFrequency * 1000000);
+            }
+        }
     }
 
     SwitchToPageName(_menu, _page, _keepicao = false) {

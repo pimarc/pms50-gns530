@@ -1101,6 +1101,9 @@ class GPS_FPLCatalog extends NavSystemElement {
                         if (elem) {
                             elem.updateWaypoints();
                         }
+                        setTimeout(() => {
+                            this.gps.setApproachFrequency();
+                        }, 2000);
                     }, indextransition);
                 }
             }
