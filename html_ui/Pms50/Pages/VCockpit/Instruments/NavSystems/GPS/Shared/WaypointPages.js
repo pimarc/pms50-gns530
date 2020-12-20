@@ -1828,7 +1828,7 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
             this.posEWElement.textContent = this.gps.longitudeFormat(infos.coordinates.long);
             this.nearestVORElement.textContent = infos.nearestVORIdent;
             this.radialFromNearVORElement.textContent = fastToFixed(infos.nearestVORMagneticRadial, 0);
-            this.distanceFromNearVORElement.textContent = fastToFixed(infos.nearestVORDistance / 1852, 1);
+            this.distanceFromNearVORElement.textContent = (Math.round((infos.nearestVORDistance / 1852*10))/10).toFixed(1);
         }
         else {
             this.regionElement.textContent = "_____";
@@ -1985,7 +1985,7 @@ class GPS_VORWaypoint extends NavSystemElement {
             this.regionElement.textContent = infos.region;
             this.latitudeElement.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
             this.longitudeElement.textContent = this.gps.longitudeFormat(infos.coordinates.long);
-            this.frequencyElement.textContent = fastToFixed(infos.frequencyMHz, 2);
+            this.frequencyElement.innerHTML = this.gps.frequencyFormat(infos.frequencyMHz, 2);
             if (infos.weatherBroadcast == 2) {
                 this.weatherBroadcastElement.textContent = "Wx Brdcst";
             }

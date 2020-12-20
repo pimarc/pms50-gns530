@@ -1483,7 +1483,48 @@ as530-element {
           as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection tr, as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr {
             height: 12.5%; }
             as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection tr td, as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr td, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr td {
-              height: 100%; }
+              height: 100%;
+              padding-left: 1vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection tr th:nth-child(1), as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr th:nth-child(1), as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr th:nth-child(1) {
+              padding-left: 1vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection tr th:nth-child(2) {
+              padding-left: 7vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection tr th:nth-child(3) {
+              padding-left: 6vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr th:nth-child(2) {
+              padding-left: 5vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr th:nth-child(3) {
+              padding-left: 5vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr th:nth-child(4) {
+              padding-left: 2vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr th:nth-child(2) {
+              padding-left: 2vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr th:nth-child(3) {
+              padding-left: 3vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr th:nth-child(4) {
+              padding-left: 4vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection tr td:nth-child(4), as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr td:nth-child(4), as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr td:nth-child(4) {
+              text-align: right;
+              padding-right: 6vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection tr td:nth-child(3), as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr td:nth-child(3), as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr td:nth-child(3) {
+              text-align: right;
+              padding-right: 6vw;
+            }
+            as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB tr td:nth-child(5), as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR tr td:nth-child(5) {
+              text-align: right;
+              padding-right: 2vw;
+            }
           as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection img, as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB img, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR img {
             height: 7vh; }
         as530-element #Electricity #TopDisplay #GpsPart #NRSTAirspace #NRSTAirspaceList {

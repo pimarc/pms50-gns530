@@ -661,7 +661,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 if(this.map && !this.displayWeather && this.map.eBingMode === EBingMode.CURSOR) {
                     this.map.deactivateCursor();
                     this.clearSelectedElement();
-                    this.gps.icaoFromMap = null;
                     this.gps.SwitchToInteractionState(0);
                     if(this.windContainer)
                        this.windContainer.setAttribute("style", "visibility: visible");
@@ -719,7 +718,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     else if (this.map.eBingMode === EBingMode.CURSOR) {
                         this.map.deactivateCursor();
                         this.clearSelectedElement();
-                        this.gps.icaoFromMap = null;
                         this.gps.SwitchToInteractionState(0);
                         if(this.windContainer) {
                             this.windContainer.setAttribute("style", "visibility: visible");
@@ -749,7 +747,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 // This situation may occur after a direcTo from map and then CLR
                 this.map.deactivateCursor();
                 this.clearSelectedElement();
-                this.gps.icaoFromMap = null;
                 this.gps.SwitchToInteractionState(0);
                 if(this.windContainer)
                     this.windContainer.setAttribute("style", "visibility: visible");
@@ -809,9 +806,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             return;
         }
 
-        this.gps.lastRelevantICAO = null;
-        this.gps.lastRelevantICAOType = "";
-        this.gps.icaoFromMap = this.gps.lastRelevantICAO;
         let cc = this.getCursorCoordinates();
         let distance = 1000;
         let icao = null;
@@ -861,9 +855,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         if(this.selectedsvgMapElement) {
             this.selectedsvgMapElement.selected = false;
             this.selectedsvgMapElement._refreshLabel(this.map.navMap, false);
-            this.gps.lastRelevantICAO = null;
-            this.gps.lastRelevantICAOType = "";
-            this.gps.icaoFromMap = this.gps.lastRelevantICAO;
         }
     }
     getCursorCoordinates(offset = null) {

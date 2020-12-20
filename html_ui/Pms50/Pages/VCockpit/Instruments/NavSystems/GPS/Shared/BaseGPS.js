@@ -62,6 +62,7 @@ class BaseGPS extends NavSystem {
         this.attemptDeleteWpLeg = 0;
         this.attemptDeleteWpProc = 0;
         this.attemptAddWp = 0;
+        this.airspaceList = new NearestAirspaceList(this);
         this.weatherRadar = false;
         this.weatherRadarLegend = false;
         this.debug = false;
@@ -327,6 +328,15 @@ class BaseGPS extends NavSystem {
         }
     }
 
+    getDistanceToDestination() {
+        let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+        let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+        let ll = new LatLong(lat, long);
+        if(!this.currFlightPlanManager.getDestination())
+            return NaN;
+        return Avionics.Utils.computeDistance(ll, this.currFlightPlanManager.getDestination().infos.coordinates);
+    }
+
     SwitchToPageName(_menu, _page, _keepicao = false) {
         if(!_keepicao) {
             this.lastRelevantICAO = null;
@@ -425,6 +435,26 @@ class BaseGPS extends NavSystem {
         };
         httpRequest.open("GET", file);
         httpRequest.send();
+    }
+    loadMetar(callback) {
+        return new Promise((resolve) => {
+            var milliseconds = new Date().getTime().toString();
+            var url = "https://avwx.rest/api/metar/LFRK?options=info&airport=true&reporting=true&format=json&onfail=cache";
+            let httpRequest = new XMLHttpRequest();
+            httpRequest.open("GET", url);
+            httpRequest.setRequestHeader('Authorization', "Q6dJrZHSvmTA18-uyWs6bYvA2qB4zqZ3c9EvXCGKiU4");
+            httpRequest.onreadystatechange = function (data) {
+                if (this.readyState === XMLHttpRequest.DONE) {
+                    let loaded = this.status === 200 || this.status === 0;
+                    if (loaded) {
+                        console.log(this.responseText);
+                        if(callback)
+                            callback(this.responseText);
+                    }
+                }
+            };
+            httpRequest.send();
+        });
     }
 }
 

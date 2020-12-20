@@ -50,10 +50,11 @@ class GPS_NearestAirports extends NavSystemElement {
             else if (this.nearestAirportList.airports[i].airportClass == 5) {
                 logo = "Private_Airfield.png";
             }
+
             firstLine += '<td class="SelectableElement">' + this.nearestAirportList.airports[i].ident + '</td>';
             firstLine += '<td><img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/' + logo + '" class="imgSizeM"/> </td>';
             firstLine += '<td>' + fastToFixed(this.nearestAirportList.airports[i].bearing, 0) + '<div class="Align unit">o<br />M</div></td>';
-            firstLine += '<td>' + fastToFixed(this.nearestAirportList.airports[i].distance, 1) + '<div class="Align unit">n<br />m</div></td>';
+            firstLine += '<td>' + (Math.round((this.nearestAirportList.airports[i].distance*10))/10).toFixed(1) + '<div class="Align unit">n<br />m</div></td>';
             firstLine += '<td>' + this.nearestAirportList.airports[i].bestApproach + '</td>';
             secondLine += '<td>' + this.nearestAirportList.airports[i].frequencyName + '</td>';
             //Don't display frequency if it's zero
@@ -129,8 +130,8 @@ class GPS_NearestIntersection extends NavSystemElement {
             var line = "";
             line += '<td class="SelectableElement">' + this.nearestIntersectionList.intersections[i].ident + '</td>';
             line += '<td><img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + this.nearestIntersectionList.intersections[i].imageFileName() + '"/></td>';
-            line += '<td>' + fastToFixed(this.nearestIntersectionList.intersections[i].bearing, 0) + '<div class="Align unit">o<br />M</div></td>';
-            line += '<td>' + fastToFixed(this.nearestIntersectionList.intersections[i].distance, 1) + '<div class="Align unit">n<br />m</div></td>';
+            line += '<td>' + Utils.leadingZeros(fastToFixed(this.nearestIntersectionList.intersections[i].bearing, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
+            line += '<td>' + (Math.round((this.nearestIntersectionList.intersections[i].distance*10))/10).toFixed(1) + '<div class="Align unit">n<br />m</div></td>';
             lines.push(line);
         }
         this.intersectionsSliderGroup.setStringElements(lines);
@@ -177,8 +178,8 @@ class GPS_NearestNDB extends NavSystemElement {
             var line = "";
             line += '<td class="SelectableElement">' + this.nearestNDBList.ndbs[i].ident + '</td>';
             line += '<td><img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + this.nearestNDBList.ndbs[i].imageFileName() + '"/></td>';
-            line += '<td>' + fastToFixed(this.nearestNDBList.ndbs[i].bearing, 0) + '<div class="Align unit">o<br />M</div></td>';
-            line += '<td>' + fastToFixed(this.nearestNDBList.ndbs[i].distance, 1) + '<div class="Align unit">n<br />m</div></td>';
+            line += '<td>' + Utils.leadingZeros(fastToFixed(this.nearestNDBList.ndbs[i].bearing, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
+            line += '<td>' + (Math.round((this.nearestNDBList.ndbs[i].distance*10))/10).toFixed(1) + '<div class="Align unit">n<br />m</div></td>';
             line += '<td>' + fastToFixed(this.nearestNDBList.ndbs[i].frequencyMHz, 1) + '</td>';
             lines.push(line);
         }
@@ -230,9 +231,9 @@ class GPS_NearestVOR extends NavSystemElement {
             line += '<td class="SelectableElement Select0">' + this.nearestVORList.vors[i].ident + '</td>';
             var image = this.nearestVORList.vors[i].imageFileName();
             line += '<td> <img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + image + '"></td>';
-            line += '<td>' + fastToFixed(this.nearestVORList.vors[i].bearing, 0) + '<div class="Align unit">o<br />M</div></td>';
-            line += '<td>' + fastToFixed(this.nearestVORList.vors[i].distance, 1) + '<div class="Align unit">n<br />m</div></td>';
-            line += '<td class="SelectableElement Select1">' + fastToFixed(this.nearestVORList.vors[i].frequencyMHz, 2) + '</td>';
+            line += '<td>' + Utils.leadingZeros(fastToFixed(this.nearestVORList.vors[i].bearing, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
+            line += '<td>' + (Math.round((this.nearestVORList.vors[i].distance*10))/10).toFixed(1) + '<div class="Align unit">n<br />m</div></td>';
+            line += '<td class="SelectableElement Select1">' + this.gps.frequencyFormat(this.nearestVORList.vors[i].frequencyMHz, 2) + '</td>';
             lines.push(line);
         }
         this.vorsSliderGroup.setStringElements(lines);
@@ -334,13 +335,13 @@ class GPS_NearestAirpaces extends NavSystemElement {
             case 0:
                 return "";
             case 1:
-                return "Ahead";
+                return "Near";
             case 2:
-                return "Ahead " + displayAheadTime;
+                return "Ahead - " + displayAheadTime;     // Ahead, less than 10 minutes
             case 3:
-                return "Within 2nm of airspace " + displayAheadTime;
+                return "Near and ahead - " + displayAheadTime;    // Near and ahead
             case 4:
-                return "Inside of airspace";
+                return "Inside of airspace";    // Inside
             default:
                 return "";
         }

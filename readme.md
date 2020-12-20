@@ -10,7 +10,11 @@ I cannot thank each of you individually so thank you to everyone who supports me
 
 # Installation
 
+Get the latest release from  https://pms50.com/fs2020/gns530/pms50-gns530.zip
+
 Unzip the file in your Community folder and restart the sim.
+
+If you download from GitHub, BE CAREFUL to download only the releases (button release at the right of the GitHub screen). GitHub sources may be not stable.
 
 Sometimes users reported that it was necessary to reboot the machine (maybe after a MSFS patch?).
 
@@ -18,25 +22,17 @@ If you have set a config file and/or loadable flight plans, be careful to save t
 
 You can also use the alternate data MOD to fix this situation (see note below).
 
-# First release features
-- Better logic for approach loading and activation
-- Correcting the crazy U-turn bug
-- Activate leg now works on approach waypoints
-- Better DirectTo management and possibility to Direct to an approach icao waypoint
-- Bug correction when direct to an airport: it was then impossible to select an approach
-- Remove approach works now
-- Activate approach is not selectable if not relevant (ex already activated or no approach)
-- Display screen more readable
-- Airport list: Correcting flicking bug and enhancing the view
-- Adding a declutter level
-
 # Change log
+## V 1.0.22
+- VOR/LOC standby frequency automatically set to ILS/VOR frequency when loading or activating approach.
+- Last selected waypoint in map available for waypoint page
+- Changing some distance display in nearest pages (rounded)
 ## V 1.0.21
 - Workaround for the MSFS issue with adding waypoints (see note below)
 - Prevent removing and adding procedure waypoints
 - Bugfix: distance for DME-only station was not displayed
 - Added a dedicated second MOD for managing config and loadable flight plans (see note below)
--  Last selected waypoint in the map  page is available as the default waypoint to insert in the flight plan (insert from the map)
+- Last selected waypoint in the map  page is available as the default waypoint to insert in the flight plan (insert from the map)
 - Current leg can be removed from the flight plan if not in NAV mode (blocked before)
 - Added a message if an approach is loaded but not activated less than 30nm from the destination
 - Bugfix: distance calculation on the flight plan for some waypoints
@@ -151,6 +147,41 @@ You can also use the alternate data MOD to fix this situation (see note below).
 ## V 1.0.1
 - World4Fly Mod integration (Wrong radial and Rounded DME)
 - NAV page now displays ETE to next waypoint instead of ETE to destination
+# First release features
+- Better logic for approach loading and activation
+- Correcting the crazy U-turn bug
+- Activate leg now works on approach waypoints
+- Better DirectTo management and possibility to Direct to an approach icao waypoint
+- Bug correction when direct to an airport: it was then impossible to select an approach
+- Remove approach works now
+- Activate approach is not selectable if not relevant (ex already activated or no approach)
+- Display screen more readable
+- Airport list: Correcting flicking bug and enhancing the view
+- Adding a declutter level
+
+# Bug reporting
+You can report bugs on the forum: https://forums.flightsimulator.com/t/gns530-mod/
+
+Before reporting a bug:
+- Read the readme file (maybe not a real bug but a normal behavior)
+- Install the latest release of the MOD 
+- Remove any other MOD
+- Take some time to search for the fastest sequence that reproduces the bug
+- Re-install the MOD
+- Restart the sim
+- Reboot the computer
+- Set the weather to clear sky at midday.
+- Try with another aircraft having a different GPS if this is a flight plan issue
+
+When reporting:
+- Give all the information necessary to reproduce the bug. Be very precise
+- Give your exact flight plan (textual)
+- Give your version number as displayed when you start the GPS
+
+If I'm not able to reproduce the issue, it will be very difficult to fix.
+Messages just like "I got a froze" or "I got a CTD" without further information will not be taken into care.
+I can spend all the necessary time to help but I need real information to do that.
+Thank you for your understanding.
 
 # Current MSFS bugs
 - Waypoint insertion is broken since November update especially if there is an approach loaded. I cannot do anything here since it's in the sim's kernel.

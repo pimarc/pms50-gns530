@@ -175,6 +175,7 @@ class GPS_Annunciations extends PFD_Annunciations {
     constructor() {
         super(...arguments);
         this.isActive = false;
+        this._t_airspaces = 0;
     }
     init(root) {
         // We have rebuilt all the init in order to discard XML engine alert messages. They should not be displayed in these GPS.
@@ -191,6 +192,10 @@ class GPS_Annunciations extends PFD_Annunciations {
         this.addMessage(Annunciation_MessageType.WARNING, "Attempt to delete proc waypoint", this.deleteWpProc);
         this.addMessage(Annunciation_MessageType.WARNING, "Cannot add waypoint at this place", this.addWp);
         this.addMessage(Annunciation_MessageType.WARNING, "Approach is not active", this.approachNotActive);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "Near airspace -- less than 2nm", this.airspaceNear);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace ahead -- less than 10 min", this.airspaceAhead);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace near and ahead", this.airspaceNearAhead);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "Inside airspace", this.airspaceInside);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.ADVISORY, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.sayTrue);
@@ -227,6 +232,12 @@ class GPS_Annunciations extends PFD_Annunciations {
                 }
             }
         }
+        if(this.gps)
+            this.gps.airspaceList.Update();
+        // this._t_airspaces++;
+        // if(this._t_airspaces > 10) {
+        //     this._t_airspaces = 0;
+        // }
         super.onUpdate(_deltaTime);
     }
 
@@ -284,10 +295,7 @@ class GPS_Annunciations extends PFD_Annunciations {
         // Check if next point is destination and if approach is loaded
         if(this.gps.currFlightPlanManager.isLoadedApproach() && !this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getDestination()) {
             if(this.gps.currFlightPlanManager.getActiveWaypointIdent() == this.gps.currFlightPlanManager.getDestination().ident) {
-                let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-                let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-                let ll = new LatLong(lat, long);
-                let distance = Avionics.Utils.computeDistance(ll, this.gps.currFlightPlanManager.getDestination().infos.coordinates);
+                let distance = this.gps.getDistanceToDestination();
                 if(distance < 30) {
                     // Set the message
                     return true;
@@ -306,6 +314,66 @@ class GPS_Annunciations extends PFD_Annunciations {
             return true;
         }
         return false;        
+    }
+    airspaceNear() {
+        // No message if near the ground
+        if(SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet") < 100)
+            return false;
+        if(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 20)
+            return false;
+        // Disable if approach loaded and distance to destination is less than 30nm
+        if(this.gps.currFlightPlanManager.isLoadedApproach() && this.gps.getDistanceToDestination() < 30)
+            return false;
+        for(var i=0; i < this.gps.airspaceList.airspaces.length; i++) {
+            if(this.gps.airspaceList.airspaces[i].status == 1)
+                return true;
+        }
+        return false;
+    }
+    airspaceAhead() {
+        // No message if near the ground
+        if(SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet") < 100)
+            return false;
+        if(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 20)
+            return false;
+        // Disable if approach loaded and distance to destination is less than 30nm
+        if(this.gps.currFlightPlanManager.isLoadedApproach() && this.gps.getDistanceToDestination() < 30)
+            return false;
+        for(var i=0; i < this.gps.airspaceList.airspaces.length; i++) {
+            if(this.gps.airspaceList.airspaces[i].status == 2 && this.gps.airspaceList.airspaces[i].aheadTime < 600)
+                return true;
+        }
+        return false;
+    }
+    airspaceNearAhead() {
+        // No message if near the ground
+        if(SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet") < 100)
+            return false;
+        if(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 20)
+            return false;
+        // Disable if approach loaded and distance to destination is less than 30nm
+        if(this.gps.currFlightPlanManager.isLoadedApproach() && this.gps.getDistanceToDestination() < 30)
+            return false;
+        for(var i=0; i < this.gps.airspaceList.airspaces.length; i++) {
+            if(this.gps.airspaceList.airspaces[i].status == 3 && this.gps.airspaceList.airspaces[i].nearDistance <= 2)
+                return true;
+        }
+        return false;
+    }
+    airspaceInside() {
+        // No message if near the ground
+        if(SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet") < 100)
+            return false;
+        if(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 20)
+            return false;
+        // Disable if approach loaded and distance to destination is less than 30nm
+        if(this.gps.currFlightPlanManager.isLoadedApproach() && this.gps.getDistanceToDestination() < 30)
+            return false;
+        for(var i=0; i < this.gps.airspaceList.airspaces.length; i++) {
+            if(this.gps.airspaceList.airspaces[i].status == 4)
+                return true;
+        }
+        return false;
     }
     testObs() {
         let obs = SimVar.GetSimVarValue("NAV OBS:1", "degrees");
