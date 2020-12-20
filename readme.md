@@ -24,9 +24,11 @@ You can also use the alternate data MOD to fix this situation (see note below).
 
 # Change log
 ## V 1.0.22
-- VOR/LOC standby frequency automatically set to ILS/VOR frequency when loading or activating approach.
+- VOR/LOC standby frequency automatically set to ILS/VOR frequency when loading or activating approach
+- Added messages about airspaces (4 types of messages as described in the GNS530 documentation)
 - Last selected waypoint in map available for waypoint page
 - Changing some distance display in nearest pages (rounded)
+- Bugfix: selection mode blocked after activating an approach from procedure menu
 ## V 1.0.21
 - Workaround for the MSFS issue with adding waypoints (see note below)
 - Prevent removing and adding procedure waypoints
@@ -174,9 +176,11 @@ Before reporting a bug:
 - Try with another aircraft having a different GPS if this is a flight plan issue
 
 When reporting:
-- Give all the information necessary to reproduce the bug. Be very precise
-- Give your exact flight plan (textual)
-- Give your version number as displayed when you start the GPS
+- All the information necessary to reproduce the bug. Be very precise
+- The exact flight plan (textual)
+- The version number as displayed when you start the GPS
+- The aircraft type
+- The list of installed Mods
 
 If I'm not able to reproduce the issue, it will be very difficult to fix.
 Messages just like "I got a froze" or "I got a CTD" without further information will not be taken into care.

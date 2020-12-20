@@ -42,6 +42,7 @@ class GPS_Procedures extends NavSystemElement {
     if (_event == "ENT_Push") {
             this.gps.activateApproach();
             this.gps.closePopUpElement();
+            this.gps.SwitchToInteractionState(0);
             this.gps.SwitchToPageName("NAV", "DefaultNav");
         }
     }

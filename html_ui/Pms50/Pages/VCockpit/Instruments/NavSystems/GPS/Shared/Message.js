@@ -175,7 +175,6 @@ class GPS_Annunciations extends PFD_Annunciations {
     constructor() {
         super(...arguments);
         this.isActive = false;
-        this._t_airspaces = 0;
     }
     init(root) {
         // We have rebuilt all the init in order to discard XML engine alert messages. They should not be displayed in these GPS.
@@ -234,10 +233,6 @@ class GPS_Annunciations extends PFD_Annunciations {
         }
         if(this.gps)
             this.gps.airspaceList.Update();
-        // this._t_airspaces++;
-        // if(this._t_airspaces > 10) {
-        //     this._t_airspaces = 0;
-        // }
         super.onUpdate(_deltaTime);
     }
 
