@@ -285,6 +285,8 @@ class GPS_WaypointMap extends MapInstrumentElement {
             let sMostXY = 0;
             for(var i=0; i< waypoints.length; i++) {
                 let xy = this.instrument.navMap.coordinatesToXY(waypoints[i].infos.coordinates);
+                if(xy.x == NaN)
+                    continue;
                 if(i==0) {
                     wMostXY = xy.x;
                     eMostXY = xy.x;
@@ -1143,7 +1145,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
                         this.selectedTransition = this.gps.currFlightPlanManager.getArrivalTransitionIndex();
                     this.selectedRunway = this.lastSelectedRunway;
                     let arrival = this.getSelectedArrival(infos);
-                    if(arrival.runwayTransitions.length <= this.selectedRunway)
+                    if(arrival.runwayTransitions.length)
                         this.selectedRunway = 0;
                 }
             }
@@ -1201,13 +1203,13 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
                 else {
                     this.transitionElement.textContent = "NONE";
                 }
-                if (arrival.runwayTransitions && this.selectedRunway >= 0) {
-                    if(arrival.runwayTransitions.length <= this.selectedRunway)
+                if (arrival.runwayTransitions && arrival.runwayTransitions.length) {
+                    if(this.selectedRunway == -1 || this.selectedRunway >= arrival.runwayTransitions.length)
                         this.selectedRunway = 0;
                     this.runwayElement.textContent = arrival.runwayTransitions[this.selectedRunway].name;
                 }
                 else {
-                    this.runwayElement.textContent = "NONE";
+                    this.runwayElement.textContent = "ALL";
                 }
             }
             else {
@@ -1232,7 +1234,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
         var waypoints = [];
         if(arrival){
             if(this.selectedTransition >= 0) {
-                let enRouteTransition = arrival.enRouteTransitions[this.selectedRunway];
+                let enRouteTransition = arrival.enRouteTransitions[this.selectedTransition];
                 if (enRouteTransition && enRouteTransition.legs) {
                     for (let i = 0; i < enRouteTransition.legs.length; i++) {
                         let wp = new WayPoint(this.gps);
@@ -1254,7 +1256,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
                         wp.UpdateInfos();
                         waypoints.push(wp);
                     }
-            }
+                }
             }
             if(this.selectedRunway >= 0) {
                 let runwayTransition = arrival.runwayTransitions[this.selectedRunway];
@@ -1610,7 +1612,7 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
             }
             }
             if(this.selectedTransition >= 0) {
-                let enRouteTransition = departure.enRouteTransitions[this.selectedRunway];
+                let enRouteTransition = departure.enRouteTransitions[this.selectedTransition];
                 if (enRouteTransition && enRouteTransition.legs) {
                     for (let i = 0; i < enRouteTransition.legs.length; i++) {
                         let wp = new WayPoint(this.gps);

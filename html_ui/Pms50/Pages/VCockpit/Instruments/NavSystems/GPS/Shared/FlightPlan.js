@@ -1363,6 +1363,8 @@ class GPS_FlightPlanForSave {
             let newicao = "";
             if (this.destination)
                 newicao = this.destination.icao;
+            else
+                this.destination = new WayPoint(this.gps);
             this.destination.icao = icao;
             this.destination.UpdateInfos();
             icao = newicao;

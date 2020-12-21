@@ -29,6 +29,7 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Last selected waypoint in map available for waypoint page
 - Changing some distance display in nearest pages (rounded)
 - Bugfix: selection mode blocked after activating an approach from procedure menu
+- Bugfix: incorrect database information may freeze the GPS when displaying a procedure map
 ## V 1.0.21
 - Workaround for the MSFS issue with adding waypoints (see note below)
 - Prevent removing and adding procedure waypoints

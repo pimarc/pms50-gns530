@@ -356,6 +356,11 @@
       "date": 132453631615266163
     },
     {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/FlightElements/Waypoint.js",
+      "size": 32299,
+      "date": 132453631615266163
+    },
+    {
       "path": "html_ui/Official/Pages/VCockpit/Instruments/Shared/FlightElements/Approach.js",
       "size": 306,
       "date": 132453631615266163
@@ -383,11 +388,6 @@
     {
       "path": "html_ui/Official/Pages/VCockpit/Instruments/Shared/FlightElements/Runway.js",
       "size": 4476,
-      "date": 132453631615266163
-    },
-    {
-      "path": "html_ui/Official/Pages/VCockpit/Instruments/Shared/FlightElements/Waypoint.js",
-      "size": 32299,
       "date": 132453631615266163
     },
     {

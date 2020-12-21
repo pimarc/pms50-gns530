@@ -780,8 +780,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     wp.icao = this.selectedsvgMapElement.source.icao;
                     wp.ident = wp.icao.substr(7);
                     if(wp.icao.replace(/\s+/g, '').length){
-                        wp.UpdateInfos();
-                        coordinates = wp.infos.coordinates;
+                        wp.UpdateInfos(() => {
+                            coordinates = wp.infos.coordinates;
+                        });
                     }
                 }
                 if(coordinates)
@@ -821,8 +822,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 wp.icao = svgElement.source.icao;
                 wp.ident = wp.icao.substr(7);
                 if(wp.icao.replace(/\s+/g, '').length){
-                    wp.UpdateInfos();
-                    coordinates = wp.infos.coordinates;
+                    wp.UpdateInfos(() => {
+                        coordinates = wp.infos.coordinates;
+                    });
                 }
             }
             if(coordinates) {
