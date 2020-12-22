@@ -1,4 +1,5 @@
 {
   "weather_radar": "off",
-  "weather_legend": "on"
+  "weather_legend": "on",
+  "metar_avwx_token": ""
 }

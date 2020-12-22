@@ -254,7 +254,7 @@ as530-element {
         as530-element #Electricity #TopDisplay #GpsPart #DefaultNav, as530-element #Electricity #TopDisplay #GpsPart #MapNav, as530-element #Electricity #TopDisplay #GpsPart #TerrainNav, as530-element #Electricity #TopDisplay #GpsPart #ComNav, as530-element #Electricity #TopDisplay #GpsPart #Position, as530-element #Electricity #TopDisplay #GpsPart #Satellite, as530-element #Electricity #TopDisplay #GpsPart #Vnav, as530-element #Electricity #TopDisplay #GpsPart #Terrain, as530-element #Electricity #TopDisplay #GpsPart #DRCT, as530-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as530-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
         as530-element #Electricity #TopDisplay #GpsPart #Procedures, as530-element #Electricity #TopDisplay #GpsPart #ApproachSelection, as530-element #Electricity #TopDisplay #GpsPart #AirportLocation, as530-element #Electricity #TopDisplay #GpsPart #AirportRunway, as530-element #Electricity #TopDisplay #GpsPart #AirportFrequency, as530-element #Electricity #TopDisplay #GpsPart #AirportApproach,
         as530-element #Electricity #TopDisplay #GpsPart #AirportArrival, as530-element #Electricity #TopDisplay #GpsPart #AirportDeparture, as530-element #Electricity #TopDisplay #GpsPart #Intersection, as530-element #Electricity #TopDisplay #GpsPart #NDB, as530-element #Electricity #TopDisplay #GpsPart #VOR, as530-element #Electricity #TopDisplay #GpsPart #UserWaypoint, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirport, as530-element #Electricity #TopDisplay #GpsPart #NRSTIntersection,
-        as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR, as530-element #Electricity #TopDisplay #GpsPart #NRSTUser, as530-element #Electricity #TopDisplay #GpsPart #NRSTCenter, as530-element #Electricity #TopDisplay #GpsPart #NRSTFlightService, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirspace, as530-element #Electricity #TopDisplay #GpsPart #COMSetup, as530-element #Electricity #TopDisplay #GpsPart #MSG {
+        as530-element #Electricity #TopDisplay #GpsPart #NRSTNDB, as530-element #Electricity #TopDisplay #GpsPart #NRSTVOR, as530-element #Electricity #TopDisplay #GpsPart #NRSTUser, as530-element #Electricity #TopDisplay #GpsPart #NRSTCenter, as530-element #Electricity #TopDisplay #GpsPart #NRSTFlightService, as530-element #Electricity #TopDisplay #GpsPart #NRSTAirspace, as530-element #Electricity #TopDisplay #GpsPart #COMSetup, as530-element #Electricity #TopDisplay #GpsPart #MSG, as530-element #Electricity #TopDisplay #GpsPart #METAR {
           display: none;
           width: 100%;
           height: 100%;
@@ -292,6 +292,7 @@ as530-element {
         as530-element #Electricity #TopDisplay #GpsPart[state=NRSTFlightService] #NRSTFlightService,
         as530-element #Electricity #TopDisplay #GpsPart[state=NRSTAirspace] #NRSTAirspace,
         as530-element #Electricity #TopDisplay #GpsPart[state=COMSetup] #COMSetup,
+        as530-element #Electricity #TopDisplay #GpsPart[state=METAR] #METAR,
         as530-element #Electricity #TopDisplay #GpsPart[state=MSG] #MSG {
           display: block; }
         as530-element #Electricity #TopDisplay #GpsPart #DefaultNav {
@@ -1576,6 +1577,31 @@ as530-element {
         }
         as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #newAnnunciations .Advisory, as530-element #Electricity #TopDisplay #GpsPart #MSG #Messages #Annunciations #acknowledged .Advisory {
           color: #8fbe31;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #METAR .AirportDisplay {
+          position: absolute;
+          width: 100%;
+          top: 15%;
+          display: flex;
+          justify-content: center;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #METAR .AirportDisplay .WhiteTitle {
+          margin-left: -12vw;
+          padding-right: 2vw;
+          padding-top: 1vw;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #METAR .AirportDisplay #APTIdent {
+          height: 9vh;
+          width: 22%;
+          text-align: center;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #METAR #MetarData {
+          position: absolute;
+          top: 30%;
+          left: 5%;
+          width: 90%;
+          height: 60%;
+          overflow: hidden;
         }
         as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock {
           display: flex;

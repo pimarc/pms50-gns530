@@ -24,6 +24,7 @@ You can also use the alternate data MOD to fix this situation (see note below).
 
 # Change log
 ## V 1.0.22
+- Added real time METAR data (see note below)
 - VOR/LOC standby frequency automatically set to ILS/VOR frequency when loading or activating approach
 - Added messages about airspaces (4 types of messages as described in the GNS530 documentation)
 - Last selected waypoint in map available for waypoint page
@@ -304,3 +305,17 @@ However I've set some limitations in order to avoid bugs. For example, you canno
 There are also some limitations on removing waypoints. You cannot remove a procedure waypoint. The current leg waypoint can be removed only if you are not in autopilot NAV mode.
 
 For this workaround, I'm completely rebuilding the flight plan while inserting a waypoint. Although not necessary, I recommend to switch to HDG mode before inserting a waypoint.
+
+## METAR
+The METAR data is available as second AUX page.
+
+Before using it, you must configure:
+- Please first subscribe to https://account.avwx.rest/ (it's free) and get an API token.
+- Copy this token in the "metar_avwx_token" entry of your config.json file (see above).
+
+The METAR page provides a menu to get your origin or destination METARs in a fast way.
+
+You can also select any airport.
+Selecting an airport can be done directly from the METAR page but also from the map page in cursor mode or from the flight plan (ENT key).
+
+The METAR data is a real information taken from METAR stations. The result may differ from the in game weather following your configuration. This is relevant only if you play in live weather.

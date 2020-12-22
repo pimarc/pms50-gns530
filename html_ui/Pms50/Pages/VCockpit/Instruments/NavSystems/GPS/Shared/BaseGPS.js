@@ -66,6 +66,7 @@ class BaseGPS extends NavSystem {
         this.weatherRadar = false;
         this.weatherRadarLegend = false;
         this.debug = false;
+        this.metar_avwx_token = false;
         this.icaoFromMap = null;
         //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
         this.loadConfig(() => {
@@ -417,7 +418,10 @@ class BaseGPS extends NavSystem {
                 if(data.weather_legend && data.weather_legend.toUpperCase() == "ON")
                     this.weatherRadarLegend = true;
                 if(data.debug && data.debug.toUpperCase() == "ON")
-                    this.debug = true;
+                    this.debug = true
+                if(data.metar_avwx_token)
+                    this.metar_avwx_token = data.metar_avwx_token;
+
                 callback();
                 resolve();
             });
@@ -436,25 +440,33 @@ class BaseGPS extends NavSystem {
         httpRequest.open("GET", file);
         httpRequest.send();
     }
-    loadMetar(callback) {
-        return new Promise((resolve) => {
-            var milliseconds = new Date().getTime().toString();
-            var url = "https://avwx.rest/api/metar/LFRK?options=info&airport=true&reporting=true&format=json&onfail=cache";
-            let httpRequest = new XMLHttpRequest();
-            httpRequest.open("GET", url);
-            httpRequest.setRequestHeader('Authorization', "Q6dJrZHSvmTA18-uyWs6bYvA2qB4zqZ3c9EvXCGKiU4");
-            httpRequest.onreadystatechange = function (data) {
-                if (this.readyState === XMLHttpRequest.DONE) {
-                    let loaded = this.status === 200 || this.status === 0;
-                    if (loaded) {
-                        console.log(this.responseText);
+    loadMetar(ident, callback) {
+console.log("ident:" + ident);
+        if(ident.length) {
+            return new Promise((resolve) => {
+                var milliseconds = new Date().getTime().toString();
+                var url = "https://avwx.rest/api/metar/" + ident + "?options=info&airport=true&reporting=true&format=json&onfail=cache";
+                let httpRequest = new XMLHttpRequest();
+                httpRequest.open("GET", url);
+                httpRequest.setRequestHeader('Authorization', this.metar_avwx_token);
+                httpRequest.onreadystatechange = function (data) {
+                    if (this.readyState === XMLHttpRequest.DONE) {
+                        let loaded = this.status === 200 || this.status === 0;
+console.log("loaded");
+                        let data = "";
+                        if (loaded)
+                            data = this.responseText;
                         if(callback)
-                            callback(this.responseText);
+                            callback(data);
                     }
-                }
-            };
-            httpRequest.send();
-        });
+                };
+                httpRequest.send();
+            });
+        }
+        else {
+            if(callback)
+                callback("");
+        }
     }
 }
 
