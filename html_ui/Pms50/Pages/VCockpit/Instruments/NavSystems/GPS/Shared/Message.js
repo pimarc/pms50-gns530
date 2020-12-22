@@ -195,6 +195,8 @@ class GPS_Annunciations extends PFD_Annunciations {
         this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace ahead -- less than 10 min", this.airspaceAhead);
         this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace near and ahead", this.airspaceNearAhead);
         this.addMessage(Annunciation_MessageType.ADVISORY, "Inside airspace", this.airspaceInside);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "No departure airport", this.airportOrigin);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "No arrival airport", this.airportDestination);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.ADVISORY, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.sayTrue);
@@ -368,6 +370,18 @@ class GPS_Annunciations extends PFD_Annunciations {
             if(this.gps.airspaceList.airspaces[i].status == 4)
                 return true;
         }
+        return false;
+    }
+    airportOrigin() {
+        var origin = this.gps.currFlightPlanManager.getOrigin();
+        if(!origin || origin.GetInfos().getWaypointType() != "A" )
+            return true;
+        return false;
+    }
+    airportDestination() {
+        var destination = this.gps.currFlightPlanManager.getDestination();
+        if(!destination || destination.GetInfos().getWaypointType() != "A" )
+            return true;
         return false;
     }
     testObs() {
