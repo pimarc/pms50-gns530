@@ -25,6 +25,7 @@ You can also use the alternate data MOD to fix this situation (see note below).
 # Change log
 ## V 1.0.22
 - Added real time METAR data (see note below)
+- Added a menu item in default NAV page for restating the GPS.
 - VOR/LOC standby frequency automatically set to ILS/VOR frequency when loading or activating approach
 - Added messages about airspaces (4 types of messages as described in the GNS530 documentation)
 - Last selected waypoint in map available for waypoint page

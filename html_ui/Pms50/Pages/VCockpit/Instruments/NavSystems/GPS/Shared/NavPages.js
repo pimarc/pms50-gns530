@@ -360,7 +360,8 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
                 new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
                 new ContextualMenuElement("North up/Trk up?", this.toggleMapOrientation.bind(this)),
                 new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this)),
-                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this))
+                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this)),
+                new ContextualMenuElement("Restart GPS?", this.reloadGPS.bind(this))
             ]);
         }
         else {
@@ -368,7 +369,8 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
                 new ContextualMenuElement("Crossfill?", null, true),
                 new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
                 new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this)),
-                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this))
+                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this)),
+                new ContextualMenuElement("Restart GPS?", this.reloadGPS.bind(this))
             ]);
         }
     }
@@ -395,6 +397,16 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         this.baseElem.restoreCustomValues();
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
+    }
+    reloadGPS() {
+        this.element.gps.confirmWindow.element.setTexts("Restart GPS ?");
+        this.element.gps.switchToPopUpPage(this.element.gps.confirmWindow, () => {
+            if (this.element.gps.confirmWindow.element.Result == 1) {
+                window.location.reload();
+                return;
+            }
+            this.element.gps.SwitchToInteractionState(0);
+        });
     }
     toggleMapOrientation() {
         super.toggleMapOrientation();
@@ -1256,7 +1268,7 @@ class GPS_ComNav extends NavSystemElement {
         var elements = [];
         if (infos && infos.frequencies) {
             for (let i = 0; i < infos.frequencies.length; i++) {
-                elements.push('<div><div class="Align LeftDisplay">' + infos.frequencies[i].name.replace(" ", "&nbsp;").slice(0, 15) + '</div> <div class="Align RightValue SelectableElement">' + this.gps.frequencyFormat(infos.frequencies[i].mhValue, 3) + '</div></div>');
+                elements.push('<div><div class="Align LeftDisplay">' + infos.frequencies[i].name.slice(0, 22) + '</div> <div class="Align RightValue SelectableElement">' + this.gps.frequencyFormat(infos.frequencies[i].mhValue, 3) + '</div></div>');
             }
         }
         this.frequenciesSelectionGroup.setStringElements(elements);
