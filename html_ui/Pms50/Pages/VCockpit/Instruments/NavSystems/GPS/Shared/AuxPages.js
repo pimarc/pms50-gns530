@@ -126,7 +126,7 @@ class GPS_METAR extends NavSystemElement {
         this.updateMetar(destination.ident);
     }
     updateMetar(ident) {
-        this.metarElement.textContent = "";
+        this.metarElement.textContent = "Get data...";
         this.gps.loadMetar(ident, (metar_data) => {
             if(metar_data.length) {
                 let data = JSON.parse(metar_data);

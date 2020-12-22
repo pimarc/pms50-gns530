@@ -315,7 +315,9 @@ Before using it, you must configure:
 
 The METAR page provides a menu to get your origin or destination METARs in a fast way.
 
-You can also select any airport.
+For refreshing, press the ENT button.
+
+You can select any airport.
 Selecting an airport can be done directly from the METAR page but also from the map page in cursor mode or from the flight plan (ENT key).
 
 The METAR data is a real information taken from METAR stations. The result may differ from the in game weather following your configuration. This is relevant only if you play in live weather.

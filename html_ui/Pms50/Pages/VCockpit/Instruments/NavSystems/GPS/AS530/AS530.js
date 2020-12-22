@@ -187,6 +187,8 @@ class AS530_VorInfos extends NavSystemElement {
         Avionics.Utils.diffAndSet(this.vor, ident);
         Avionics.Utils.diffAndSet(this.typ, type);
         Avionics.Utils.diffAndSet(this.rad, radial);
+        if(distance > 99.9)
+            distance = Math.trunc(distance);
         Avionics.Utils.diffAndSet(this.dis, distance);
 //PM Modif: End World4Fly Mod integration (Wrong radial and Rounded DME) and check for LOC or VOR
     }

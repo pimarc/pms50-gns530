@@ -441,7 +441,6 @@ class BaseGPS extends NavSystem {
         httpRequest.send();
     }
     loadMetar(ident, callback) {
-console.log("ident:" + ident);
         if(ident.length) {
             return new Promise((resolve) => {
                 var milliseconds = new Date().getTime().toString();
@@ -452,7 +451,6 @@ console.log("ident:" + ident);
                 httpRequest.onreadystatechange = function (data) {
                     if (this.readyState === XMLHttpRequest.DONE) {
                         let loaded = this.status === 200 || this.status === 0;
-console.log("loaded");
                         let data = "";
                         if (loaded)
                             data = this.responseText;
