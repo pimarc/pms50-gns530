@@ -28,6 +28,7 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Added a menu item in default NAV page for restating the GPS.
 - VOR/LOC standby frequency automatically set to ILS/VOR frequency when loading or activating approach
 - Added messages about airspaces (4 types of messages as described in the GNS530 documentation)
+- Added messages for missing departure and/or arrival airports
 - Last selected waypoint in map available for waypoint page
 - Changing some distance display in nearest pages (rounded)
 - Bugfix: selection mode blocked after activating an approach from procedure menu

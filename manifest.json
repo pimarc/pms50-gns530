@@ -4,7 +4,7 @@
   "title": "PMS50 GNS530 Mod",
   "manufacturer": "",
   "creator": "PMS50",
-  "package_version": "1.0.21",
+  "package_version": "1.0.22",
   "minimum_game_version": "1.9.3",
   "release_notes": {
     "neutral": {
@@ -12,5 +12,5 @@
       "OlderHistory": ""
     }
   },
-  "total_package_size": "2091853"
+  "total_package_size": "2113659"
 }
