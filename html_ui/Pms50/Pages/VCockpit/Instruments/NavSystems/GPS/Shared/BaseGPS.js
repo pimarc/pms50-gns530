@@ -316,7 +316,10 @@ class BaseGPS extends NavSystem {
             {
                 let waypoint = approachWaypoints[i];
                 if(waypoint.infos.getWaypointType() == "V" && waypoint.infos.frequencyBcd16) {
-                    SimVar.SetSimVarValue("K:NAV" + this.navIndex + "_STBY_SET", "Frequency BCD16", waypoint.infos.frequencyBcd16);
+                    // Check if frequency is not already the active one
+                    let currentActiveFrequency = SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:" + this.navIndex, "Frequency BCD16");
+                    if(currentActiveFrequency != waypoint.infos.frequencyBcd16)
+                        SimVar.SetSimVarValue("K:NAV" + this.navIndex + "_STBY_SET", "Frequency BCD16", waypoint.infos.frequencyBcd16);
                     break;
                 }
             }
@@ -324,11 +327,12 @@ class BaseGPS extends NavSystem {
         else {
             let approachFrequency = this.currFlightPlanManager.getApproachNavFrequency();
             if (!isNaN(approachFrequency)) {
-                SimVar.SetSimVarValue("K:NAV" + this.navIndex + "_STBY_SET_HZ", "hertz", approachFrequency * 1000000);
+                let currentActiveFrequency = SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:" + this.navIndex, "Hertz");
+                if(currentActiveFrequency != (approachFrequency.toFixed(3) * 1000000))
+                    SimVar.SetSimVarValue("K:NAV" + this.navIndex + "_STBY_SET_HZ", "hertz", approachFrequency * 1000000);
             }
         }
     }
-
     getDistanceToDestination() {
         let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
         let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
