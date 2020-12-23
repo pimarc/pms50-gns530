@@ -68,6 +68,7 @@ class BaseGPS extends NavSystem {
         this.debug = false;
         this.metar_avwx_token = false;
         this.icaoFromMap = null;
+        this.dataStore = new WTDataStore(this);
         //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
         this.loadConfig(() => {
             if(this.debug) {
@@ -417,12 +418,15 @@ class BaseGPS extends NavSystem {
                 this.weatherRadar = false;
                 this.weatherRadarLegend = false;
                 this.debug = false;
+                this.map430 = false;
                 if(data.weather_radar && data.weather_radar.toUpperCase() == "ON")
                     this.weatherRadar = true;
                 if(data.weather_legend && data.weather_legend.toUpperCase() == "ON")
                     this.weatherRadarLegend = true;
                 if(data.debug && data.debug.toUpperCase() == "ON")
-                    this.debug = true
+                    this.debug = true;
+                if(data.map430 && data.map430.toUpperCase() == "ON")
+                    this.map430 = true;
                 if(data.metar_avwx_token)
                     this.metar_avwx_token = data.metar_avwx_token;
 
@@ -859,5 +863,61 @@ class GPS_Map extends MapInstrumentElement {
         }
     }
 }
+
+// DataStore Code taken from WorkingTitle g1000 MOD
+// Just set it non static and add the GPS model
+Include.addScript("/JS/dataStorage.js") // it's required, so why not load it ourselves?
+/** class WTDataStore provides an interface to the lower-level storage API */
+class WTDataStore {
+    constructor(_gps) {
+        this.gps = _gps;
+    }
+    /**
+     * Retrieves a key from the datastore, possibly returning the default value
+     * @param {string} key The name of the key to retrieve
+     * @param {tsring|number|boolean} defaultValue The default value to use if the key does not exist
+     * @returns {string|number|boolean} Either the stored value of the key, or the default value
+     */
+    get(key, defaultValue) {
+        var storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + this.gps.gpsType + "::" + this.gps.navIndex + "::" + key;
+        try {
+            var stringValue = GetStoredData(storeKey);
+            if (stringValue == null || stringValue == "") {
+                return defaultValue;
+            }
+        } catch (e) {
+            return defaultValue;
+        }
+        switch (typeof defaultValue) {
+            case "string":
+                return stringValue;
+            case "number":
+                return Number(stringValue);
+            case "boolean":
+                // Unfortunately, Boolean("false") is true.
+                if (stringValue == "false") {
+                    return false
+                }
+                return true;
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Stores a key in the datastore
+     * @param {string} key The name of the value to store
+     * @param {string|number|boolean} The value to store
+     */
+    set(key, value) {
+        var storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + this.gps.gpsType + "::" + this.gps.navIndex + "::" + key;
+        switch (typeof value) {
+            case "string":
+            case "number":
+            case "boolean":
+                SetStoredData(storeKey, value.toString());
+        }
+        return value;
+    }
+};
 
 //# sourceMappingURL=BaseGPS.js.map

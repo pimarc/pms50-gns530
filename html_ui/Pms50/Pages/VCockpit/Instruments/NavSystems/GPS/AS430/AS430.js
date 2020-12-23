@@ -83,7 +83,8 @@ class AS430 extends BaseGPS {
         var PageGroupNav = null;
         // Check if we have a GNS530 in the plane (must be loaded first)
         // And disable maps in this case
-        if(this.state530) {
+
+        if(this.state530 && !this.map430) {
             PageGroupNav = new NavSystemPageGroup("NAV", this, [
                 defaultNav,
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav()),
