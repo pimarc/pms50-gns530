@@ -21,6 +21,9 @@ class WayPoint {
         this.cumulativeDistanceInFP = 0;
         this.isInFlightPlan = false;
         this.isActiveInFlightPlan = false;
+        this.timeWasReached = NaN;
+        this.altitudeWasReached = NaN;
+        this.fuelWasReached = NaN;
         this.legAltitudeDescription = 0;
         this.legAltitude1 = 0;
         this.legAltitude2 = 0;
@@ -28,6 +31,22 @@ class WayPoint {
         this.instrument = _instrument;
         this.infos = new WayPointInfo(_instrument);
         this.transitionLLas = [];
+    }
+    get icaoNoSpace() {
+        if (!this._icaoNoSpace) {
+            if (this.icao) {
+                this._icaoNoSpace = this.icao;
+                while (this._icaoNoSpace.indexOf(" ") != -1) {
+                    this._icaoNoSpace = this._icaoNoSpace.replace(" ", "_");
+                }
+            }
+        }
+        if (this._icaoNoSpace) {
+            return this._icaoNoSpace;
+        }
+    }
+    getFuelWasReached(useLbs = false) {
+        return this.fuelWasReached * 2.204623;
     }
     getSvgElement(index) {
         if (this.infos) {
@@ -98,13 +117,10 @@ class WayPoint {
         }
     }
     SetFromIFacility(data, callback = EmptyCallback.Void) {
-// PM Modif: Check no data
-        if(!data)
-        {
-            console.warn("FacilityData not found.");
+        if (data == undefined) {
+            console.warn("Trying to set a waypoint with undefined data");
             return;
         }
-// PM Modif: End Check no data
         this.icao = data.icao;
         if (!this.icao) {
             console.warn("FacilityData without ICAO was used to Set a Waypoint, expect the unexpected.");
@@ -242,7 +258,9 @@ class AirportInfo extends WayPointInfo {
         this.arrivals = [];
         this.runways = [];
         this.oneWayRunways = [];
+        this.unsortedOneWayRunways = [];
         this.airportClass = 0;
+        this.transitionAltitude = 5000;
         this.privateType = 0;
         this.radarCoverage = 0;
         this.needReload = false;
@@ -454,6 +472,7 @@ class AirportInfo extends WayPointInfo {
             }
         }
         if (this.oneWayRunways) {
+            this.unsortedOneWayRunways = [...this.oneWayRunways];
             this.oneWayRunways = this.oneWayRunways.sort((r1, r2) => {
                 if (parseInt(r1.designation) === parseInt(r2.designation)) {
                     let v1 = 0;
@@ -492,7 +511,7 @@ class AirportInfo extends WayPointInfo {
                     approach.transitions = [];
                     for (let i = 0; i < approachData.transitions.length; i++) {
                         let transition = new Transition();
-                        transition.name = approachData.transitions[i].legs[0].fixIcao.substr(7, 5);
+                        transition.name = approachData.transitions[i].name;
                         transition.waypoints = [];
                         for (let j = 0; j < approachData.transitions[i].legs.length; j++) {
                             let wp = new WayPoint(this.instrument);
@@ -528,6 +547,20 @@ class AirportInfo extends WayPointInfo {
             }
         }
         this.departures = data.departures;
+        if (this.departures[0]) {
+            if (this.departures[0].runwayTransitions[0]) {
+                if (this.departures[0].runwayTransitions[0].legs) {
+                    let l = this.departures[0].runwayTransitions[0].legs.length;
+                    let lastWp = this.departures[0].runwayTransitions[0].legs[l - 1];
+                    if (lastWp) {
+                        let transAlt = Math.round(lastWp.altitude1 * 3.28084 / 100) * 100;
+                        if (transAlt > 1000) {
+                            this.transitionAltitude = transAlt;
+                        }
+                    }
+                }
+            }
+        }
         for (let i = 0; i < this.departures.length; i++) {
             for (let j = 0; j < this.departures[i].runwayTransitions.length; j++) {
                 this.departures[i].runwayTransitions[j].name = "RW" + this.departures[i].runwayTransitions[j].runwayNumber.toString();
@@ -879,7 +912,7 @@ class IntersectionInfo extends WayPointInfo {
         this.nearestVORTrueRadial = data.nearestVorTrueRadial;
         this.nearestVORMagneticRadial = data.nearestVorMagneticRadial;
         this.nearestVORDistance = data.nearestVorDistance;
-        this.instrument.facilityLoader.getAllAirways(this).then(airways => {
+        this.instrument.facilityLoader.getAllAirways(this, 5).then(airways => {
             this.airways = airways;
             return callback();
         });

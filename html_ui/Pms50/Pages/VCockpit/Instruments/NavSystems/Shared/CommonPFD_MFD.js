@@ -97,7 +97,7 @@ class PFD_Airspeed extends NavSystemElement {
         this.lastSpeed = indicatedSpeed;
         this.airspeedElement.setAttribute("airspeed-trend", (this.acceleration).toString());
         let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");
-        let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
+        let cruiseMach = SimVar.GetSimVarValue("MACH MAX OPERATE", "mach");
         let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(this.maxSpeed, cruiseMach);
         if (crossSpeed != 0) {
             this.airspeedElement.setAttribute("max-speed", (Math.min(crossSpeedFactor, 1) * this.maxSpeed).toString());
@@ -1653,6 +1653,7 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
                 this.element.FPLRemoveApproach_CB();
 //PM Modif: End Call element function
                 break;
+//PM Modif: Go to wp approach page
             case "ENT_Push":
                 if(this.element.gps.currFlightPlanManager.getApproach() != null) {
                     this.element.gps.lastRelevantICAO =this.element.gps.currFlightPlanManager.getDestination().icao;
@@ -1661,6 +1662,7 @@ class MFD_ApproachLine extends MFD_FlightPlanLine {
                     this.element.gps.SwitchToPageName("WPT", "AirportApproach", true);
                     break;
                 }
+//PM Modif: End Go to wp approach page
         }
         return false;
     }
@@ -2119,11 +2121,17 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
     activateLeg(_index, _approach = false) {
 //        console.log("CommonPFD_MFD.ts > Activate leg for index " + _index);
         if (_approach) {
-            let icao = this.gps.currFlightPlanManager.getApproachWaypoints()[_index].icao;
-            this.gps.currFlightPlanManager.activateApproach(() => {
-                let index = this.gps.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === icao; });
-                this.gps.currFlightPlanManager.setActiveWaypointIndex(index);
-            });
+            let approachWPNb = this.gps.currFlightPlanManager.getApproachWaypoints().length;
+            if (_index >= 0 && _index < approachWPNb) {
+                let approachWP = this.gps.currFlightPlanManager.getApproachWaypoints()[_index];
+                if (approachWP) {
+                    let icao = approachWP.icao;
+                    this.gps.currFlightPlanManager.activateApproach(() => {
+                        let index = this.gps.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === icao; });
+                        this.gps.currFlightPlanManager.setActiveWaypointIndex(index);
+                    });
+                }
+            }
         }
         else {
             this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
@@ -2321,9 +2329,11 @@ class MFD_DuplicateWaypoint extends NavSystemElement {
             this.type = this.icaoSearchField.duplicates[_index].type;
             this.gps.closePopUpElement();
         }
+// PM Modif: Close popup in CRL
         if (_event == "CLR_Push") {
             this.gps.closePopUpElement();
         }
+// PM Modif: End Close popup in CRL
     }
 }
 class DRCT_SelectionWindow extends NavSystemElement {

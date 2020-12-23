@@ -224,7 +224,7 @@ class BaseGPS extends NavSystem {
         // Check if we are at the end of a directTo (less than 1nm to the destination WP)
         this._t++;
         // We arm 1 nm before the target approach directTo
-        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.currFlightPlanManager.isLoadedApproach() && this.waypointDirectTo != null && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 1) {
+        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.currFlightPlanManager.isLoadedApproach() && this.waypointDirectTo != null && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
             this._t = 0;
             // Check if the directTO is part of the approach
             let wayPointList = this.currFlightPlanManager.getApproachWaypoints();

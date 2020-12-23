@@ -24,14 +24,14 @@ You can also use the alternate data MOD to fix this situation (see note below).
 
 # Change log
 ## V 1.0.22
-- Added real time METAR data (see note below)
-- Added a menu item in default NAV page for restating the GPS.
+- Added real-time METAR data (see note below)
+- Added a menu item in the default NAV page for restarting the GPS.
 - VOR/LOC standby frequency automatically set to ILS/VOR frequency when loading or activating approach
 - Added messages about airspaces (4 types of messages as described in the GNS530 documentation)
 - Added messages for missing departure and/or arrival airports
-- Last selected waypoint in map available for waypoint page
+- Last selected waypoint in the map available for the waypoint pages
 - Changing some distance display in nearest pages (rounded)
-- Bugfix: selection mode blocked after activating an approach from procedure menu
+- Bugfix: selection mode blocked after activating an approach from the procedure menu
 - Bugfix: incorrect database information may freeze the GPS when displaying a procedure map
 ## V 1.0.21
 - Workaround for the MSFS issue with adding waypoints (see note below)

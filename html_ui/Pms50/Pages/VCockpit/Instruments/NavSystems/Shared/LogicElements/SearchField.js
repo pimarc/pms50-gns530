@@ -206,7 +206,7 @@ class SearchFieldWaypointICAO {
             if (waypoint) {
                 this.wayPoint = waypoint;
             }
-            if (waypoint || (this.lastIcao && this.wayPoint && this.wayPoint.infos.icao == this.lastIcao)) {
+            if (waypoint || this.wayPoint && this.wayPoint.infos.icao == this.lastIcao) {
                 this.isActive = false;
                 this.container.OnSearchFieldEndEditing();
                 let numberOfDuplicates = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchMatchedIcaosNumber", "number", this.instrument.instrumentIdentifier);
@@ -232,11 +232,14 @@ class SearchFieldWaypointICAO {
                 }
             }
             else {
-                if(this.wayPoint) {
+                if (this.wayPoint && this.wayPoint.infos) {
                     this.lastIcao = this.wayPoint.infos.icao;
-                    if (this.endCallback) {
-                        this.endCallback();
-                    }
+                }
+                else {
+                    this.lastIcao = "";
+                }
+                if (this.endCallback) {
+                    this.endCallback();
                 }
             }
         });

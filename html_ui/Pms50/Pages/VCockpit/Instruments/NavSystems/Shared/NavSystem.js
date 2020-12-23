@@ -51,6 +51,10 @@ class NavSystem extends BaseInstrument {
     disconnectedCallback() {
         super.disconnectedCallback();
     }
+    Init() {
+        super.Init();
+        this.cockpitSettings = SimVar.GetGameVarValue("", "GlassCockpitSettings");
+    }
     parseXMLConfig() {
         super.parseXMLConfig();
         let soundSourceNodeElem = this.xmlConfig.getElementsByTagName("SoundSourceNode");
@@ -379,7 +383,9 @@ class NavSystem extends BaseInstrument {
                 this.currFlightPlanManager.update(this.deltaTime);
                 if (this.currFlightPlanManager.isLoadedApproach() && !this.currFlightPlanManager.isActiveApproach() && (this.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.currFlightPlanManager.getActiveWaypointIndex() > this.currFlightPlanManager.getLastIndexBeforeApproach()))) {
                     if (SimVar.GetSimVarValue("L:FMC_FLIGHT_PLAN_IS_TEMPORARY", "number") != 1) {
+// PM Modif: No autoactivation
 //                        this.currFlightPlanManager.tryAutoActivateApproach();
+// PM Modif: End No autoactivation
                     }
                 }
             }
@@ -889,7 +895,7 @@ class NavSystem extends BaseInstrument {
     isBootProcedureComplete() {
         if (!this.hasBeenOff)
             return true;
-            if ((Date.now() - this.startTime > this.initDuration) && (this.initAcknowledged || !this.needValidationAfterInit))
+        if ((Date.now() - this.startTime > this.initDuration) && (this.initAcknowledged || !this.needValidationAfterInit))
             return true;
         return false;
     }
@@ -1994,6 +2000,8 @@ class Annunciation_Message {
         this.Visible = false;
         this.Acknowledged = false;
     }
+    reset() {
+    }
 }
 ;
 class XMLCondition {
@@ -2020,6 +2028,12 @@ class Annunciation_Message_XML extends Annunciation_Message {
             }
         }
         return false;
+    }
+    reset() {
+        super.reset();
+        for (let i = 0; i < this.conditions.length; i++) {
+            this.conditions[i].logic.reset();
+        }
     }
 }
 class Annunciation_Message_Timed extends Annunciation_Message {
@@ -2092,6 +2106,11 @@ class Annunciations extends NavSystemElement {
     onEnter() {
     }
     onExit() {
+    }
+    reset() {
+        for (let i = 0; i < this.allMessages.length; i++) {
+            this.allMessages[i].reset();
+        }
     }
     addMessage(_type, _text, _handler) {
         var msg = new Annunciation_Message();
@@ -2636,6 +2655,8 @@ class Warning_Data {
         this.callback = _callback;
         this.once = _once;
     }
+    reset() {
+    }
 }
 class Warning_Data_XML extends Warning_Data {
     constructor(_gps, _shortText, _longText, _soundEvent, _Level, _logicElement, _once = false) {
@@ -2645,6 +2666,10 @@ class Warning_Data_XML extends Warning_Data {
     }
     getXMLBoolean() {
         return this.xmlLogic.getValue() != 0;
+    }
+    reset() {
+        super.reset();
+        this.xmlLogic.reset();
     }
 }
 class Warnings extends NavSystemElement {
@@ -2813,6 +2838,11 @@ class Warnings extends NavSystemElement {
             return _points[lastLowerIndex].length;
         }
     }
+    reset() {
+        for (let i = 0; i < this.warnings.length; i++) {
+            this.warnings[i].reset();
+        }
+    }
     pullUpCallback() {
         let height = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet");
         let descentRate = -SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
@@ -2854,7 +2884,7 @@ class Cabin_Warnings extends Warnings {
         let warningIndex = SimVar.GetSimVarValue("L:AS1000_Warnings_WarningIndex", "number");
         let warningText;
         let warningLevel;
-        if (warningIndex <= 0 || warningIndex >= this.warnings.length) {
+        if (warningIndex <= 0 || warningIndex > this.warnings.length) {
             warningText = "";
             warningLevel = 0;
         }
