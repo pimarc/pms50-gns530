@@ -1465,3 +1465,391 @@ class GPS_Position extends NavSystemElement {
     }
 }
 
+// Map instrument extended for weather radar
+class GPS_Map extends MapInstrumentElement {
+    constructor() {
+        super(...arguments);
+    }
+    onUpdate(_deltaTime) {
+        if (this.instrumentLoaded) {
+            this.instrument.update(_deltaTime);
+            let range = this.instrument.getWeatherRange();
+            if (this.weatherTexts) {
+                let ratio = 1.0 / this.weatherTexts.length;
+                for (let i = 0; i < this.weatherTexts.length; i++) {
+                    this.weatherTexts[i].textContent = fastToFixed(range * ratio * (i + 1), 2);
+                }
+            }
+            if (this.weatherAltTexts && this.weatherAltTexts.length >= 2) {
+                this.weatherAltTexts[0].textContent = "+" + fastToFixed(range * 1200, 0) + "ft";
+                this.weatherAltTexts[1].textContent = "-" + fastToFixed(range * 1200, 0) + "ft";
+            }
+        }
+    }
+    setWeather(_mode, _legend = true) {
+        this.instrument.showWeather(_mode);
+        let svgRoot = this.instrument.weatherSVG;
+        if (svgRoot) {
+            Utils.RemoveAllChildren(svgRoot);
+            this.weatherTexts = null;
+            if (_mode == EWeatherRadar.HORIZONTAL || _mode == EWeatherRadar.VERTICAL) {
+                var circleRadius = 575;
+                var dashNbRect = 10;
+                var dashWidth = 8;
+                var dashHeight = 6;
+                if (_mode == EWeatherRadar.HORIZONTAL) {
+                    this.instrument.setBingMapStyle("10.3%", "-13.3%", "127%", "157%");
+                    var coneAngle = 90;
+                    svgRoot.setAttribute("viewBox", "0 0 400 400");
+                    var trsGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    trsGroup.setAttribute("transform", "translate(-125, 29) scale(1.63)");
+                    svgRoot.appendChild(trsGroup);
+                    let viewBox = document.createElementNS(Avionics.SVG.NS, "svg");
+                    viewBox.setAttribute("viewBox", "-600 -600 1200 1200");
+                    trsGroup.appendChild(viewBox);
+                    var circleGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    circleGroup.setAttribute("id", "Circles");
+                    viewBox.appendChild(circleGroup);
+                    {
+                        let rads = [0.25, 0.50, 0.75, 1.0];
+                        for (let r = 0; r < rads.length; r++) {
+                            let rad = circleRadius * rads[r];
+                            let startDegrees = -coneAngle * 0.5;
+                            let endDegrees = coneAngle * 0.5;
+                            while (Math.floor(startDegrees) <= endDegrees) {
+                                let line = document.createElementNS(Avionics.SVG.NS, "rect");
+                                let degree = (180 + startDegrees + 0.5);
+                                line.setAttribute("x", "0");
+                                line.setAttribute("y", rad.toString());
+                                line.setAttribute("width", dashWidth.toString());
+                                line.setAttribute("height", dashHeight.toString());
+                                line.setAttribute("transform", "rotate(" + degree + " 0 0)");
+                                line.setAttribute("fill", "white");
+                                circleGroup.appendChild(line);
+                                startDegrees += coneAngle / dashNbRect;
+                            }
+                        }
+                    }
+                    var lineGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    lineGroup.setAttribute("id", "Lines");
+                    viewBox.appendChild(lineGroup);
+                    {
+                        var coneStart = 180 - coneAngle * 0.5;
+                        var coneStartLine = document.createElementNS(Avionics.SVG.NS, "line");
+                        coneStartLine.setAttribute("x1", "0");
+                        coneStartLine.setAttribute("y1", "0");
+                        coneStartLine.setAttribute("x2", "0");
+                        coneStartLine.setAttribute("y2", circleRadius.toString());
+                        coneStartLine.setAttribute("transform", "rotate(" + coneStart + " 0 0)");
+                        coneStartLine.setAttribute("stroke", "white");
+                        coneStartLine.setAttribute("stroke-width", "4");
+                        lineGroup.appendChild(coneStartLine);
+                        var coneEnd = 180 + coneAngle * 0.5;
+                        var coneEndLine = document.createElementNS(Avionics.SVG.NS, "line");
+                        coneEndLine.setAttribute("x1", "0");
+                        coneEndLine.setAttribute("y1", "0");
+                        coneEndLine.setAttribute("x2", "0");
+                        coneEndLine.setAttribute("y2", circleRadius.toString());
+                        coneEndLine.setAttribute("transform", "rotate(" + coneEnd + " 0 0)");
+                        coneEndLine.setAttribute("stroke", "white");
+                        coneEndLine.setAttribute("stroke-width", "4");
+                        lineGroup.appendChild(coneEndLine);
+                    }
+                    var textGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    textGroup.setAttribute("id", "Texts");
+                    viewBox.appendChild(textGroup);
+                    {
+                        this.weatherTexts = [];
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.setAttribute("x", "125");
+                        text.setAttribute("y", "-85");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        textGroup.appendChild(text);
+                        this.weatherTexts.push(text);
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.setAttribute("x", "225");
+                        text.setAttribute("y", "-185");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        textGroup.appendChild(text);
+                        this.weatherTexts.push(text);
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.setAttribute("x", "325");
+                        text.setAttribute("y", "-285");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        textGroup.appendChild(text);
+                        this.weatherTexts.push(text);
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.setAttribute("x", "380");
+                        text.setAttribute("y", "-430");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        textGroup.appendChild(text);
+                        this.weatherTexts.push(text);
+                    }
+                }
+                else if (_mode == EWeatherRadar.VERTICAL) {
+                    this.instrument.setBingMapStyle("-75%", "-88%", "201%", "250%");
+                    var coneAngle = 51.43;
+                    svgRoot.setAttribute("viewBox", "0 0 400 400");
+                    var trsGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    trsGroup.setAttribute("transform", "translate(402, -190) scale(1.95) rotate(90)");
+                    svgRoot.appendChild(trsGroup);
+                    let viewBox = document.createElementNS(Avionics.SVG.NS, "svg");
+                    viewBox.setAttribute("viewBox", "-600 -600 1200 1200");
+                    trsGroup.appendChild(viewBox);
+                    var circleGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    circleGroup.setAttribute("id", "Circles");
+                    viewBox.appendChild(circleGroup);
+                    {
+                        let rads = [0.25, 0.50, 0.75, 1.0];
+                        for (let r = 0; r < rads.length; r++) {
+                            let rad = circleRadius * rads[r];
+                            let startDegrees = -coneAngle * 0.5;
+                            let endDegrees = coneAngle * 0.5;
+                            while (Math.floor(startDegrees) <= endDegrees) {
+                                let line = document.createElementNS(Avionics.SVG.NS, "rect");
+                                let degree = (180 + startDegrees + 0.5);
+                                line.setAttribute("x", "0");
+                                line.setAttribute("y", rad.toString());
+                                line.setAttribute("width", dashWidth.toString());
+                                line.setAttribute("height", dashHeight.toString());
+                                line.setAttribute("transform", "rotate(" + degree + " 0 0)");
+                                line.setAttribute("fill", "white");
+                                circleGroup.appendChild(line);
+                                startDegrees += coneAngle / dashNbRect;
+                            }
+                        }
+                    }
+                    var limitGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    limitGroup.setAttribute("id", "Limits");
+                    viewBox.appendChild(limitGroup);
+                    {
+                        let endPosY = circleRadius + 50;
+                        let posX = -130;
+                        let posY = 50;
+                        while (posY <= endPosY) {
+                            let line = document.createElementNS(Avionics.SVG.NS, "rect");
+                            line.setAttribute("x", posX.toString());
+                            line.setAttribute("y", (-posY).toString());
+                            line.setAttribute("width", dashHeight.toString());
+                            line.setAttribute("height", dashWidth.toString());
+                            line.setAttribute("fill", "white");
+                            limitGroup.appendChild(line);
+                            posY += dashWidth * 2;
+                        }
+                        posX = 130;
+                        posY = 50;
+                        while (posY <= endPosY) {
+                            let line = document.createElementNS(Avionics.SVG.NS, "rect");
+                            line.setAttribute("x", posX.toString());
+                            line.setAttribute("y", (-posY).toString());
+                            line.setAttribute("width", dashHeight.toString());
+                            line.setAttribute("height", dashWidth.toString());
+                            line.setAttribute("fill", "white");
+                            limitGroup.appendChild(line);
+                            posY += dashWidth * 2;
+                        }
+                    }
+                    var lineGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    lineGroup.setAttribute("id", "Lines");
+                    viewBox.appendChild(lineGroup);
+                    {
+                        var coneStart = 180 - coneAngle * 0.5;
+                        var coneStartLine = document.createElementNS(Avionics.SVG.NS, "line");
+                        coneStartLine.setAttribute("x1", "0");
+                        coneStartLine.setAttribute("y1", "0");
+                        coneStartLine.setAttribute("x2", "0");
+                        coneStartLine.setAttribute("y2", circleRadius.toString());
+                        coneStartLine.setAttribute("transform", "rotate(" + coneStart + " 0 0)");
+                        coneStartLine.setAttribute("stroke", "white");
+                        coneStartLine.setAttribute("stroke-width", "3");
+                        lineGroup.appendChild(coneStartLine);
+                        var coneEnd = 180 + coneAngle * 0.5;
+                        var coneEndLine = document.createElementNS(Avionics.SVG.NS, "line");
+                        coneEndLine.setAttribute("x1", "0");
+                        coneEndLine.setAttribute("y1", "0");
+                        coneEndLine.setAttribute("x2", "0");
+                        coneEndLine.setAttribute("y2", circleRadius.toString());
+                        coneEndLine.setAttribute("transform", "rotate(" + coneEnd + " 0 0)");
+                        coneEndLine.setAttribute("stroke", "white");
+                        coneEndLine.setAttribute("stroke-width", "3");
+                        lineGroup.appendChild(coneEndLine);
+                    }
+                    var textGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    textGroup.setAttribute("id", "Texts");
+                    viewBox.appendChild(textGroup);
+                    {
+                        this.weatherAltTexts = [];
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.textContent = "+60000FT";
+                        text.setAttribute("x", "50");
+                        text.setAttribute("y", "-140");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        text.setAttribute("transform", "rotate(-90)");
+                        textGroup.appendChild(text);
+                        this.weatherAltTexts.push(text);
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.textContent = "-60000FT";
+                        text.setAttribute("x", "50");
+                        text.setAttribute("y", "170");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        text.setAttribute("transform", "rotate(-90)");
+                        textGroup.appendChild(text);
+                        this.weatherAltTexts.push(text);
+                        this.weatherTexts = [];
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.setAttribute("x", "95");
+                        text.setAttribute("y", "105");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        text.setAttribute("transform", "rotate(-90)");
+                        textGroup.appendChild(text);
+                        this.weatherTexts.push(text);
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.setAttribute("x", "235");
+                        text.setAttribute("y", "170");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        text.setAttribute("transform", "rotate(-90)");
+                        textGroup.appendChild(text);
+                        this.weatherTexts.push(text);
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.setAttribute("x", "350");
+                        text.setAttribute("y", "225");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        text.setAttribute("transform", "rotate(-90)");
+                        textGroup.appendChild(text);
+                        this.weatherTexts.push(text);
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.setAttribute("x", "480");
+                        text.setAttribute("y", "290");
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "30");
+                        text.setAttribute("transform", "rotate(-90)");
+                        textGroup.appendChild(text);
+                        this.weatherTexts.push(text);
+                    }
+                }
+                if(_legend) {
+                    var legendGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                    legendGroup.setAttribute("id", "legendGroup");
+                    svgRoot.appendChild(legendGroup);
+                    {
+                        var x = 2;
+                        var y = 330;
+                        var w = 65;
+                        var h = 125;
+                        var titleHeight = 22;
+                        var scaleOffsetX = 3;
+                        var scaleOffsetY = 3;
+                        var scaleWidth = 13;
+                        var scaleHeight = 20;
+                        var left = x - w * 0.5;
+                        var top = y - h * 0.5;
+                        var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                        rect.setAttribute("x", left.toString());
+                        rect.setAttribute("y", top.toString());
+                        rect.setAttribute("width", w.toString());
+                        rect.setAttribute("height", h.toString());
+                        rect.setAttribute("stroke", "white");
+                        rect.setAttribute("stroke-width", "2");
+                        rect.setAttribute("stroke-opacity", "1");
+                        legendGroup.appendChild(rect);
+                        rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                        rect.setAttribute("x", left.toString());
+                        rect.setAttribute("y", top.toString());
+                        rect.setAttribute("width", w.toString());
+                        rect.setAttribute("height", titleHeight.toString());
+                        rect.setAttribute("stroke", "white");
+                        rect.setAttribute("stroke-width", "2");
+                        rect.setAttribute("stroke-opacity", "1");
+                        legendGroup.appendChild(rect);
+                        var text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.textContent = "SCALE";
+                        text.setAttribute("x", x.toString());
+                        text.setAttribute("y", (top + titleHeight * 0.7).toString());
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "13");
+                        text.setAttribute("text-anchor", "middle");
+                        legendGroup.appendChild(text);
+                        var scaleIndex = 0;
+                        rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                        rect.setAttribute("x", (left + scaleOffsetX).toString());
+                        rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
+                        rect.setAttribute("width", scaleWidth.toString());
+                        rect.setAttribute("height", scaleHeight.toString());
+                        rect.setAttribute("fill", "magenta");
+                        rect.setAttribute("stroke", "white");
+                        rect.setAttribute("stroke-width", "1");
+                        rect.setAttribute("stroke-opacity", "1");
+                        legendGroup.appendChild(rect);
+                        scaleIndex++;
+                        rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                        rect.setAttribute("x", (left + scaleOffsetX).toString());
+                        rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
+                        rect.setAttribute("width", scaleWidth.toString());
+                        rect.setAttribute("height", scaleHeight.toString());
+                        rect.setAttribute("fill", "red");
+                        rect.setAttribute("stroke", "white");
+                        rect.setAttribute("stroke-width", "1");
+                        rect.setAttribute("stroke-opacity", "1");
+                        legendGroup.appendChild(rect);
+                        text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.textContent = "HEAVY";
+                        text.setAttribute("x", (left + scaleOffsetX + scaleWidth + 5).toString());
+                        text.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight + scaleHeight * 0.7).toString());
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "13");
+                        legendGroup.appendChild(text);
+                        scaleIndex++;
+                        rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                        rect.setAttribute("x", (left + scaleOffsetX).toString());
+                        rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
+                        rect.setAttribute("width", scaleWidth.toString());
+                        rect.setAttribute("height", scaleHeight.toString());
+                        rect.setAttribute("fill", "yellow");
+                        rect.setAttribute("stroke", "white");
+                        rect.setAttribute("stroke-width", "1");
+                        rect.setAttribute("stroke-opacity", "1");
+                        legendGroup.appendChild(rect);
+                        scaleIndex++;
+                        rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                        rect.setAttribute("x", (left + scaleOffsetX).toString());
+                        rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
+                        rect.setAttribute("width", scaleWidth.toString());
+                        rect.setAttribute("height", scaleHeight.toString());
+                        rect.setAttribute("fill", "green");
+                        rect.setAttribute("stroke", "white");
+                        rect.setAttribute("stroke-width", "1");
+                        rect.setAttribute("stroke-opacity", "1");
+                        legendGroup.appendChild(rect);
+                        text = document.createElementNS(Avionics.SVG.NS, "text");
+                        text.textContent = "LIGHT";
+                        text.setAttribute("x", (left + scaleOffsetX + scaleWidth + 5).toString());
+                        text.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight + scaleHeight * 0.7).toString());
+                        text.setAttribute("fill", "white");
+                        text.setAttribute("font-size", "13");
+                        legendGroup.appendChild(text);
+                        scaleIndex++;
+                        rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                        rect.setAttribute("x", (left + scaleOffsetX).toString());
+                        rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
+                        rect.setAttribute("width", scaleWidth.toString());
+                        rect.setAttribute("height", scaleHeight.toString());
+                        rect.setAttribute("fill", "black");
+                        rect.setAttribute("stroke", "white");
+                        rect.setAttribute("stroke-width", "1");
+                        rect.setAttribute("stroke-opacity", "1");
+                        legendGroup.appendChild(rect);
+                    }
+                }
+            }
+        }
+    }
+}
