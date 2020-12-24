@@ -566,6 +566,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             if(permuted)
                 waypoint.ident = this.getRunwayDesignation(runway, 0);
             waypoint.icao = waypoint.ident;
+            waypoint.infos.icao = waypoint.icao;
             waypoint.infos.ident = waypoint.ident;
             waypoint.infos.coordinates = endCoordinates;
             waypoints.push(waypoint);
@@ -577,6 +578,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
             if(permuted)
                 waypoint.ident = this.getRunwayDesignation(runway, 1);
             waypoint.icao = waypoint.ident;
+            waypoint.infos.icao = waypoint.icao;
             waypoint.infos.ident = waypoint.ident;
             waypoint.infos.coordinates = beginningCoordinates;
             waypoints.push(waypoint);

@@ -530,7 +530,7 @@ as430-element {
           width: auto;
           height: 100%;
           width: 95%;
-          font-size: calc(11.5789473684vh); }
+          font-size: 9vh; }
           as430-element #Electricity #TopDisplay #GpsPart #ComNav #ComNavMain .Hidden {
             display: none; }
           as430-element #Electricity #TopDisplay #GpsPart #ComNav #ComNavMain .FrecDecimals {

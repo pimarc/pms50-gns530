@@ -72,7 +72,7 @@ class AS530 extends BaseGPS {
                 defaultNav,
                 mapNav,
                 terrainNav,
-                new NavSystemPage("ComNav", "ComNav", new GPS_ComNav(8)),
+                new NavSystemPage("ComNav", "ComNav", new GPS_ComNav(10)),
             ]),
             new NavSystemPageGroup("WPT", this, [
                 new NavSystemPage("AirportLocation", "AirportLocation", new GPS_AirportWaypointLocation(this.airportWaypointsIcaoSearchField)),

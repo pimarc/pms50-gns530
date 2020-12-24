@@ -585,8 +585,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     }
     init() {
         super.init(2, false, "110%", "66%", 1.47, 1.53, 2000);
-        this.displayData = true;
-        this.savedDisplayData = this.displayData;
+        this.displayData = !this.gps.dataStore.get("MapDisplayData", true); // Not operator because toggle after
         var menu_elements = [];
         menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)));
@@ -596,6 +595,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.defaultMenu = new ContextualMenu("PAGE MENU", menu_elements);
         // No data displayed by default for GNS530
         this.toggleDataDisplay();
+        this.savedDisplayData = this.displayData;
         this.nearestIntersectionList = new NearestIntersectionList(this.map.instrument);
         this.nearestNDBList = new NearestNDBList(this.map.instrument);
         this.nearestVORList = new NearestVORList(this.map.instrument);
@@ -987,6 +987,8 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     }
     toggleDataDisplay(){
         this.displayData = this.displayData ? false : true;
+        this.gps.dataStore.set("MapDisplayData", this.displayData);
+
         if(this.displayData) {
             this.gps.getChildById("MapRightDisplay").setAttribute("style", "display: block;");
             this.gps.getChildById("MapInstrument2").setAttribute("style", "width: 70%;");
@@ -1250,9 +1252,11 @@ class GPS_ComNav extends NavSystemElement {
     }
     onEvent(_event) {
     if ((_event == "CLR_Push") || (_event == "MENU_Push"))  {
-            this.gps.closePopUpElement();
-            this.gps.currentContextualMenu = null;
-            this.gps.SwitchToInteractionState(1);
+            if(this.gps.currentContextualMenu) {
+                this.gps.closePopUpElement();
+                this.gps.currentContextualMenu = null;
+                this.gps.SwitchToInteractionState(1);
+            }
         }
     }
     setComAirtportListIndex_CB(_index) {

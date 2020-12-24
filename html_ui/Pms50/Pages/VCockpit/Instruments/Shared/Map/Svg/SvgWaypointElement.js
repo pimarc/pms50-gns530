@@ -203,7 +203,9 @@ class SvgWaypointElement extends SvgMapElement {
             this.y = pos.y;
         }
         let wp = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(false, true);
-        let isActiveWaypoint = this.source === wp || (wp && wp.icao === this.source.icao);
+//PM Modif: Check also ident
+        let isActiveWaypoint = this.source === wp || (wp && wp.icao === this.source.icao) || (wp && wp.ident === this.source.ident);
+//PM Modif: End Check also ident
         if (isActiveWaypoint != this._lastIsActiveWaypoint) {
             this._refreshLabel(map, isActiveWaypoint);
             if (this._image) {

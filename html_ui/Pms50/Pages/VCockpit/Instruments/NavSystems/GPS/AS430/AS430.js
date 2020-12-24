@@ -87,7 +87,7 @@ class AS430 extends BaseGPS {
         if(this.state530 && !this.map430) {
             PageGroupNav = new NavSystemPageGroup("NAV", this, [
                 defaultNav,
-                new NavSystemPage("ComNav", "ComNav", new GPS_ComNav()),
+                new NavSystemPage("ComNav", "ComNav", new GPS_ComNav(6)),
                 new NavSystemPage("Position", "Position", new GPS_Position()),
             ]);
         }
