@@ -353,7 +353,8 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         this.initialUpdate = true;
     }
     init() {
-        super.init(1, true, "110%", "66%", 1.62, 1, 200);
+        this.trackUp = this.gps.dataStore.get("BaseNavTrackUp", false);
+        super.init(1, this.trackUp, "110%", "66%", 1.62, 1, 200);
         if(this.gps.gpsType == "530") {
             this.defaultMenu = new ContextualMenu("PAGE MENU", [
                 new ContextualMenuElement("Crossfill?", null, true),
@@ -410,6 +411,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
     }
     toggleMapOrientation() {
         super.toggleMapOrientation();
+        this.gps.dataStore.set("BaseNavTrackUp", this.trackUp);
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
     }
@@ -584,8 +586,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.baseElem = baseElem;
     }
     init() {
-        super.init(2, false, "110%", "66%", 1.47, 1.53, 2000);
         this.displayData = !this.gps.dataStore.get("MapDisplayData", true); // Not operator because toggle after
+        this.trackUp = this.gps.dataStore.get("MapTrackUp", false);
+        super.init(2, this.trackUp, "110%", "66%", 1.47, 1.53, 2000);
         var menu_elements = [];
         menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)));
@@ -932,6 +935,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     }
     toggleMapOrientation() {
         super.toggleMapOrientation();
+        this.gps.dataStore.set("MapTrackUp", this.trackUp);
         if (this.map && this.map.navMap) {
             // We must readjust width after changing the height in toggle map orientation
             if(this.displayData){
