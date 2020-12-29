@@ -66,7 +66,8 @@ class BaseGPS extends NavSystem {
         this.weatherRadar = false;
         this.weatherRadarLegend = false;
         this.debug = false;
-        this.metar_avwx_token = false;
+        this.metar_avwx_token = "";
+        this.disableAirspaceMessages = false;
         this.icaoFromMap = null;
         this.dataStore = new WTDataStore(this);
         //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
@@ -419,6 +420,7 @@ class BaseGPS extends NavSystem {
                 this.weatherRadarLegend = false;
                 this.debug = false;
                 this.map430 = false;
+                this.disableAirspaceMessages = false;
                 if(data.weather_radar && data.weather_radar.toUpperCase() == "ON")
                     this.weatherRadar = true;
                 if(data.weather_legend && data.weather_legend.toUpperCase() == "ON")
@@ -429,6 +431,8 @@ class BaseGPS extends NavSystem {
                     this.map430 = true;
                 if(data.metar_avwx_token)
                     this.metar_avwx_token = data.metar_avwx_token;
+                if(data.disable_airspace_messages && data.disable_airspace_messages.toUpperCase() == "ON")
+                    this.disableAirspaceMessages = true;
 
                 callback();
                 resolve();

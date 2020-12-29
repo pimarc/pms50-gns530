@@ -977,8 +977,39 @@ class GPS_FPLCatalog extends NavSystemElement {
     addWaypoints(callback = EmptyCallback.Void) {
         let fpl = this.fplList.fpls[this.realindex];
         for(var i=0; i<fpl.icaoWaypoints.length; i++){
-            Coherent.call("ADD_WAYPOINT", fpl.icaoWaypoints[i], i, true).then(() => {
-            });
+            if(fpl.icaoWaypoints[i].indexOf(":") == -1) {
+                Coherent.call("ADD_WAYPOINT", fpl.icaoWaypoints[i], i, true).then(() => {
+                });
+            }
+            else {
+                // User waypoint
+                // Currently not working
+//                 let parts = fpl.icaoWaypoints[i].split(":");
+//                 if (parts.length > 1) {
+//                     let icao = parts[0];
+//     console.log("icao1:" + icao);
+//                     let position = parts[1];
+//     console.log("position:" + position);
+//                     parts = position.split(",");
+//     console.log("parts0:" + parts[0]);
+//     console.log("parts1:" + parts[1]);
+//                     if(parts.length > 1) {
+//                         let latitude = fpl.convertDMSToDD(parts[0]);
+//                         let longitude = fpl.convertDMSToDD(parts[1]);
+// console.log("icao:" + stringToAscii(icao));
+// console.log("ident:" + icao.substring(7));
+// console.log("latitude:" + latitude);
+// console.log("longitude:" + longitude);
+//                         SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointICAO", "string", icao);
+//                         SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointIdent", "string", "Custom");
+//                         SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", latitude);
+//                         SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", longitude);
+//                         SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "number", i).then(() => {
+//                             console.log("User waypoint added");
+//                         });
+//                     }
+//                 }
+            }
         }
         this.gps.currFlightPlanManager.instrument.requestCall(callback);
     }
@@ -1095,6 +1126,11 @@ class GPS_FPLCatalog extends NavSystemElement {
                         break;
                     }
                 }
+                if(indextransition == -1 && approach.transitions.length) {
+                    // We should get the nearest transition
+                    // For now just take the first one
+                    indextransition = 0;
+                }
                 if(indextransition >= 0) {
                     this.gps.currFlightPlanManager.setApproachIndex(indexapproach, () => {
                         let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
@@ -1157,7 +1193,6 @@ class FPLCatalogItem {
         this.approachrwdes = "";
         this.approachtr = "";
         this.icaoWaypoints = [];
-        this.previousIcao = "";
     }
     load(){
         this.xmlFpl = null;
@@ -1238,8 +1273,27 @@ class FPLCatalogItem {
                             this.icaoWaypoints.push(icaoString);
                         }
                     }
-                    if(icao)
-                        this.previousIcao = icao;
+                    else {
+                        // User Waypoint
+                        // Curently not working
+//                         let ident = waypointroot.id.toUpperCase();
+// console.log("ident:" + ident);
+//                         if(ident) {
+//                             let WorldPosition = waypointroot.getElementsByTagName("WorldPosition")[0].textContent;
+// console.log("WorldPosition:" + WorldPosition);
+//                             if(WorldPosition) {
+//                                 let region = "";
+//                                 ident = "";
+//                                 while(ident.length < 5)
+//                                     ident += " ";
+//                                 while(region.length < 6)
+//                                     region += " ";
+//                                 let icaoString = "U" + region + ident + "_123" + ":" + WorldPosition;
+// console.log("icaoString:" + stringToAscii(icaoString));
+//                                 this.icaoWaypoints.push(icaoString);
+//                             }
+//                         }
+                    }
                 }
             }
         });
@@ -1266,6 +1320,23 @@ class FPLCatalogItem {
         };
         httpRequest.open("GET", file);
         httpRequest.send();
+    }
+    // Convert lat long to decimal
+    // Format N48° 58' 26.88" or W0° 40' 21.30"
+    convertDMSToDD(dms) {
+        let direction = dms.substring(0,1);
+        dms = dms.substring(1);
+        let parts = dms.split(/[^\d+(\,\d+)\d+(\.\d+)?\w]+/);
+        let degrees = parseFloat(parts[0]);
+        let minutes = parseFloat(parts[1]);
+        let seconds = parseFloat(parts[2].replace(',','.'));
+   
+        let dd = degrees + minutes / 60 + seconds / (60 * 60);
+   
+        if (direction == 'S' || direction == 'W') {
+          dd = dd * -1;
+        } // Don't do anything for N or E
+        return dd;
     }
 }
 

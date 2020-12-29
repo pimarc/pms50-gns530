@@ -175,10 +175,12 @@ class GPS_Annunciations extends PFD_Annunciations {
     constructor() {
         super(...arguments);
         this.isActive = false;
+        this._tUpdateAirspaces = 0;
     }
     init(root) {
         // We have rebuilt all the init in order to discard XML engine alert messages. They should not be displayed in these GPS.
 //        super.init(root);
+        this.t_UpdateAirspaces = 0;
         this.engineType = Simplane.getEngineType();
         if (this.rootElementName != "")
             this.annunciations = this.gps.getChildById(this.rootElementName);
@@ -191,10 +193,12 @@ class GPS_Annunciations extends PFD_Annunciations {
         this.addMessage(Annunciation_MessageType.WARNING, "Attempt to delete proc waypoint", this.deleteWpProc);
         this.addMessage(Annunciation_MessageType.WARNING, "Cannot add waypoint at this place", this.addWp);
         this.addMessage(Annunciation_MessageType.WARNING, "Approach is not active", this.approachNotActive);
-        this.addMessage(Annunciation_MessageType.ADVISORY, "Near airspace -- less than 2nm", this.airspaceNear);
-        this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace ahead -- less than 10 min", this.airspaceAhead);
-        this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace near and ahead", this.airspaceNearAhead);
-        this.addMessage(Annunciation_MessageType.ADVISORY, "Inside airspace", this.airspaceInside);
+        if(!this.gps.disableAirspaceMessages) {
+            this.addMessage(Annunciation_MessageType.ADVISORY, "Near airspace -- less than 2nm", this.airspaceNear);
+            this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace ahead -- less than 10 min", this.airspaceAhead);
+            this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace near and ahead", this.airspaceNearAhead);
+            this.addMessage(Annunciation_MessageType.ADVISORY, "Inside airspace", this.airspaceInside);
+        }
         this.addMessage(Annunciation_MessageType.ADVISORY, "No departure airport", this.airportOrigin);
         this.addMessage(Annunciation_MessageType.ADVISORY, "No arrival airport", this.airportDestination);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test Obs < 10", this.testObs);
@@ -233,8 +237,11 @@ class GPS_Annunciations extends PFD_Annunciations {
                 }
             }
         }
-        if(this.gps)
+        this.t_UpdateAirspaces++;
+        if(this.gps && this.gps.airspaceList && !this.gps.disableAirspaceMessages && this.t_UpdateAirspaces > 10) {
+            this.t_UpdateAirspaces = 0;
             this.gps.airspaceList.Update();
+        }
         super.onUpdate(_deltaTime);
     }
 

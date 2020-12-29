@@ -26,6 +26,7 @@ You can also use the alternate data MOD to fix this situation (see note below).
 ## V 1.0.23
 - Approach frequency automatically set to standby only if the current active frequency is different
 - Official embedded and not modified 1.12.13.0 MSFS files
+- Saving some GPS states between sessions: Northup/TrackUp, Data display in Map page and Channel spacing.
 - Bugfix: auto reactivation of approach after a directTO was not always working after update 1.12.13.0
 ## V 1.0.22
 - Added real-time METAR data (see note below)
