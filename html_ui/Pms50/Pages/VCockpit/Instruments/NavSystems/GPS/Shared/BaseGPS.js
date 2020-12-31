@@ -63,15 +63,13 @@ class BaseGPS extends NavSystem {
         this.attemptDeleteWpProc = 0;
         this.attemptAddWp = 0;
         this.airspaceList = new NearestAirspaceList(this);
-        this.weatherRadar = false;
-        this.weatherRadarLegend = false;
+        this.configData = null;
         this.debug = false;
-        this.metar_avwx_token = "";
-        this.disableAirspaceMessages = false;
         this.icaoFromMap = null;
         this.dataStore = new WTDataStore(this);
         //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
         this.loadConfig(() => {
+            this.debug = this.getConfigKey("debug", false);
             if(this.debug) {
                 Include.addScript("/JS/debug.js", function () {
                     g_modDebugMgr.AddConsole(null);
@@ -279,31 +277,40 @@ class BaseGPS extends NavSystem {
 //             });
 //         }
 //         else {
-            let removeWaypointForApproachMethod = (callback_here = EmptyCallback.Void) => {
-                let i = 1;
-                let destinationIndex = this.currFlightPlanManager.getWaypoints().findIndex(w => {
-                    return w.icao === this.currFlightPlanManager.getDestination().icao;
-                });
-
-                if (i < destinationIndex) {
-                    this.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
-                        //i++;
-                        removeWaypointForApproachMethod(callback_here);
-                    });
-                }
-                else {
-                    callback_here();
-                }
-            };
-
-            removeWaypointForApproachMethod(() => {
-                    Coherent.call("ACTIVATE_APPROACH").then(() => {
-                        this.currFlightPlanManager._approachActivated = true;
-                        this.currFlightPlanManager.updateCurrentApproach();
-                        this.setApproachFrequency();
-                    });
+        let removeWaypointForApproachMethod = (callback_here = EmptyCallback.Void) => {
+            let i = 1;
+            let destinationIndex = this.currFlightPlanManager.getWaypoints().findIndex(w => {
+                return w.icao === this.currFlightPlanManager.getDestination().icao;
             });
-        callback();
+
+            if (i < destinationIndex) {
+                this.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
+                    //i++;
+                    removeWaypointForApproachMethod(callback_here);
+                });
+            }
+            else {
+                callback_here();
+            }
+        };
+        if(this.getConfigKey("wa_uturn_bug", true)) {
+            removeWaypointForApproachMethod(() => {
+                Coherent.call("ACTIVATE_APPROACH").then(() => {
+                    this.currFlightPlanManager._approachActivated = true;
+                    this.currFlightPlanManager.updateCurrentApproach();
+                    this.setApproachFrequency();
+                    callback();
+                });
+            });
+        }
+        else {
+            Coherent.call("ACTIVATE_APPROACH").then(() => {
+                this.currFlightPlanManager._approachActivated = true;
+                this.currFlightPlanManager.updateCurrentApproach();
+                this.setApproachFrequency();
+                callback();
+            });
+        }
     }
 
     setApproachFrequency() {
@@ -415,30 +422,22 @@ class BaseGPS extends NavSystem {
         return new Promise((resolve) => {
             var milliseconds = new Date().getTime().toString();
             this.loadFile("/VFS/Config/pms50-gns530/config.json" + "?id=" + milliseconds, (text) => {
-                let data = JSON.parse(text);
-                this.weatherRadar = false;
-                this.weatherRadarLegend = false;
-                this.debug = false;
-                this.map430 = false;
-                this.disableAirspaceMessages = false;
-                if(data.weather_radar && data.weather_radar.toUpperCase() == "ON")
-                    this.weatherRadar = true;
-                if(data.weather_legend && data.weather_legend.toUpperCase() == "ON")
-                    this.weatherRadarLegend = true;
-                if(data.debug && data.debug.toUpperCase() == "ON")
-                    this.debug = true;
-                if(data.map430 && data.map430.toUpperCase() == "ON")
-                    this.map430 = true;
-                if(data.metar_avwx_token)
-                    this.metar_avwx_token = data.metar_avwx_token;
-                if(data.disable_airspace_messages && data.disable_airspace_messages.toUpperCase() == "ON")
-                    this.disableAirspaceMessages = true;
-
+                this.configData = JSON.parse(text);
                 callback();
                 resolve();
             });
         });
     }
+    getConfigKey(_key, _default = undefined) {
+        if(!this.configData || !this.configData[_key])
+            return _default;
+        if(this.configData[_key].toUpperCase() == "ON")
+            return true;
+        if(this.configData[_key].toUpperCase() == "OFF")
+            return false;
+        return this.configData[_key];
+    }
+
     loadFile(file, callbackSuccess) {
         let httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function (data) {
@@ -459,7 +458,7 @@ class BaseGPS extends NavSystem {
                 var url = "https://avwx.rest/api/metar/" + ident + "?options=info&airport=true&reporting=true&format=json&onfail=cache";
                 let httpRequest = new XMLHttpRequest();
                 httpRequest.open("GET", url);
-                httpRequest.setRequestHeader('Authorization', this.metar_avwx_token);
+                httpRequest.setRequestHeader('Authorization', this.getConfigKey("metar_avwx_token", ""));
                 httpRequest.onreadystatechange = function (data) {
                     if (this.readyState === XMLHttpRequest.DONE) {
                         let loaded = this.status === 200 || this.status === 0;

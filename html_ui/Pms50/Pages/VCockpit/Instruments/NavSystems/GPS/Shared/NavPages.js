@@ -59,7 +59,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.map = this.gps.getChildById("MapInstrument" + this.mapnum);
         this.mapDisplayRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
         this.weatherRangeIndex = 0;
-        this.weatherLegend = this.gps.weatherRadarLegend;
+        this.weatherLegend = this.gps.getConfigKey("weather_legend", false);
         this.mapSavedRanges = [];
         this.mapSavedRangeIndex = 0;
         if(this.map){
@@ -694,11 +694,11 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.gps.closePopUpElement();
             this.gps.currentContextualMenu = null;
             this.gps.SwitchToInteractionState(0);
-            if(this.displayWeather && this.gps.weatherRadarLegend)
+            if(this.displayWeather && this.gps.getConfigKey("weather_legend", false))
                 this.toggleWeatherLegend();
         }
         if (_event == "ENT_Push")  {
-            if(this.gps.weatherRadar && this.gps.gpsType == "530")
+            if(this.gps.getConfigKey("weather_radar", false) && this.gps.gpsType == "530")
             {
                 if(!this.gps.currentContextualMenu)
                     if(!this.displayWeather || !this.weatherModeHorizontal) {
