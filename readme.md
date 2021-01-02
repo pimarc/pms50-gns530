@@ -23,10 +23,15 @@ If you have set a config file and/or loadable flight plans, be careful to save t
 You can also use the alternate data MOD to fix this situation (see note below).
 
 # Change log
+## V 1.0.24 BETA (dev)
+- Changed add waypoint and load flight plan code
+- Load flight plan: the approach transition is now the best one instead of the first one
+- Nearest airport frequencies always have 3 digits and name is lowercase
+- Nearest pages bearings are now display in magnetic north instead of true north
 ## V 1.0.23
 - Approach frequency automatically set to standby only if the current active frequency is different
 - Official embedded and not modified 1.12.13.0 MSFS files
-- Saving some GPS states between sessions: Northup/TrackUp, Data display in Map page and Channel spacing.
+- Saving some GPS states between sessions: Northup/TrackUp, Data display in Map page and Channel spacing
 - Bugfix: auto reactivation of approach after a directTO was not always working after update 1.12.13.0
 ## V 1.0.22
 - Added real-time METAR data (see note below)

@@ -676,12 +676,10 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
                                     navmode = 2;
                                 this.savedFpl.load(navmode);
                                 // Try restoring cursor
-                                // Must press manually the navigation button to get it back
-                                this.gps.SwitchToInteractionState(0);
                                 setTimeout(() => {
-                                    this.fplSelectable.index = savedIndex;
+                                    this.gps.ActiveSelection(this.defaultSelectables);
+                                    this.fplSelectable.index = savedIndex+1;
                                     this.fplSelectable.offset = savedOffset;
-                                    this.fplSelectable.onEvent("NavigationLargeInc");
                                 }, 2000);
                             }
                         }
@@ -1094,9 +1092,26 @@ class GPS_FPLCatalog extends NavSystemElement {
                             }
                         }
                         if(indextransition == -1 && approach.transitions.length) {
-                            // We should get the nearest transition
+                            // We should get the nearest transition from last enroute wp
                             // For now just take the first one
                             indextransition = 0;
+                            if(fpl.approachtrIcao.length) {
+                                let waypoint = await this.gps.currFlightPlanManager.instrument.facilityLoader.getFacility(fpl.approachtrIcao);
+                                if(waypoint) {
+                                    let trCoordinates = waypoint.GetInfos().coordinates;
+                                    let distance = 1000;
+                                    for (let i = 0; i < approach.transitions.length; i++) {
+                                        let transitionFirstWp = approach.transitions[i].waypoints[0];
+                                        if(transitionFirstWp) {
+                                            let distanceTowp = Avionics.Utils.computeDistance(transitionFirstWp.infos.coordinates, trCoordinates);
+                                            if(distanceTowp < distance) {
+                                                distance = distanceTowp;
+                                                indextransition = i;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         if(indextransition >= 0) {
                             await Coherent.call("SET_APPROACH_INDEX", indexapproach).then(() => {
@@ -1188,6 +1203,7 @@ class FPLCatalogItem {
         this.approachrw = "";
         this.approachrwdes = "";
         this.approachtr = "";
+        this.approachtrIcao = "";
         this.icaoWaypoints = [];
     }
     load(){
@@ -1203,12 +1219,14 @@ class FPLCatalogItem {
         this.approachrw = "";
         this.approachrwdes = "";
         this.approachtr = "";
+        this.approachtrIcao = "";
         this.icaoWaypoints = [];
         this.ident = "";
         this.loadXml("fpl" + this.index + ".pln").then((xmlFpl) => {
             this.xmlFpl = xmlFpl;
             let fpl = xmlFpl.getElementsByTagName("FlightPlan.FlightPlan");
-            if(fpl.length > 0){
+            if(fpl.length > 0) {
+                let lastIcao = "";
                 this.departure = fpl[0].getElementsByTagName("DepartureID")[0] ? fpl[0].getElementsByTagName("DepartureID")[0].textContent : "";
                 this.destination = fpl[0].getElementsByTagName("DestinationID")[0] ? fpl[0].getElementsByTagName("DestinationID")[0].textContent : "";
                 let waypoints = fpl[0].getElementsByTagName("ATCWaypoint");
@@ -1230,6 +1248,7 @@ class FPLCatalogItem {
                         // Check for approach
                         let approach = waypointroot.getElementsByTagName("ApproachTypeFP")[0] ? waypointroot.getElementsByTagName("ApproachTypeFP")[0].textContent : "";
                         if(approach != "")
+                        {
                             this.approach = approach;
                             let approachrw = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
                             if(approachrw != "")
@@ -1244,6 +1263,8 @@ class FPLCatalogItem {
                             this.approachtr = this.ident;
                             while(this.approachtr.length < 5)
                                 this.approachtr += " ";
+                            this.approachtrIcao = lastIcao;
+                        }
                     }
                     let icao = waypointroot.getElementsByTagName("ICAO")[0];
                     if(icao){
@@ -1270,6 +1291,7 @@ class FPLCatalogItem {
                             // Do not add waypoints that are part of sid or star
                             this.icaoWaypoints.push(icaoString);
                         }
+                        lastIcao = icaoString;
                     }
                     else {
                         // User Waypoint

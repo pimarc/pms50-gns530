@@ -20,6 +20,7 @@ class GPS_NearestAirports extends NavSystemElement {
     onUpdate(_deltaTime ) {
         this.nearestAirportList.Update();
         var airportListStrings = [];
+        let magvar = SimVar.GetSimVarValue("MAGVAR", "degrees");
         for (var i = 0; i < this.nearestAirportList.airports.length; i++) {
             var firstLine = "";
             var secondLine = "";
@@ -53,15 +54,14 @@ class GPS_NearestAirports extends NavSystemElement {
 
             firstLine += '<td class="SelectableElement">' + this.nearestAirportList.airports[i].ident + '</td>';
             firstLine += '<td><img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/' + logo + '" class="imgSizeM"/> </td>';
-            firstLine += '<td>' + fastToFixed(this.nearestAirportList.airports[i].bearing, 0) + '<div class="Align unit">o<br />M</div></td>';
+            firstLine += '<td>' + fastToFixed((this.nearestAirportList.airports[i].bearing - magvar + 360)%360, 0) + '<div class="Align unit">o<br />M</div></td>';
             firstLine += '<td>' + (Math.round((this.nearestAirportList.airports[i].distance*10))/10).toFixed(1) + '<div class="Align unit">n<br />m</div></td>';
             firstLine += '<td>' + this.nearestAirportList.airports[i].bestApproach + '</td>';
-            secondLine += '<td>' + this.nearestAirportList.airports[i].frequencyName + '</td>';
+            secondLine += '<td>' + this.nearestAirportList.airports[i].frequencyName.toLowerCase() + '</td>';
             //Don't display frequency if it's zero
-            let frequency = fastToFixed(this.nearestAirportList.airports[i].frequencyMHz, 3);
             secondLine += '<td colspan="2"';
-            if(frequency > 0) {
-                secondLine += 'class="SelectableElement"' +'>' + fastToFixed(this.nearestAirportList.airports[i].frequencyMHz, 3) + '</td>';
+            if(this.nearestAirportList.airports[i].frequencyMHz > 0) {
+                secondLine += 'class="SelectableElement"' +'>' + this.gps.frequencyFormat(this.nearestAirportList.airports[i].frequencyMHz, 3) + '</td>';
             }
             else {
                 secondLine += '>';
@@ -126,11 +126,12 @@ class GPS_NearestIntersection extends NavSystemElement {
     onUpdate(_deltaTime) {
         this.nearestIntersectionList.Update(50, 100);
         var lines = [];
+        let magvar = SimVar.GetSimVarValue("MAGVAR", "degrees");
         for (var i = 0; i < this.nearestIntersectionList.intersections.length; i++) {
             var line = "";
             line += '<td class="SelectableElement">' + this.nearestIntersectionList.intersections[i].ident + '</td>';
             line += '<td><img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + this.nearestIntersectionList.intersections[i].imageFileName() + '"/></td>';
-            line += '<td>' + Utils.leadingZeros(fastToFixed(this.nearestIntersectionList.intersections[i].bearing, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
+            line += '<td>' + Utils.leadingZeros(fastToFixed((this.nearestIntersectionList.intersections[i].bearing - magvar + 360)%360, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
             line += '<td>' + (Math.round((this.nearestIntersectionList.intersections[i].distance*10))/10).toFixed(1) + '<div class="Align unit">n<br />m</div></td>';
             lines.push(line);
         }
@@ -174,11 +175,12 @@ class GPS_NearestNDB extends NavSystemElement {
     onUpdate(_deltaTime) {
         this.nearestNDBList.Update();
         var lines = [];
+        let magvar = SimVar.GetSimVarValue("MAGVAR", "degrees");
         for (var i = 0; i < this.nearestNDBList.ndbs.length; i++) {
             var line = "";
             line += '<td class="SelectableElement">' + this.nearestNDBList.ndbs[i].ident + '</td>';
             line += '<td><img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + this.nearestNDBList.ndbs[i].imageFileName() + '"/></td>';
-            line += '<td>' + Utils.leadingZeros(fastToFixed(this.nearestNDBList.ndbs[i].bearing, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
+            line += '<td>' + Utils.leadingZeros(fastToFixed((this.nearestNDBList.ndbs[i].bearing - magvar + 360)%360, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
             line += '<td>' + (Math.round((this.nearestNDBList.ndbs[i].distance*10))/10).toFixed(1) + '<div class="Align unit">n<br />m</div></td>';
             line += '<td>' + fastToFixed(this.nearestNDBList.ndbs[i].frequencyMHz, 1) + '</td>';
             lines.push(line);
@@ -226,12 +228,13 @@ class GPS_NearestVOR extends NavSystemElement {
     onUpdate(_deltaTime) {
         this.nearestVORList.Update();
         var lines = [];
+        let magvar = SimVar.GetSimVarValue("MAGVAR", "degrees");
         for (var i = 0; i < this.nearestVORList.vors.length; i++) {
             var line = "";
             line += '<td class="SelectableElement Select0">' + this.nearestVORList.vors[i].ident + '</td>';
             var image = this.nearestVORList.vors[i].imageFileName();
             line += '<td> <img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + image + '"></td>';
-            line += '<td>' + Utils.leadingZeros(fastToFixed(this.nearestVORList.vors[i].bearing, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
+            line += '<td>' + Utils.leadingZeros(fastToFixed((this.nearestVORList.vors[i].bearing - magvar + 360)%360, 0), 3) + '<div class="Align unit">o<br />M</div></td>';
             line += '<td>' + (Math.round((this.nearestVORList.vors[i].distance*10))/10).toFixed(1) + '<div class="Align unit">n<br />m</div></td>';
             line += '<td class="SelectableElement Select1">' + this.gps.frequencyFormat(this.nearestVORList.vors[i].frequencyMHz, 2) + '</td>';
             lines.push(line);
