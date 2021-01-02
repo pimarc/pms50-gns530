@@ -1194,6 +1194,8 @@ as430-element {
               as430-element #Electricity #TopDisplay #GpsPart #NRSTIntersection .SliderContainer table tr img, as430-element #Electricity #TopDisplay #GpsPart #NRSTNDB .SliderContainer table tr img, as430-element #Electricity #TopDisplay #GpsPart #NRSTVOR .SliderContainer table tr img {
                 height: 10vh; }
         as430-element #Electricity #TopDisplay #GpsPart #NRSTAirspace #NRSTAirspaceList {
+          white-space: nowrap;
+          overflow: hidden;
           height: calc(73.6842105263vh); }
           as430-element #Electricity #TopDisplay #GpsPart #NRSTAirspace #NRSTAirspaceList .BotBorder {
             border-bottom: calc(0.5263157895vh) solid #6ecdee;

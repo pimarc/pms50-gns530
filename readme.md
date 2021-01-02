@@ -28,6 +28,7 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Load flight plan: the approach transition is now the best one instead of the first one
 - Nearest airport frequencies always have 3 digits and name is lowercase
 - Nearest pages bearings are now display in magnetic north instead of true north
+- Nearest airspaces: long airspace names not displayed correctly. 
 ## V 1.0.23
 - Approach frequency automatically set to standby only if the current active frequency is different
 - Official embedded and not modified 1.12.13.0 MSFS files
