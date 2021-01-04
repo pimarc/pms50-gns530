@@ -1805,6 +1805,9 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.identElement, this.ident_SelectionCallback.bind(this))
         ];
+        this.duplicateWaypoints = new NavSystemElementContainer("Duplicate Waypoints", "DuplicateWaypointWindow", new MFD_DuplicateWaypoint());
+        this.duplicateWaypoints.setGPS(this.gps);
+        this.duplicateWaypoints.element.icaoSearchField = this.icaoSearchField;
     }
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "W") {
@@ -1854,8 +1857,25 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
     ident_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
-            this.icaoSearchField.StartSearch();
+            this.icaoSearchField.StartSearch(this.onSearchEnd.bind(this));
             this.gps.SwitchToInteractionState(3);
+        }
+    }
+    onSearchEnd() {
+        if (this.icaoSearchField.duplicates.length > 0) {
+            this.gps.switchToPopUpPage(this.duplicateWaypoints, () => {
+                if(this.gps.lastRelevantICAO) {
+                    this.icaoSearchField.getWaypoint().SetICAO(this.gps.lastRelevantICAO);
+                    this.gps.ActiveSelection(this.defaultSelectables);
+                    this.gps.cursorIndex = 0;
+                    this.menuname = ""
+                }
+            });
+        }
+        else {
+            this.gps.ActiveSelection(this.defaultSelectables);
+            this.gps.cursorIndex = 0;
+            this.menuname = ""
         }
     }
 }
@@ -1878,6 +1898,9 @@ class GPS_NDBWaypoint extends NavSystemElement {
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.identElement, this.ident_SelectionCallback.bind(this))
         ];
+        this.duplicateWaypoints = new NavSystemElementContainer("Duplicate Waypoints", "DuplicateWaypointWindow", new MFD_DuplicateWaypoint());
+        this.duplicateWaypoints.setGPS(this.gps);
+        this.duplicateWaypoints.element.icaoSearchField = this.icaoSearchField;
     }
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "N") {
@@ -1936,8 +1959,25 @@ class GPS_NDBWaypoint extends NavSystemElement {
     ident_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
-            this.icaoSearchField.StartSearch();
+            this.icaoSearchField.StartSearch(this.onSearchEnd.bind(this));
             this.gps.SwitchToInteractionState(3);
+        }
+    }
+    onSearchEnd() {
+        if (this.icaoSearchField.duplicates.length > 0) {
+            this.gps.switchToPopUpPage(this.duplicateWaypoints, () => {
+                if(this.gps.lastRelevantICAO) {
+                    this.icaoSearchField.getWaypoint().SetICAO(this.gps.lastRelevantICAO);
+                    this.gps.ActiveSelection(this.defaultSelectables);
+                    this.gps.cursorIndex = 0;
+                    this.menuname = ""
+                }
+            });
+        }
+        else {
+            this.gps.ActiveSelection(this.defaultSelectables);
+            this.gps.cursorIndex = 0;
+            this.menuname = ""
         }
     }
 }
@@ -1962,6 +2002,9 @@ class GPS_VORWaypoint extends NavSystemElement {
             new SelectableElement(this.gps, this.identElement, this.ident_SelectionCallback.bind(this)),
             new SelectableElement(this.gps, this.frequencyElement, this.frequency_SelectionCallback.bind(this))
         ];
+        this.duplicateWaypoints = new NavSystemElementContainer("Duplicate Waypoints", "DuplicateWaypointWindow", new MFD_DuplicateWaypoint());
+        this.duplicateWaypoints.setGPS(this.gps);
+        this.duplicateWaypoints.element.icaoSearchField = this.icaoSearchField;
     }
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "V") {
@@ -2028,8 +2071,25 @@ class GPS_VORWaypoint extends NavSystemElement {
     ident_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
-            this.icaoSearchField.StartSearch();
+            this.icaoSearchField.StartSearch(this.onSearchEnd.bind(this));
             this.gps.SwitchToInteractionState(3);
+        }
+    }
+    onSearchEnd() {
+        if (this.icaoSearchField.duplicates.length > 0) {
+            this.gps.switchToPopUpPage(this.duplicateWaypoints, () => {
+                if(this.gps.lastRelevantICAO) {
+                    this.icaoSearchField.getWaypoint().SetICAO(this.gps.lastRelevantICAO);
+                    this.gps.ActiveSelection(this.defaultSelectables);
+                    this.gps.cursorIndex = 0;
+                    this.menuname = ""
+                }
+            });
+        }
+        else {
+            this.gps.ActiveSelection(this.defaultSelectables);
+            this.gps.cursorIndex = 0;
+            this.menuname = ""
         }
     }
     frequency_SelectionCallback(_event) {
