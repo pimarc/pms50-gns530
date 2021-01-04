@@ -6,6 +6,9 @@ class GPS_Procedures extends NavSystemElement {
         this.SelectApproach = this.gps.getChildById("SelectApproach");
         this.SelectArrival = this.gps.getChildById("SelectArrival");
         this.SelectDeparture = this.gps.getChildById("SelectDeparture");
+        this.LoadedApproach = this.gps.getChildById("LoadedProcAPR");
+        this.LoadedArrival = this.gps.getChildById("LoadedProcARVL");
+        this.LoadedDeparture = this.gps.getChildById("LoadedProcDEP");
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.ActivateApproach, this.activateApproach_CB.bind(this)),
             new SelectableElement(this.gps, this.SelectApproach, this.selectApproach_CB.bind(this)),
@@ -28,6 +31,66 @@ class GPS_Procedures extends NavSystemElement {
         this.defaultSelectables[0].setActive(true);
         if (!this.gps.currFlightPlanManager.isLoadedApproach() || this.gps.currFlightPlanManager.isActiveApproach()) {
             this.defaultSelectables[0].setActive(false);
+        }
+        let destination = this.gps.currFlightPlanManager.getDestination();
+        if(this.LoadedApproach) {
+            let approachText = "____ -";
+            let approachindex = this.gps.currFlightPlanManager.getApproachIndex();
+            // We must get approach name from destination otherwise it's not complete
+            if(approachindex >= 0 && destination) {
+                let infos = destination.infos;
+                let approach = null;
+                if (infos instanceof AirportInfo)
+                    approach = infos.approaches[approachindex];
+                if(approach) {
+                    approachText = approach.name;
+                    let transitionIndex = this.gps.currFlightPlanManager.getApproachTransitionIndex();
+                    if(transitionIndex >= 0) {
+                        let transition = approach.transitions[transitionIndex];
+                        if (transition) {
+                            approachText += " - " + transition.name;
+                        }
+                    }
+                }
+            }
+            this.LoadedApproach.textContent = approachText;
+        }
+        if(this.LoadedArrival) {
+            let arrivalText = "____ -";
+            let arrival = this.gps.currFlightPlanManager.getArrival();
+            if(arrival) {
+                arrivalText = arrival.name;
+                let transitionIndex = this.gps.currFlightPlanManager.getArrivalTransitionIndex();
+                if(transitionIndex >= 0) {
+                    let transition = arrival.enRouteTransitions[transitionIndex];
+                    if (transition) {
+                        arrivalText += " - " + transition.name;
+                    }
+                }
+            }
+            this.LoadedArrival.textContent = arrivalText;
+        }
+        if(this.LoadedDeparture) {
+            let departureText = "____ -";
+            let departure = this.gps.currFlightPlanManager.getDeparture();
+            if(departure) {
+                departureText = departure.name;
+                let transitionIndex = this.gps.currFlightPlanManager.getDepartureEnRouteTransitionIndex();
+                if(transitionIndex >= 0) {
+                    let transition = departure.enRouteTransitions[transitionIndex];
+                    if (transition) {
+                        departureText += " - " + transition.name;
+                    }
+                }
+                let runwayIndex = this.gps.currFlightPlanManager.getDepartureRunwayIndex();
+                if(runwayIndex >= 0) {
+                    let runway = departure.runwayTransitions[runwayIndex];
+                    if (runway) {
+                        departureText += " - " + runway.name;
+                    }
+                }
+            }
+            this.LoadedDeparture.textContent = departureText;
         }
     }
     onExit() {

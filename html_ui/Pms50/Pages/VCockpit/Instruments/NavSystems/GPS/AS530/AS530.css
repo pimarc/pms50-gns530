@@ -1061,11 +1061,33 @@ as530-element {
                 vertical-align: central; }
      
 
-           as530-element #Electricity #TopDisplay #GpsPart #Procedures .Value {
-          width: 95%;
-          margin-left: 2.5%;
-          line-height: 15vh; }
-/*PM Modif: The greyed status was missing for procedure menu*/
+          as530-element #Electricity #TopDisplay #GpsPart #Procedures .Value {
+            width: 95%;
+            margin-left: 2.5%;
+            font-size: 6vh;
+            line-height: 10vh; 
+            }
+          as530-element #Electricity #TopDisplay #GpsPart #Procedures .Title {
+            font-size: 5vh;
+            }
+          as530-element #Electricity #TopDisplay #GpsPart #Procedures .TitleLoadedProcedures {
+            margin-top: 2vh;
+            width: 100%;
+            text-align: center;
+            }
+          as530-element #Electricity #TopDisplay #GpsPart #Procedures .LoadedProcedures {
+            line-height: 7vh; 
+            }
+          as530-element #Electricity #TopDisplay #GpsPart #Procedures .LoadedProcedures .Title{
+            width: 15%;
+            }
+          as530-element #Electricity #TopDisplay #GpsPart #Procedures .LoadedProcedures .LoadedProcValue{
+            font-size: 5vh;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+  
+      /*PM Modif: The greyed status was missing for procedure menu*/
           as530-element #Electricity #TopDisplay #GpsPart #Procedures [state="Inactive"], as530-element #Electricity #TopDisplay #GpsPart #Procedures [state="Greyed"] {
             color: grey; }
 /*PM Modif: End The greyed status was missing for procedure menu*/
