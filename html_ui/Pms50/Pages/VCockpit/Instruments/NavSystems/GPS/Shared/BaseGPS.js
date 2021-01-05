@@ -455,7 +455,7 @@ class BaseGPS extends NavSystem {
         if(ident.length) {
             return new Promise((resolve) => {
                 var milliseconds = new Date().getTime().toString();
-                var url = "https://avwx.rest/api/metar/" + ident + "?options=info&airport=true&reporting=true&format=json&onfail=cache";
+                var url = "https://avwx.rest/api/metar/" + ident + "?options=translate&airport=true&reporting=true&format=json&onfail=cache";
                 let httpRequest = new XMLHttpRequest();
                 httpRequest.open("GET", url);
                 httpRequest.setRequestHeader('Authorization', this.getConfigKey("metar_avwx_token", ""));

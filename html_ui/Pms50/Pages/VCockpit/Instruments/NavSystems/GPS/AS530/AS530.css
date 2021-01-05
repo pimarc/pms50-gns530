@@ -1605,7 +1605,7 @@ as530-element {
         as530-element #Electricity #TopDisplay #GpsPart #METAR .AirportDisplay {
           position: absolute;
           width: 100%;
-          top: 15%;
+          top: 13%;
           display: flex;
           justify-content: center;
         }
@@ -1619,13 +1619,16 @@ as530-element {
           width: 22%;
           text-align: center;
         }
-        as530-element #Electricity #TopDisplay #GpsPart #METAR #MetarData {
+        as530-element #Electricity #TopDisplay #GpsPart #METAR .SliderContainer {
           position: absolute;
-          top: 30%;
-          left: 5%;
-          width: 90%;
-          height: 60%;
+          top: 26%;
+          left: 2%;
+          width: 96%;
+          height: 72%;
           overflow: hidden;
+        }
+        as530-element #Electricity #TopDisplay #GpsPart #METAR .MetarDecodedLineTitle {
+          color: white;
         }
         as530-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock {
           display: flex;

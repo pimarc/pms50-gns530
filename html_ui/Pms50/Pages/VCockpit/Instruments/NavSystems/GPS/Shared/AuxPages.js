@@ -36,23 +36,31 @@ class GPS_COMSetup extends NavSystemElement {
 }
 
 class GPS_METAR extends NavSystemElement {
-    constructor(_icaoSearchField) {
+    constructor(_icaoSearchField, _nbElemsMax = 8) {
         super();
         this.name = "METAR";
         this.icaoSearchField = _icaoSearchField;
+        this.nbElemsMax = _nbElemsMax;
     }
     init(root) {
         this.identElement = this.gps.getChildById("APTIdent");
-        this.metarElement = this.gps.getChildById("MetarData");
+        this.metarElement = this.gps.getChildById("MetarData_0");
         this.container.defaultMenu = new ContextualMenu("METAR", [
             new ContextualMenuElement("METAR Origin", this.metarOriginSet.bind(this), this.metarOriginSetCB.bind(this)),
             new ContextualMenuElement("METAR Destin.", this.metarDestinationSet.bind(this,), this.metarDestinationSetCB.bind(this,))
         ]);
+        this.sliderElement = this.gps.getChildById("SliderMETAR");
+        this.sliderCursorElement = this.gps.getChildById("SliderMETARCursor");
+        this.metarSliderGroup = new SelectableElementSliderGroup(this.gps, [], this.sliderElement, this.sliderCursorElement);
+        for (let i = 0; i < this.nbElemsMax; i++) {
+            this.metarSliderGroup.addElement(new SelectableElement(this.gps, this.gps.getChildById("MetarData_" + i), this.metar_SelectionCallback.bind(this)));
+        }
         this.defaultSelectables = [
-            new SelectableElement(this.gps, this.identElement, this.searchField_SelectionCallback.bind(this))
+            new SelectableElement(this.gps, this.identElement, this.searchField_SelectionCallback.bind(this)),
+            this.metarSliderGroup
         ];
         this.icaoSearchField.elements.push(this.identElement);
-        this.metarData = "";
+        this.doDecode = this.gps.getConfigKey("metar_decode", false);
     }
     onEnter() {
         if (this.gps.lastRelevantICAO && this.gps.lastRelevantICAOType == "A") {
@@ -81,7 +89,6 @@ class GPS_METAR extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            this.metarElement.textContent = "";
         }
     }
     onExit() {
@@ -93,9 +100,11 @@ class GPS_METAR extends NavSystemElement {
             }
         }
     }
+    metar_SelectionCallback(_event, _index) {
+    }
     searchField_SelectionCallback(_event) {
         if (_event == "ENT_Push" || _event == "RightSmallKnob_Right" || _event == "RightSmallKnob_Left") {
-            this.metarElement.textContent = "";
+            this.metarSliderGroup.setStringElements([]);
             this.gps.currentSearchFieldWaypoint = this.icaoSearchField;
             this.icaoSearchField.StartSearch(function () {
                 if(this.icaoSearchField.wayPoint) {
@@ -130,19 +139,125 @@ class GPS_METAR extends NavSystemElement {
         this.updateMetar(destination.ident);
     }
     updateMetar(ident) {
-        this.metarElement.textContent = "Get data...";
-        this.gps.loadMetar(ident, (metar_data) => {
-            if(metar_data.length) {
-                let data = JSON.parse(metar_data);
-                if(data && data.sanitized) {
-                    // Do display row
-                    this.metarElement.innerHTML = data.sanitized.replace(" TEMPO", "<br />TEMPO");
-                }
-                else
-                    this.metarElement.textContent = "No data";
+        this.metarSliderGroup.setStringElements([]);
+        if(this.gps.getConfigKey("metar_avwx_token", "") == "") {
+            this.metarSliderGroup.setStringElements(["No token. Check config."]);
+        }
+        else {
+            let Lines = [];
+            let Line = "";
+            let maxLineLengthMetar = 26;
+            let maxLineLengthDecodedMetar = 32;
+            if(this.gps.gpsType == "430") {
+                maxLineLengthMetar = 30;
+                maxLineLengthDecodedMetar = 36;
             }
-            else
-                this.metarElement.textContent = "No data";
+            this.metarSliderGroup.setStringElements(["Get data..."]);
+            this.gps.loadMetar(ident, (metar_data) => {
+                if(metar_data.length) {
+                    let data = JSON.parse(metar_data);
+                    if(data && data.sanitized) {
+                        // Do display rows
+                        let i = 0;
+                        let SplittedLines = this.splitMetarLineData(data.sanitized, 26);
+                        for(i=0;i<SplittedLines.length;i++) {
+                            Line = '<div class="SelectableElement">' + SplittedLines[i] + '</div>';
+                            if(i==SplittedLines.length-1 && this.doDecode)
+                                Line += "<hr />";
+                            Lines.push(Line);
+                        }
+                        if(this.doDecode) {
+                            let translated = "";
+                            for (var key in data.translate) {
+                                if (typeof data.translate[key] === 'string' && data.translate[key].length) {
+                                    SplittedLines = this.splitMetarLineData(key + ": " + data.translate[key], 32);
+                                    if(SplittedLines.length) {
+                                        // Remove key from first line
+                                        SplittedLines[0] = SplittedLines[0].replace(key + ":", "");
+                                        for(i=0;i<SplittedLines.length;i++) {
+                                            Line = '<div class="SelectableElement MetarDecodedLine">';
+                                            if(i==0) {
+                                                Line += '<span class="MetarDecodedLineTitle">' + key + ':</span>';
+                                            }
+                                            Line += '<span class="MetarDecodedLineData">' + SplittedLines[i] + '</span></div>';
+                                            Lines.push(Line);
+                                        }
+                                    }
+                                }
+                                else if (typeof data.translate[key] === "object") {
+                                    // Usually for remarks entry in decoded data
+                                    let firstKey = true;
+                                    for (var key2 in data.translate[key]) {
+                                        if (typeof data.translate[key][key2] === 'string' && data.translate[key][key2].length) {
+                                            if(firstKey) {
+                                                SplittedLines = this.splitMetarLineData(key + ": " + data.translate[key][key2], 32);
+                                                if(SplittedLines.length) {
+                                                    // Remove key from first line
+                                                    SplittedLines[0] = SplittedLines[0].replace(key + ":", "");
+                                                }
+                                            }
+                                            else
+                                                SplittedLines = this.splitMetarLineData(data.translate[key][key2], 32);
+                                            if(SplittedLines.length) {
+                                                for(i=0;i<SplittedLines.length;i++) {
+                                                    Line = '<div class="SelectableElement MetarDecodedLine">';
+                                                    if(firstKey && i==0) {
+                                                        Line += '<span class="MetarDecodedLineTitle">' + key + ':</span>';
+                                                        firstKey = false;
+                                                    }
+                                                    Line += '<span class="MetarDecodedLineData">' + SplittedLines[i] + '</span></div>';
+                                                    Lines.push(Line);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        this.metarSliderGroup.setStringElements(Lines);
+                    }
+                    else {
+                        this.metarSliderGroup.setStringElements(["No data"]);
+                    }
+                }
+                else {
+                    this.metarSliderGroup.setStringElements(["No data"]);
+                }
+            });
+        }
+    }
+    // Returns some text as array of lines of maxlenght = length
+    splitMetarLineData(str, length) {
+        var result = [],
+          currentLine = '',
+          currentLineLengthWithoutFormatting = 0;
+      
+        // 1. Split words on &nbsp;
+        let words = str.trim().split(" ");
+      
+        // 2. Re-assemble lines
+        words.forEach(function(word) {
+        let wordLength = word.length;
+        // Assemble line
+        if (currentLineLengthWithoutFormatting + wordLength <= length) {
+            // Word still fits on current line
+            if (currentLineLengthWithoutFormatting > 0) {
+                currentLine += ' ';
+                currentLineLengthWithoutFormatting++;
+            }
+            } else {
+                // Need to start new line
+                result.push(currentLine);
+                currentLine = '';
+                currentLineLengthWithoutFormatting = 0;
+            }
+            currentLine += word;
+            currentLineLengthWithoutFormatting += wordLength;
         });
+      
+        if (currentLineLengthWithoutFormatting > 0)
+            result.push(currentLine);
+      
+        return result;
     }
 }

@@ -498,6 +498,17 @@ as430-element {
             width: 20%;
             text-align: center;
           }
+          as430-element #Electricity #TopDisplay #GpsPart #METAR .SliderContainer {
+            position: absolute;
+            top: 30%;
+            left: 2%;
+            width: 96%;
+            height: 68%;
+            overflow: hidden;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #METAR .MetarDecodedLineTitle {
+            color: white;
+          }
           as430-element #Electricity #TopDisplay #GpsPart #METAR #MetarData {
             position: absolute;
             top: 33%;

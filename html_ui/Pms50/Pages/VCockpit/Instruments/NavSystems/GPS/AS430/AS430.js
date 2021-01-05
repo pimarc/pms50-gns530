@@ -123,7 +123,7 @@ class AS430 extends BaseGPS {
             ]),
             new NavSystemPageGroup("AUX", this, [
                 new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
-                new NavSystemPage("METAR", "METAR", new GPS_METAR(this.airportWaypointsIcaoSearchField))
+                new NavSystemPage("METAR", "METAR", new GPS_METAR(this.airportWaypointsIcaoSearchField, 6))
             ])
         ];
         this.addEventLinkedPageGroup("DirectTo_Push", new NavSystemPageGroup("DRCT", this, [new NavSystemPage("DRCT", "DRCT", new GPS_DirectTo())]));

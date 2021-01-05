@@ -30,7 +30,8 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Nearest pages bearings are now display in magnetic north instead of true north
 - Nearest airspaces: long airspace names not displayed correctly
 - Current loaded procedures now displayed in procedure menu
-- WPT pages: added duplicates management for VOR, NDB and intersections.
+- WPT pages: added duplicates management for VOR, NDB and intersections
+- Added decoded METAR feature
 ## V 1.0.23
 - Approach frequency automatically set to standby only if the current active frequency is different
 - Official embedded and not modified 1.12.13.0 MSFS files
@@ -331,6 +332,8 @@ Before using it, you must configure:
 The METAR page provides a menu to get your origin or destination METARs in a fast way.
 
 For refreshing, press the ENT button.
+
+Optionally, the METAR data can be decoded. In order to activate this feature, you must set the "metar_decode" entry to "on" in the config file.
 
 You can select any airport.
 Selecting an airport can be done directly from the METAR page but also from the map page in cursor mode or from the flight plan (ENT key).
