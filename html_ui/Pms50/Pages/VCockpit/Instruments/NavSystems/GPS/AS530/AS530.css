@@ -628,6 +628,17 @@ as530-element {
           width: 10%;
           height: 10%; }
 /* PM Modif: End North indicator */
+        as530-element #Electricity #TopDisplay #GpsPart #MapNav #TCAS {
+          position: absolute;
+          display: none;
+          font-size: 4vh;
+          left: 0;
+          top: 0;
+          background-color: black;
+          overflow: hidden;
+          text-align: left;
+          padding-left: 1vw;
+      }
         as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #NavParams {
           background-color: black;
           border: calc(0.4273504274vh) solid #6ecdee; }
@@ -796,7 +807,7 @@ as530-element {
           width: 95%;
           height: 85%;
           left: 2.5%;
-          top: 10%;
+          top: 13%;
           padding-right: 5%; }
         as530-element #Electricity #TopDisplay #GpsPart #ComNav #ComNavMain {
           background-color: black;
@@ -1627,6 +1638,13 @@ as530-element {
           height: 72%;
           overflow: hidden;
         }
+        as530-element #Electricity #TopDisplay #GpsPart #METAR #SliderMETAR {
+          position: absolute;
+          right: calc(1.2820512821vh);
+          top: 2%;
+          border: calc(0.4273504274vh) solid #6ecdee;
+          height: 96%;
+          width: calc(1.25vw); }
         as530-element #Electricity #TopDisplay #GpsPart #METAR .MetarDecodedLineTitle {
           color: white;
         }

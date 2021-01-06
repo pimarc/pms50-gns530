@@ -27,8 +27,8 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Changed add waypoint and load flight plan code
 - Load flight plan: the approach transition is now the best one instead of the first one
 - Nearest airport frequencies always have 3 digits and name is lowercase
-- Nearest pages bearings are now display in magnetic north instead of true north
-- Nearest airspaces: long airspace names not displayed correctly
+- Nearest pages bearings are now displayed in magnetic north instead of true north
+- Nearest airspaces: long airspace names were not displayed correctly
 - Current loaded procedures now displayed in procedure menu
 - WPT pages: added duplicates management for VOR, NDB and intersections
 - Added decoded METAR feature

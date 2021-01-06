@@ -106,7 +106,7 @@ class MapInstrument extends ISvgMapRootElement {
         return this._flightPlanManager;
     }
     setNPCAirplaneManagerTCASMode(mode) {
-        this.npcAirplaneManager.useTCAS = mode;
+        this.npcAirplaneManager.setTcasMode(mode);
     }
     getHideReachedWaypoints() {
         return this.flightPlanElement ? this.flightPlanElement.hideReachedWaypoints : false;

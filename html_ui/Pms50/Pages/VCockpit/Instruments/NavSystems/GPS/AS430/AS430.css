@@ -389,6 +389,17 @@ as430-element {
           width: 10%;
           height: 10%; }
 /* PM Modif: End North indicator */
+        as430-element #Electricity #TopDisplay #GpsPart #MapNav #TCAS {
+          position: absolute;
+          display: none;
+          font-size: 4vh;
+          left: 0;
+          top: 0;
+          background-color: black;
+          overflow: hidden;
+          text-align: left;
+          padding-left: 1vw;
+        }
         as430-element #Electricity #TopDisplay #GpsPart #MapNav #MapInstrument2 {
           position: absolute;
           height: 100%;

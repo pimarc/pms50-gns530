@@ -21,6 +21,26 @@
       "date": 132453631615266164
     },
     {
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_TCAS_OTHER_530.svg",
+      "size": 5149,
+      "date": 132453631615266164
+    },
+    {
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_TCAS_PROX_530.svg",
+      "size": 5149,
+      "date": 132453631615266164
+    },
+    {
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_TCAS_RA_530.svg",
+      "size": 5149,
+      "date": 132453631615266164
+    },
+    {
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_TCAS_TA_530.svg",
+      "size": 5149,
+      "date": 132453631615266164
+    },
+    {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/glogo.png",
       "size": 10324,
       "date": 132453631615266164
@@ -352,6 +372,11 @@
     },
     {
       "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgWaypointElement.js",
+      "size": 22438,
+      "date": 132453631615266164
+    },
+    {
+      "path": "html_ui/Pms50/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgAirplaneElement.js",
       "size": 22438,
       "date": 132453631615266164
     },
