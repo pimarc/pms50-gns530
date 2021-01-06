@@ -168,50 +168,84 @@ class GPS_METAR extends NavSystemElement {
                         }
                         if(this.doDecode) {
                             let translated = "";
+                            if(data.translate["altimeter"]) {
+                                Lines = Lines.concat(this.getMetarLines("altimeter", data.translate["altimeter"]));
+                                delete data.translate["altimeter"]; 
+                            }
+                            if(data.translate["wind"]) {
+                                Lines = Lines.concat(this.getMetarLines("wind", data.translate["wind"]));
+                                delete data.translate["wind"]; 
+                            }
+                            if(data.translate["visibility"]) {
+                                Lines = Lines.concat(this.getMetarLines("visibility", data.translate["visibility"]));
+                                delete data.translate["visibility"]; 
+                            }
+                            if(data.translate["wx_codes"]) {
+                                Lines = Lines.concat(this.getMetarLines("wx_codes", data.translate["wx_codes"]));
+                                delete data.translate["wx_codes"]; 
+                            }
+                            if(data.translate["temperature"]) {
+                                Lines = Lines.concat(this.getMetarLines("temperature", data.translate["temperature"]));
+                                delete data.translate["temperature"]; 
+                            }
+                            if(data.translate["dewpoint"]) {
+                                Lines = Lines.concat(this.getMetarLines("dewpoint", data.translate["dewpoint"]));
+                                delete data.translate["dewpoint"]; 
+                            }
+                            if(data.translate["clouds"]) {
+                                Lines = Lines.concat(this.getMetarLines("clouds", data.translate["clouds"]));
+                                delete data.translate["clouds"]; 
+                            }
+                            if(data.translate["remarks"]) {
+                                Lines = Lines.concat(this.getMetarLines("remarks", data.translate["remarks"]));
+                                delete data.translate["remarks"]; 
+                            }
                             for (var key in data.translate) {
-                                if (typeof data.translate[key] === 'string' && data.translate[key].length) {
-                                    SplittedLines = this.splitMetarLineData(key + ": " + data.translate[key], 32);
-                                    if(SplittedLines.length) {
-                                        // Remove key from first line
-                                        SplittedLines[0] = SplittedLines[0].replace(key + ":", "");
-                                        for(i=0;i<SplittedLines.length;i++) {
-                                            Line = '<div class="SelectableElement MetarDecodedLine">';
-                                            if(i==0) {
-                                                Line += '<span class="MetarDecodedLineTitle">' + key + ':</span>';
-                                            }
-                                            Line += '<span class="MetarDecodedLineData">' + SplittedLines[i] + '</span></div>';
-                                            Lines.push(Line);
-                                        }
-                                    }
-                                }
-                                else if (typeof data.translate[key] === "object") {
-                                    // Usually for remarks entry in decoded data
-                                    let firstKey = true;
-                                    for (var key2 in data.translate[key]) {
-                                        if (typeof data.translate[key][key2] === 'string' && data.translate[key][key2].length) {
-                                            if(firstKey) {
-                                                SplittedLines = this.splitMetarLineData(key + ": " + data.translate[key][key2], 32);
-                                                if(SplittedLines.length) {
-                                                    // Remove key from first line
-                                                    SplittedLines[0] = SplittedLines[0].replace(key + ":", "");
-                                                }
-                                            }
-                                            else
-                                                SplittedLines = this.splitMetarLineData(data.translate[key][key2], 32);
-                                            if(SplittedLines.length) {
-                                                for(i=0;i<SplittedLines.length;i++) {
-                                                    Line = '<div class="SelectableElement MetarDecodedLine">';
-                                                    if(firstKey && i==0) {
-                                                        Line += '<span class="MetarDecodedLineTitle">' + key + ':</span>';
-                                                        firstKey = false;
-                                                    }
-                                                    Line += '<span class="MetarDecodedLineData">' + SplittedLines[i] + '</span></div>';
-                                                    Lines.push(Line);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                Lines = Lines.concat(this.getMetarLines(key, data.translate[key]));
+
+                                // if (typeof data.translate[key] === 'string' && data.translate[key].length) {
+                                //     SplittedLines = this.splitMetarLineData(key + ": " + data.translate[key], 32);
+                                //     if(SplittedLines.length) {
+                                //         // Remove key from first line
+                                //         SplittedLines[0] = SplittedLines[0].replace(key + ":", "");
+                                //         for(i=0;i<SplittedLines.length;i++) {
+                                //             Line = '<div class="SelectableElement MetarDecodedLine">';
+                                //             if(i==0) {
+                                //                 Line += '<span class="MetarDecodedLineTitle">' + key + ':</span>';
+                                //             }
+                                //             Line += '<span class="MetarDecodedLineData">' + SplittedLines[i] + '</span></div>';
+                                //             Lines.push(Line);
+                                //         }
+                                //     }
+                                // }
+                                // else if (typeof data.translate[key] === "object") {
+                                //     // Usually for remarks entry in decoded data
+                                //     let firstKey = true;
+                                //     for (var key2 in data.translate[key]) {
+                                //         if (typeof data.translate[key][key2] === 'string' && data.translate[key][key2].length) {
+                                //             if(firstKey) {
+                                //                 SplittedLines = this.splitMetarLineData(key + ": " + data.translate[key][key2], 32);
+                                //                 if(SplittedLines.length) {
+                                //                     // Remove key from first line
+                                //                     SplittedLines[0] = SplittedLines[0].replace(key + ":", "");
+                                //                 }
+                                //             }
+                                //             else
+                                //                 SplittedLines = this.splitMetarLineData(data.translate[key][key2], 32);
+                                //             if(SplittedLines.length) {
+                                //                 for(i=0;i<SplittedLines.length;i++) {
+                                //                     Line = '<div class="SelectableElement MetarDecodedLine">';
+                                //                     if(firstKey && i==0) {
+                                //                         Line += '<span class="MetarDecodedLineTitle">' + key + ':</span>';
+                                //                         firstKey = false;
+                                //                     }
+                                //                     Line += '<span class="MetarDecodedLineData">' + SplittedLines[i] + '</span></div>';
+                                //                     Lines.push(Line);
+                                //                 }
+                                //             }
+                                //         }
+                                //     }
+                                // }
                             }
                         }
                         this.metarSliderGroup.setStringElements(Lines);
@@ -225,6 +259,54 @@ class GPS_METAR extends NavSystemElement {
                 }
             });
         }
+    }
+    getMetarLines(key ,data) {
+        let SplittedLines = [];
+        var Lines = [];
+        if (typeof data === 'string' && data.length) {
+            SplittedLines = this.splitMetarLineData(key + ": " + data, 32);
+            if(SplittedLines.length) {
+                // Remove key from first line
+                SplittedLines[0] = SplittedLines[0].replace(key + ":", "");
+                for(let i=0;i<SplittedLines.length;i++) {
+                    var Line = '<div class="SelectableElement MetarDecodedLine">';
+                    if(i==0) {
+                        Line += '<span class="MetarDecodedLineTitle">' + key + ':</span>';
+                    }
+                    Line += '<span class="MetarDecodedLineData">' + SplittedLines[i] + '</span></div>';
+                    Lines.push(Line);
+                }
+            }
+        }
+        else if (typeof data === "object") {
+            // Usually for remarks entry in decoded data
+            let firstKey = true;
+            for (var key2 in data) {
+                if (typeof data[key2] === 'string' && data[key2].length) {
+                    if(firstKey) {
+                        SplittedLines = this.splitMetarLineData(key + ": " + data[key2], 32);
+                        if(SplittedLines.length) {
+                            // Remove key from first line
+                            SplittedLines[0] = SplittedLines[0].replace(key + ":", "");
+                        }
+                    }
+                    else
+                        SplittedLines = this.splitMetarLineData(data[key2], 32);
+                    if(SplittedLines.length) {
+                        for(let i=0;i<SplittedLines.length;i++) {
+                            Line = '<div class="SelectableElement MetarDecodedLine">';
+                            if(firstKey && i==0) {
+                                Line += '<span class="MetarDecodedLineTitle">' + key + ':</span>';
+                                firstKey = false;
+                            }
+                            Line += '<span class="MetarDecodedLineData">' + SplittedLines[i] + '</span></div>';
+                            Lines.push(Line);
+                        }
+                    }
+                }
+            }
+        }
+        return Lines;
     }
     // Returns some text as array of lines of maxlenght = length
     splitMetarLineData(str, length) {
