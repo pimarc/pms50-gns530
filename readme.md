@@ -32,6 +32,8 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Current loaded procedures now displayed in procedure menu
 - WPT pages: added duplicates management for VOR, NDB and intersections
 - Added decoded METAR feature
+- Map pages: adjusted waypoint label position
+- Map NAV page: added traffic (TCAS) mode  (see note below)
 ## V 1.0.23
 - Approach frequency automatically set to standby only if the current active frequency is different
 - Official embedded and not modified 1.12.13.0 MSFS files

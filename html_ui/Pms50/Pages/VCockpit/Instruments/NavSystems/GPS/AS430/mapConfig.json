@@ -1,5 +1,5 @@
 ﻿{
-  "waypointLabelFontSize": 60,
+  "waypointLabelFontSize": 50,
   "waypointLabelFontFamily": "Consolas",
   "waypointLabelColor": "#3f4851",
   "waypointLabelStrokeColor": "#3f3f3f",
@@ -9,8 +9,8 @@
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
   "waypointLabelBackgroundPadding": "5 5 5 5",
-  "waypointLabelDistance": 12,
-  "waypointIconSize": 200,
+  "waypointLabelDistance": -10,
+  "waypointIconSize": 120,
 
   "cityLabelFontSize": 24,
   "cityLabelFontFamily": "Consolas",
@@ -25,7 +25,7 @@
   "cityLabelDistance": 0.45,
   "cityIconSize": 90,
 
-  "airplaneIconSize": 160,
+  "airplaneIconSize": 80,
   "airplaneIcon1": "ICON_MAP_PLANE_GNS530",
   "airplaneIcon2": "ICON_MAP_PLANE_GNS530",
 
