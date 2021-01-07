@@ -94,15 +94,7 @@ class GPS_BaseNavPage extends NavSystemPage {
     onEvent(_event){
         super.onEvent(_event);
         if (_event == "CLR_Push") {
-            if (!this.gps.currentContextualMenu) {
-                if (this.map && !this.displayWeather) {
-                    this.declutterLevelIndex ++;
-                    if (this.declutterLevelIndex >= this.declutterLevels.length) {
-                        this.declutterLevelIndex = 0;
-                    }
-                    this.map.declutterLevel=this.declutterLevels[this.declutterLevelIndex];
-                }
-            }
+            this.toggleDeclutterLevel();
         }
     }
     onUpdate(_deltaTime) {
@@ -167,6 +159,21 @@ class GPS_BaseNavPage extends NavSystemPage {
             }
             if(this.dlevel)
                 Avionics.Utils.diffAndSet(this.dlevel, this.declutterLevelIndex ? "-" + this.declutterLevelIndex : "");
+            if(this.mapDisplayRanges[this.map.rangeIndex] > 20)
+                this.map.showTraffic = false;
+            else
+                this.map.showTraffic = true;
+        }
+    }
+    toggleDeclutterLevel() {
+        if (!this.gps.currentContextualMenu) {
+            if (this.map && !this.displayWeather) {
+                this.declutterLevelIndex ++;
+                if (this.declutterLevelIndex >= this.declutterLevels.length) {
+                    this.declutterLevelIndex = 0;
+                }
+                this.map.declutterLevel=this.declutterLevels[this.declutterLevelIndex];
+            }
         }
     }
     toggleMapOrientation() {
@@ -235,7 +242,7 @@ class GPS_BaseNavPage extends NavSystemPage {
                 this.map.smallCityMaxRange = 180;
                 this.map.medCityMaxRange = 360;
                 this.map.largeCityMaxRange = 2670;
-                this.map.npcAirplaneMaxRange = 107;
+                this.map.npcAirplaneMaxRange = 400;
                 this.map.roadNetwork._lastRange = -1;
             }
             else{
@@ -251,7 +258,7 @@ class GPS_BaseNavPage extends NavSystemPage {
                 this.map.smallCityMaxRange = 100;
                 this.map.medCityMaxRange = 200;
                 this.map.largeCityMaxRange = 1500;
-                this.map.npcAirplaneMaxRange = 60;
+                this.map.npcAirplaneMaxRange = 400;
                 this.map.roadNetwork._lastRange = -1;
             }
         }
@@ -711,6 +718,24 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.gps.SwitchToInteractionState(0);
             if(this.displayWeather && this.gps.getConfigKey("weather_legend", false))
                 this.toggleWeatherLegend();
+            // Declutter a max when declutter level 3 and traffic displayed
+            if(!this.displayWeather && this.map)
+            {
+                if(this.tcas && (this.declutterLevelIndex == this.declutterLevels.length-1) && this.mapDisplayRanges[this.map.rangeIndex] <= 20) {
+                    this.map.showVORs = false;
+                    this.map.showIntersections = false;
+                    this.map.showNDBs = false;
+                    this.map.showAirports = false;
+                    this.map.showObstacles = false;
+                }
+                else {
+                    this.map.showVORs = true;
+                    this.map.showIntersections = true;
+                    this.map.showNDBs = true;
+                    this.map.showAirports = true;
+                    this.map.showObstacles = true;
+                }
+            }
         }
         if (_event == "ENT_Push")  {
             if(this.gps.getConfigKey("weather_radar", false) && this.gps.gpsType == "530")
@@ -1019,10 +1044,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.gps.dataStore.set("MapTraffic", this.tcas);
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
-        if(this.tcas)
+        if(this.tcas) {
             this.gps.getChildById("TCAS").setAttribute("style", "display: block");
-        else
+        }
+        else {
             this.gps.getChildById("TCAS").setAttribute("style", "display: none");
+        }
     }
     toggleDisplayDataCB(){
         return this.displayWeather;

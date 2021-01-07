@@ -245,14 +245,19 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", this.iconPath);
         container.appendChild(this._image);
         this._arrow = document.createElementNS(Avionics.SVG.NS, "g");
-        this._arrow.innerHTML = '<line x1="55" y1="10" x2="55" y2="46" /><polygon points="49 18, 55 12, 61 18" />';
-        this._arrowStyleTA = "stroke:#e38c56ff;stroke-width:2;fill:#e38c56ff;";
-        this._arrowStyleRA = "stroke:#ff0000ff;stroke-width:2;fill:#ff0000ff;";
-        this._arrowStylePROX = "stroke:#ffffffff;stroke-width:2;fill:#ffffffff;";
-        this._arrowStyleOTHER = "stroke:#ffffffff;stroke-width:2;fill:#ffffffff;";
+        this._arrow.innerHTML = '<line x1="55" y1="12" x2="55" y2="46" /><polygon points="49 18, 55 10, 61 18" />';
+        this._arrowStyleTA = "stroke:#e38c56ff;stroke-width:4;fill:#e38c56ff";
+        this._arrowStyleRA = "stroke:#ff0000ff;stroke-width:4;fill:#ff0000ff;";
+        this._arrowStylePROX = "stroke:#ffffffff;stroke-width:4;fill:#ffffffff;";
+        this._arrowStyleOTHER = "stroke:#ffffffff;stroke-width:4;fill:#ffffffff;";
         this._arrow.setAttribute("style", this._arrowStyleOTHER);
         this._arrow.setAttribute("visibility", "hidden");
         container.appendChild(this._arrow);
+        this.lastArrowOrientation = -1; // -1 unknown, 0 up 1 down
+        this.lastDeltaAltitudeForDisplay = 0;
+        this._text = document.createElementNS(Avionics.SVG.NS, "text");
+        this._text.setAttribute("font-size", "36");
+        container.appendChild(this._text);
         container.setAttribute("x", fastToFixed(((1000 - map.config.airplaneIconSize * 0.7) * 0.5), 0));
         container.setAttribute("y", fastToFixed(((1000 - map.config.airplaneIconSize * 0.7) * 0.5), 0));
         return container;
@@ -285,58 +290,121 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         if (this.useTCAS) {
             let altitudeAGL = map.planeAltitude;
             let deltaAltitude = Math.abs(altitudeAGL - this.alt);
+            let displayIt = false;
+            // Check if the airplane is moving
+            if(this.deltaLat != NaN && this.deltaLon != NaN && (Math.abs(this.deltaLat) > 0.00001 || Math.abs(this.deltaLat) > 0.00001))
+                displayIt = true;
+            // Unactivate TCAS under 500ft AGL
+            // Disable next 2 lines for tests without flying
+            if(displayIt && altitudeAGL < 500)
+                displayIt = false;
             let distanceHorizontal = Avionics.Utils.computeDistance(new LatLong(this.lat, this.lon), map.planeCoordinates);
-            if (distanceHorizontal < 2 && altitudeAGL > 1000 && deltaAltitude < 800) {
+            if (displayIt && distanceHorizontal < 2 && deltaAltitude < 800) {
                 if (this._lastCase !== 0) {
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_RA_530.svg");
                     this.svgElement.setAttribute("visibility", "visible");
                     this._arrow.setAttribute("style", this._arrowStyleRA);
-                    this._arrow.setAttribute("visibility", "visible");
+                    this.lastDeltaAltitudeForDisplay = 0;
                     this._lastCase = 0;
                 }
+                this.setArrow(true);
+                this.setText(true, deltaAltitude, "#ff0000ff");
             }
-            else if (distanceHorizontal < 4 && altitudeAGL > 500 && deltaAltitude < 1000) {
+            else if (displayIt && distanceHorizontal < 4 && deltaAltitude < 1000) {
                 if (this._lastCase !== 1) {
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_TA_530.svg");
                     this.svgElement.setAttribute("visibility", "visible");
                     this._arrow.setAttribute("style", this._arrowStyleTA);
-                    this._arrow.setAttribute("visibility", "visible");
+                    this.lastDeltaAltitudeForDisplay = 0;
                     this._lastCase = 1;
                 }
+                this.setArrow(true);
+                this.setText(true, deltaAltitude, "#e38c56ff");
             }
-            else if (distanceHorizontal < 6 && deltaAltitude < 1200) {
-                if (this._lastCase !== 2) {
+            else if (displayIt && distanceHorizontal < 6 && deltaAltitude < 1200) {
+                    if (this._lastCase !== 2) {
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_PROX_530.svg");
                     this.svgElement.setAttribute("visibility", "visible");
                     this._arrow.setAttribute("style", this._arrowStylePROX);
-                    this._arrow.setAttribute("visibility", "visible");
+                    this.lastDeltaAltitudeForDisplay = 0;
                     this._lastCase = 2;
                 }
+                this.setArrow(true);
+                this.setText(true, deltaAltitude, "#ffffffff");
             }
-            else if (distanceHorizontal < 30 && deltaAltitude < 2700) {
-                if (this._lastCase !== 3) {
+            else if (displayIt && distanceHorizontal < 30 && deltaAltitude < 2700) {
+                    if (this._lastCase !== 3) {
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_OTHER_530.svg");
                     this.svgElement.setAttribute("visibility", "visible");
                     this._arrow.setAttribute("style", this._arrowStyleOTHER);
-                    this._arrow.setAttribute("visibility", "visible");
+                    this.lastDeltaAltitudeForDisplay = 0;
                     this._lastCase = 3;
                 }
+                this.setArrow(true);
+                this.setText(true, deltaAltitude, "#ffffffff");
             }
             else {
                 if (this._lastCase !== 4) {
                     this.svgElement.setAttribute("visibility", "hidden");
-                    this._arrow.setAttribute("visibility", "hidden");
+                    this.setArrow(false);
+                    this.setText(false);
                     this._lastCase = 4;
                 }
             }
         }
     }
+    setArrow(display = false) {
+        if(display) {
+            if(Math.abs(this.deltaAlt) < 0.1) {
+                if(this.lastArrowOrientation != -1) {
+                    this._arrow.setAttribute("visibility", "hidden");
+                    this.lastArrowOrientation = -1;
+                }
+            }
+            else {
+                let newOrientation = 0;
+                if(this.deltaAlt < 0)
+                    newOrientation = 1;
+                if(this.lastArrowOrientation == -1 || newOrientation != this.lastArrowOrientation) {
+                    this._arrow.setAttribute("visibility", "visible");
+                    if(newOrientation == 1)
+                        this._arrow.setAttribute("transform", "rotate(180 55 28)");
+                    else
+                        this._arrow.setAttribute("transform", "rotate(0)");
+                    this.lastArrowOrientation = newOrientation;
+                }
+            }
+        }
+        else {
+            if(this.lastArrowOrientation != -1) {
+                this._arrow.setAttribute("visibility", "hidden");
+                this.lastArrowOrientation = -1;
+            }
+        }
+    }
+    setText(display = false, deltaAltitude = 0, color ="#ffffffff") {
+        let deltaAltitudeForDisplay = Math.round(deltaAltitude/100);
+        if(deltaAltitudeForDisplay == 0 || !display) {
+            this._text.setAttribute("visibility", "hidden");
+        }
+        else if(this.lastDeltaAltitudeForDisplay != deltaAltitudeForDisplay) {
+            this.lastDeltaAltitudeForDisplay = deltaAltitudeForDisplay;
+            this._text.setAttribute("visibility", "visible");
+            this._text.setAttribute("x", "0");
+            this._text.setAttribute("y", (deltaAltitudeForDisplay > 0 ? "0" : "80"));
+            this._text.setAttribute("font-size", "36");
+            this._text.setAttribute("fill", color);
+            this._text.innerHTML = (deltaAltitudeForDisplay > 0 ? "+" : "-") + Utils.leadingZeros(deltaAltitudeForDisplay, 2);
+        }
+    }
+
     setTcasMode(mode) {
         let previousMode = this.useTCAS;
         this.useTCAS = mode;
         if(previousMode != mode) {
             this.svgElement.setAttribute("visibility", "hidden");
             this._arrow.setAttribute("visibility", "hidden");
+            this._text.setAttribute("visibility", "hidden");
             if(!this.useTCAS) {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", this.iconPath);
                 this.svgElement.setAttribute("visibility", "visible");
