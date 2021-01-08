@@ -23,13 +23,13 @@ If you have set a config file and/or loadable flight plans, be careful to save t
 You can also use the alternate data MOD to fix this situation (see note below).
 
 # Change log
-## V 1.0.24 BETA (dev)
+## V 1.0.24
 - Changed add waypoint and load flight plan code
 - Load flight plan: the approach transition is now the best one instead of the first one
-- Nearest airport frequencies always have 3 digits and name is lowercase
+- Nearest airport frequencies always have 3 digits and the name is lowercase
 - Nearest pages bearings are now displayed in magnetic north instead of true north
 - Nearest airspaces: long airspace names were not displayed correctly
-- Current loaded procedures now displayed in procedure menu
+- Current loaded procedures now displayed in the procedure menu
 - WPT pages: added duplicates management for VOR, NDB and intersections
 - Added decoded METAR feature
 - Map pages: adjusted waypoint label position
