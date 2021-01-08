@@ -341,3 +341,23 @@ You can select any airport.
 Selecting an airport can be done directly from the METAR page but also from the map page in cursor mode or from the flight plan (ENT key).
 
 The METAR data is a real information taken from METAR stations. The result may differ from the in game weather following your configuration. This is relevant only if you play in live weather.
+
+## Traffic
+Traffic information is available from the menu of the second NAV page (Map page). When activated, the word "TRAFFIC" is displayed in the upper left corner of the screen. The traffic mode state is saved across game sessions. 
+
+If traffic is not activated, all the aircrafts are represented by a small airplane pictogram whatever their distance and relative altitude.
+
+In traffic mode (TCAS) aircrafts near your position are represented by the usual TCAS symbols with the following range:
+- Red square if relative distance < 2nm and relative altitude < 800ft.
+- Orange circle if relative distance < 4nm and relative altitude < 1000ft.
+- Filled blank diamond if relative distance < 6nm and relative altitude < 1200ft.
+- Un-filled blank diamond if relative distance < 30nm and relative altitude < 2700ft.
+
+Altitude deviation from own (client) aircraft altitude is displayed (in hundreds of feet) for each target symbol.
+An arrow near the symbol tells if the aircraft is climbing or descending (altitude trend).
+
+In traffic mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm.
+
+TCAS algorithms used in the mod are very simple and based only on the proximity. There is no calculation about any projected collision like in real instruments.
+
+TCAS data is disabled if your own aircraft is below 500ft AGL.
