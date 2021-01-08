@@ -356,7 +356,7 @@ In traffic mode (TCAS) aircrafts near your position are represented by the usual
 Altitude deviation from own (client) aircraft altitude is displayed (in hundreds of feet) for each target symbol.
 An arrow near the symbol tells if the aircraft is climbing or descending (altitude trend).
 
-In traffic mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm.
+In traffic mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm. On the ground aircrafts (not moving) are excluded from display.
 
 TCAS algorithms used in the mod are very simple and based only on the proximity. There is no calculation about any projected collision like in real instruments.
 
