@@ -182,7 +182,7 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Adding a declutter level
 
 # Bug reporting
-You can report bugs on the forum: https://forums.flightsimulator.com/t/gns530-mod/
+You can report bugs here: https://github.com/pimarc/pms50-gns530/issues
 
 Before reporting a bug:
 - Read the readme file (maybe not a real bug but a normal behavior)
