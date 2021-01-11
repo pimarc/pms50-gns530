@@ -55,6 +55,10 @@ Thank you for your understanding.
 - U-turn bug: The airplane operates a 180° turn to come back to the last enroute waypoint if you activate an approach after the last enroute waypoint. I implemented a workaround in this MOD that consists of removing all enroute waypoints before activating the approach.
 
 # Change log
+## V 1.0.25 (dev not released)
+- Fixed the CTD map issue when more than 3 maps so the GNS430 map is back in dual configuration (Cessna 172)
+- Changed word "TRAFFIC" to "TCAS" in map page
+- Turning TCAS mode now automatically sets the range to 20nm if it was greater
 ## V 1.0.24
 - Changed add waypoint and load flight plan code
 - Load flight plan: the approach transition is now the best one instead of the first one
@@ -259,9 +263,7 @@ Activate approach is not selectable if not relevant (ex already activated or no 
 ## Maps
 There are 3 maps available (1 for GNS430). You can use the CLR button to declutter map information. The first declutter level hides roads and airspaces. The third map is a terrain map using 4 colors:  red below 500AGL, yellow between 500AGL and 1000AGL, green between 1000AGL and 1500AGL, black above 1500AGL.
 
-All procedures have now an associated map that displays all the procedure waypoints.
-
-Note: there is a bug in the sim if the airplane has more than 4 maps (CTD). So in case of dual combination GNS530/GNS430, I had to remove the GNS430 maps from display.
+All procedures have now an associated map that displays the procedure waypoints.
 
 ## Flight plan loading
 19 flight plans can be loaded.
@@ -280,7 +282,7 @@ If your PLN file comes from another software, the result may differ from the ori
 When there are messages available, the MSG indicator is set. It blinks if there are new messages not acknowledged. In order to view and acknowledge the messages, press the MSG button. There are 3 kind of messages: Advise in green, warning in yellow and caution in red.
 
 ## Config file
-The config file is named config.json and is located in the directory Config/pms50-gns530 directory of the MOD. This file is not distributed but a file named example_config.json is available in this same directory. You can copy it or rename it to be your current config.json file.
+The config file is named config.json and is located in the directory Config/pms50-gns530 directory of the MOD. This file is not distributed but a file named example_config.json is available in this same directory. You can copy it or rename it to be your current config.json file. All entries of config file are separated by a comma excepts the last one (think as a comma separated collection).
 
 ## Weather radar
 This is a not standard feature (not available in original GNS530) so by default it's not activated.
@@ -342,12 +344,12 @@ Selecting an airport can be done directly from the METAR page but also from the 
 
 The METAR data is a real information taken from METAR stations. The result may differ from the in game weather following your configuration. This is relevant only if you play in live weather.
 
-## Traffic
-Traffic information is available from the menu of the second NAV page (Map page). When activated, the word "TRAFFIC" is displayed in the upper left corner of the screen. The traffic mode state is saved across game sessions. 
+## TCAS
+TCAS (anti collision system) information is available from the menu of the second NAV page (Map page). When activated, the word "TCAS" is displayed in the upper left corner of the screen. The TCAS mode state is saved across game sessions. 
 
-If traffic is not activated, all the aircrafts are represented by a small airplane pictogram whatever their distance and relative altitude.
+If TCAS is not activated, all the aircrafts are represented by a small airplane pictogram whatever their distance and relative altitude.
 
-In traffic mode (TCAS) aircrafts near your position are represented by the usual TCAS symbols with the following range:
+In TCAS mode aircrafts near your position are represented by the usual TCAS symbols with the following range:
 - Red square if relative distance < 2nm and relative altitude < 800ft.
 - Orange circle if relative distance < 4nm and relative altitude < 1000ft.
 - Filled blank diamond if relative distance < 6nm and relative altitude < 1200ft.
@@ -356,7 +358,7 @@ In traffic mode (TCAS) aircrafts near your position are represented by the usual
 Altitude deviation from own (client) aircraft altitude is displayed (in hundreds of feet) for each target symbol.
 An arrow near the symbol tells if the aircraft is climbing or descending (altitude trend).
 
-In traffic mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm. On the ground aircrafts (not moving) are excluded from display.
+In TCAS mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm. On the ground aircrafts (not moving) are excluded from display.
 
 TCAS algorithms used in the mod are very simple and based only on the proximity. There is no calculation about any projected collision like in real instruments.
 

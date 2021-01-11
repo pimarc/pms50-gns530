@@ -1049,6 +1049,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.gps.SwitchToInteractionState(0);
         if(this.tcas) {
             this.gps.getChildById("TCAS").setAttribute("style", "display: block");
+            // Set the range to max 20
+            while(this.mapDisplayRanges[this.map.rangeIndex] > 20 && this.map.rangeIndex >= 0)
+                this.map.zoomIn();
             // Set declutter level to max
             this.declutterLevelIndex = this.declutterLevels.length-1;
             this.map.declutterLevel = this.declutterLevels[this.declutterLevelIndex];
