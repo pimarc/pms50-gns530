@@ -260,7 +260,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         container.appendChild(this._text);
         container.setAttribute("x", fastToFixed(((1000 - map.config.airplaneIconSize * 0.7) * 0.5), 0));
         container.setAttribute("y", fastToFixed(((1000 - map.config.airplaneIconSize * 0.7) * 0.5), 0));
-        this.debug = WTDataStore.get("Debug", false, true);
+        this.debug = WTDataStore.globalGet("Debug", false);
         return container;
     }
     updateDraw(map) {
@@ -352,19 +352,6 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this.setArrow(false);
                     this.setText(false);
                     this._lastCase = 4;
-                }
-                if(this.debug) {
-                    if (this._lastHeading !== this.heading && isFinite(this.heading)) {
-                        if (this.svgElement.children[0]) {
-                            this._lastHeading = this.heading;
-                            let angle = this.heading;
-                            if (map.rotateWithPlane) {
-                                angle -= map.planeDirection;
-                            }
-                            let rotation = "rotate(" + fastToFixed(angle, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + ")";
-                            this.svgElement.children[0].setAttribute("transform", rotation);
-                        }
-                    }
                 }
             }
         }

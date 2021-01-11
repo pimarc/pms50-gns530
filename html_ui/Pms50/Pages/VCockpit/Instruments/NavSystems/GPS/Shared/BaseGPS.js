@@ -71,7 +71,7 @@ class BaseGPS extends NavSystem {
         this.loadConfig(() => {
             this.debug = this.getConfigKey("debug", false);
             // Set debug mode to datastore in order to retrieve it evrywhere from a static method
-            this.dataStore.set("Debug", this.debug)
+            WTDataStore.globalSet("Debug", this.debug)
             if(this.debug) {
                 Include.addScript("/JS/debug.js", function () {
                     g_modDebugMgr.AddConsole(null);
@@ -496,10 +496,32 @@ class WTDataStore {
      * @param {tsring|number|boolean} defaultValue The default value to use if the key does not exist
      * @returns {string|number|boolean} Either the stored value of the key, or the default value
      */
-    static get(key, defaultValue, global = false) {
+    get(key, defaultValue) {
+        var storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + this.gps.gpsType + "::" + this.gps.navIndex + "::" + key;
+        return WTDataStore.load(storeKey, defaultValue);
+    }
+
+    /**
+     * Stores a key in the datastore
+     * @param {string} key The name of the value to store
+     * @param {string|number|boolean} The value to store
+     */
+    set(key, value) {
+        var storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + this.gps.gpsType + "::" + this.gps.navIndex + "::" + key;
+        return WTDataStore.store(storeKey, value);
+    }
+
+    static globalGet(key, defaultValue){
         var storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + "Global" + "::" + key;
-        if(!global)
-            storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + this.gps.gpsType + "::" + this.gps.navIndex + "::" + key;
+        return WTDataStore.load(storeKey, defaultValue);
+    }
+
+    static globalSet(key, value){
+        var storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + "Global" + "::" + key;
+        return WTDataStore.store(storeKey, value);
+    }
+
+    static load(storeKey, defaultValue) {
         try {
             var stringValue = GetStoredData(storeKey);
             if (stringValue == null || stringValue == "") {
@@ -522,16 +544,7 @@ class WTDataStore {
         }
         return defaultValue;
     }
-
-    /**
-     * Stores a key in the datastore
-     * @param {string} key The name of the value to store
-     * @param {string|number|boolean} The value to store
-     */
-    static set(key, value, global = false) {
-        var storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + "Global" + "::" + key;
-        if(!global)
-            storeKey = SimVar.GetSimVarValue("ATC MODEL", "string") + "::" + this.gps.gpsType + "::" + this.gps.navIndex + "::" + key;
+    static store(storeKey, value) {
         switch (typeof value) {
             case "string":
             case "number":
