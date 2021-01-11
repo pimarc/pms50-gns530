@@ -2,6 +2,8 @@
 
 This package is an enhancement of the built-in GNS530 GPS.
 
+# Donation
+
 If you enjoyed this software, you can participate in the development effort by clicking on the following link:
 
 https://pms50.com/fs2020/donateGNS530mod.html
@@ -21,6 +23,36 @@ Sometimes users reported that it was necessary to reboot the machine (maybe afte
 If you have set a config file and/or loadable flight plans, be careful to save them before the update and to restore them after.
 
 You can also use the alternate data MOD to fix this situation (see note below).
+
+# Bug reporting
+You can report bugs here https://github.com/pimarc/pms50-gns530/issues
+
+Before reporting a bug:
+- Read the readme file (maybe not a real bug but a normal behavior)
+- Install the latest release of the MOD 
+- Remove any other MOD
+- Take some time to search for the fastest sequence that reproduces the bug
+- Re-install the MOD
+- Restart the sim
+- Reboot the computer
+- Set the weather to clear sky at midday.
+- Try with another aircraft having a different GPS if this is a flight plan issue
+
+When reporting:
+- All the information necessary to reproduce the bug. Be very precise
+- The exact flight plan (textual)
+- The version number as displayed when you start the GPS
+- The aircraft type
+- The list of installed Mods
+
+If I'm not able to reproduce the issue, it will be very difficult to fix.
+Messages just like "I got a froze" or "I got a CTD" without further information will not be taken into care.
+I can spend all the necessary time to help but I need real information to do that.
+Thank you for your understanding.
+
+# Current MSFS bugs
+- Waypoint insertion is broken since November update especially if there is an approach loaded. I cannot do anything here since it's in the sim's kernel.
+- U-turn bug: The airplane operates a 180° turn to come back to the last enroute waypoint if you activate an approach after the last enroute waypoint. I implemented a workaround in this MOD that consists of removing all enroute waypoints before activating the approach.
 
 # Change log
 ## V 1.0.24
@@ -181,38 +213,6 @@ You can also use the alternate data MOD to fix this situation (see note below).
 - Airport list: Correcting flicking bug and enhancing the view
 - Adding a declutter level
 
-# Bug reporting
-You can report bugs here: https://github.com/pimarc/pms50-gns530/issues
-
-Before reporting a bug:
-- Read the readme file (maybe not a real bug but a normal behavior)
-- Install the latest release of the MOD 
-- Remove any other MOD
-- Take some time to search for the fastest sequence that reproduces the bug
-- Re-install the MOD
-- Restart the sim
-- Reboot the computer
-- Set the weather to clear sky at midday.
-- Try with another aircraft having a different GPS if this is a flight plan issue
-
-When reporting:
-- All the information necessary to reproduce the bug. Be very precise
-- The exact flight plan (textual)
-- The version number as displayed when you start the GPS
-- The aircraft type
-- The list of installed Mods
-
-If I'm not able to reproduce the issue, it will be very difficult to fix.
-Messages just like "I got a froze" or "I got a CTD" without further information will not be taken into care.
-I can spend all the necessary time to help but I need real information to do that.
-Thank you for your understanding.
-
-# Current MSFS bugs
-- Waypoint insertion is broken since November update especially if there is an approach loaded. I cannot do anything here since it's in the sim's kernel.
-- U-turn bug: The airplane operates a 180° turn to come back to the last enroute waypoint if you activate an approach after the last enroute waypoint. I implemented a workaround in this MOD that consists of removing all enroute waypoints before activating the approach.
-- Fancy approaches. Sometimes the approach route is very strange. This is a sim's issue and I cannot do anything here. The GPS just displays what the sim's does.
-- Remove an approach waypoint doesn't work so I had to disable it until ASOBO fixes that.
-
 # Details
 ## Approach loading and activation
 The original logic for the loading and activating of an approach has been changed. Here is how it works now:
@@ -356,7 +356,7 @@ In traffic mode (TCAS) aircrafts near your position are represented by the usual
 Altitude deviation from own (client) aircraft altitude is displayed (in hundreds of feet) for each target symbol.
 An arrow near the symbol tells if the aircraft is climbing or descending (altitude trend).
 
-In traffic mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm.
+In traffic mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm. On the ground aircrafts (not moving) are excluded from display.
 
 TCAS algorithms used in the mod are very simple and based only on the proximity. There is no calculation about any projected collision like in real instruments.
 
