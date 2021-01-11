@@ -2,7 +2,6 @@ class AS430 extends BaseGPS {
     get templateID() { return "AS430"; }
     connectedCallback() {
         this.gpsType = "430";
-        this.state530 = false;
         this.cnt = 0;
         this.superCnt = 0;
         this.toInit = true;
@@ -12,8 +11,6 @@ class AS430 extends BaseGPS {
         this.initScreen = this.getChildById("InitScreen");
         this.initScreenBottomInfo = this.getChildById("InitScreenBottomInfo");
         this.NbLoopInitScreen = 150;
-        this.maxCnt = 50;
-        this.maxSuperCnt = 15;
         this.initScreen.setAttribute("style", "display: none");
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
@@ -33,28 +30,17 @@ class AS430 extends BaseGPS {
         }
         if(this.isStarted && this.toInit) {
             if(this.debug) {
-                this.NbLoopInitScreen = 5;
-                this.maxCnt = 5;
-                this.maxSuperCnt = 5;
+                this.NbLoopInitScreen = 50;
             }
             this.initScreen.setAttribute("style", "display: flex");
             this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br /> Initializing...";
             this.cnt++;
-            if(this.cnt > this.NbLoopInitScreen || this.superCnt > 0){
-                // Init delayed after 50 updates
-                if(this.cnt > this.maxCnt || this.superCnt > this.maxSuperCnt){
-                    this.state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
-                    if(this.state530 || this.superCnt > this.maxSuperCnt) {
-                        this.toInit = false;
-                        this.hotStart = false;
-                        this.doInit();
-                        this.initScreen.setAttribute("style", "display: none");
-                    }
-                    else {
-                        this.cnt = 0;
-                        this.superCnt++;
-                    }
-                }
+            // Init delayed after 50 updates
+            if(this.cnt > this.NbLoopInitScreen){
+                this.toInit = false;
+                this.hotStart = false;
+                this.doInit();
+                this.initScreen.setAttribute("style", "display: none");
             }
         }
         // Hot restart
@@ -80,29 +66,15 @@ class AS430 extends BaseGPS {
         this.menuMaxElems = 11;
         var defaultNav = new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7], "430");
         defaultNav.element.addElement(new GPS_Map());
-        var PageGroupNav = null;
-        // Check if we have a GNS530 in the plane (must be loaded first)
-        // And disable maps in this case
-
-        if(this.state530 && !this.getConfigKey("map430", false)) {
-            PageGroupNav = new NavSystemPageGroup("NAV", this, [
-                defaultNav,
-                new NavSystemPage("ComNav", "ComNav", new GPS_ComNav(6)),
-                new NavSystemPage("Position", "Position", new GPS_Position()),
-            ]);
-        }
-        else {
-            var mapNav = new GPS_MapNavPage(4, [16, 3, 4, 9]);
-            mapNav.element.addElement(new GPS_Map());
-            PageGroupNav = new NavSystemPageGroup("NAV", this, [
+        var mapNav = new GPS_MapNavPage(4, [16, 3, 4, 9]);
+        mapNav.element.addElement(new GPS_Map());
+        this.pageGroups = [
+            new NavSystemPageGroup("NAV", this, [
                 defaultNav,
                 mapNav,
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav()),
                 new NavSystemPage("Position", "Position", new GPS_Position()),
-            ]);
-        }
-        this.pageGroups = [
-            PageGroupNav,
+            ]),
             new NavSystemPageGroup("WPT", this, [
                 new NavSystemPage("AirportLocation", "AirportLocation", new GPS_AirportWaypointLocation(this.airportWaypointsIcaoSearchField)),
                 new NavSystemPage("AirportRunway", "AirportRunway", new GPS_AirportWaypointRunways(this.airportWaypointsIcaoSearchField)),
@@ -131,11 +103,9 @@ class AS430 extends BaseGPS {
             new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("430")),
             new NavSystemPage("FPLCatalog", "FPLCatalog", new GPS_FPLCatalog("430"))
         ]));
-//        this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [new NavSystemPage("ActiveFPL", "FlightPlanEdit", new GPS_ActiveFPL("430"))]));
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", this.messageList)]));
-        if(!this.state530)
-            this.addIndependentElementContainer(new NavSystemElementContainer("WaypointMap", "WaypointMap", new GPS_WaypointMap()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("WaypointMap", "WaypointMap", new GPS_WaypointMap()));
         this.addIndependentElementContainer(new NavSystemElementContainer("MSG", "MSG", new AS530_InitMessageList()));
         this.initDone = true;
     }

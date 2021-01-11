@@ -80,5 +80,26 @@
       "alt": 9000,
       "color": "#000000"
     }
+  ],
+
+  "netBingAltitudeColors2": [],
+  "netBingWaterColor2": "#1c28c0",
+  "netBingHeightColor2": [
+    {
+      "alt": 0,
+      "color": "#dc0f1c"
+    },
+    {
+      "alt": 500,
+      "color": "#a29a0f"
+    },
+    {
+      "alt": 1000,
+      "color": "#4c9d24"
+    },
+    {
+      "alt": 1500,
+      "color": "#000000"
+    }
   ]
 }

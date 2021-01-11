@@ -343,7 +343,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         if(elem)
             elem.toggleNexrad();
     }
-    toggleTraffic() {
+    toggleTCAS() {
         this.tcas = !this.tcas;
         this.map.setNPCAirplaneManagerTCASMode(this.tcas);
     }
@@ -603,9 +603,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         super.init(2, this.trackUp, "110%", "66%", 1.47, 1.53, 2000);
         var menu_elements = [];
         menu_elements.push(new ContextualMenuElement("Data On/Off?", this.toggleDataDisplay.bind(this), this.toggleDisplayDataCB.bind(this)));
-        menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this)));
+        menu_elements.push(new ContextualMenuElement("North up/Trk up", this.toggleMapOrientation.bind(this), this.toggleMapOrientationCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("Nexrad on/off", this.toggleNexrad.bind(this), this.toggleNexradCB.bind(this)));
-        menu_elements.push(new ContextualMenuElement("Traffic on/off", this.toggleTraffic.bind(this), this.toggleTrafficCB.bind(this)));
+        menu_elements.push(new ContextualMenuElement("TCAS on/off", this.toggleTCAS.bind(this), this.toggleTCASCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), this.changeFieldsStateCB.bind(this)));
         menu_elements.push(new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this), this.restoreDefaultsCB.bind(this)));
         this.defaultMenu = new ContextualMenu("PAGE MENU", menu_elements);
@@ -624,10 +624,10 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.cursorData.setAttribute("style", "display: none");
         this.cursorDataLeft = this.gps.getChildById("CursorModeLeft");
         this.cursorDataRight = this.gps.getChildById("CursorModeRight");
-        this.tcas = this.gps.dataStore.get("MapTraffic", false);
+        this.tcas = this.gps.dataStore.get("MapTCAS", false);
         if(this.tcas) {
             this.tcas = false;
-            this.toggleTraffic();
+            this.toggleTCAS();
         }
     }
 
@@ -718,7 +718,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.gps.SwitchToInteractionState(0);
             if(this.displayWeather && this.gps.getConfigKey("weather_legend", false))
                 this.toggleWeatherLegend();
-            // Declutter a max when declutter level 3 and traffic displayed
+            // Declutter a max when declutter level 3 and TCAS displayed
             if(!this.displayWeather && this.map)
             {
                 if(this.tcas && (this.declutterLevelIndex == this.declutterLevels.length-1) && this.mapDisplayRanges[this.map.rangeIndex] <= 20) {
@@ -998,10 +998,13 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     toggleWeatherModeCB(){
         return !this.displayWeather;
     }
+    toggleMapOrientationCB() {
+        return this.displayWeather;
+    }
     toggleNexradCB(){
         return this.displayWeather;
     }
-    toggleTrafficCB(){
+    toggleTCASCB(){
         return this.displayWeather;
     }
     toggleMapWeather() {
@@ -1039,13 +1042,23 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
     }
-    toggleTraffic() {
-        super.toggleTraffic();
-        this.gps.dataStore.set("MapTraffic", this.tcas);
+    toggleTCAS() {
+        super.toggleTCAS();
+        this.gps.dataStore.set("MapTCAS", this.tcas);
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
         if(this.tcas) {
             this.gps.getChildById("TCAS").setAttribute("style", "display: block");
+            // Set declutter level to max
+            this.declutterLevelIndex = this.declutterLevels.length-1;
+            this.map.declutterLevel = this.declutterLevels[this.declutterLevelIndex];
+            if(this.mapDisplayRanges[this.map.rangeIndex] <= 20) {
+                this.map.showVORs = false;
+                this.map.showIntersections = false;
+                this.map.showNDBs = false;
+                this.map.showAirports = false;
+                this.map.showObstacles = false;
+            }
         }
         else {
             this.gps.getChildById("TCAS").setAttribute("style", "display: none");
@@ -1169,6 +1182,7 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
         this.navBrgImg = null;
         this.declutterLevels = [0, 17];
         this.alwaysHideAirspacesAndRoads = true;
+        this.map.mapConfigId = 1;
         if(this.map.roadNetwork)
             this.map.roadNetwork.setVisible(false);
         this.map.showAirspaces = false;
@@ -1177,6 +1191,14 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
         this.map.instrument.bingMapRef = EBingReference.PLANE;
         this.mslThousands = this.gps.getChildById("TerrainMslValueTh" + this.mapnum);
         this.mslHundreds = this.gps.getChildById("TerrainMslValueHu" + this.mapnum);
+    }
+    onEnter() {
+        if(this.map)
+            this.map.mapConfigId = 1;
+    }
+    onExit() {
+        if(this.map)
+            this.map.mapConfigId = 0;
     }
     onEvent(_event){
         super.onEvent(_event);
