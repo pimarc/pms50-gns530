@@ -1,6 +1,29 @@
 # Documentation for the GNS530 MOD Package
 
-This package is an enhancement of the built-in GNS530 GPS.
+This package is an enhancement of the built-in GNS530 GPS. The goal is to offer an instrument that comes as close as possible to the original.
+
+# Main features
+- MSFS U-turn bug workaround
+- North Up / Track up map modes
+- Terrain Map
+- Map cursor
+- TCAS (anti collision system)
+- NEXTRAD weather data
+- Better DirectTo management
+- Weather radar
+- Wind indicator
+- VNAV page
+- Dynamic flight plan distances
+- Flight plan catalog and flight plan import
+- Procedure maps
+- METAR (with decoded option)
+- GNS430 included
+- State saved between sessions
+- Message management
+- Configuration file
+- Startup screen
+- Many graphical enhancements
+- Night/day lighting
 
 # Donation
 
@@ -51,8 +74,155 @@ I can spend all the necessary time to help but I need real information to do tha
 Thank you for your understanding.
 
 # Current MSFS bugs
-- Waypoint insertion is broken since November update especially if there is an approach loaded. I cannot do anything here since it's in the sim's kernel.
+- Waypoint insertion is broken since November update especially if there is an approach loaded. I cannot do anything here since it's in the sim's kernel. I made a workaround but sometimes some waypoints cannot be added.
 - U-turn bug: The airplane operates a 180° turn to come back to the last enroute waypoint if you activate an approach after the last enroute waypoint. I implemented a workaround in this MOD that consists of removing all enroute waypoints before activating the approach.
+
+# Details
+## Approach loading and activation
+The original logic for the loading and activating of an approach has been changed. Here is how it works now:
+
+Loading
+
+If you choose an approach and just load it, it's then added to the flight plan but not activated. It's up to the pilot to activate it or not (activate approach in procs menu).
+
+Activating
+
+If you activate the approach before the last enroute waypoint, the autopilot goes directly to the first approach waypoint. This removes your enroute waypoints.
+
+If you activate the approach after the last enroute waypoint, the autopilot goes directly to the first approach waypoint (without U-turn!!!). This removes all the enroute waypoints.
+
+Note: If you set a Direct To, this automatically de-activates the approach. You will have to reactivate it if needed.
+
+## U-turn bug
+This FS2020 bug probably made many of us crazy. It occurs when you select/activate an approach after the last enroute waypoint. Then the autopilot comes back to the last enroute waypoint before reaching the first approach waypoint.
+
+The workaround to this bug implemented here is to remove all enroute waypoints in this situation. This is not a real problem since you already flew these waypoints.
+
+## Activate leg
+Activate leg now works also in approach.
+
+## Direct to
+The Direct To now works correctly and you can direct to an approach icao waypoint. These lasts are available in the DirectTo FPL element list without having to manually type them.
+
+A DirectTo automatically de-activates the approach if there is one loaded. This one will be reactivated automatically if the directTO target waypoint is part of your approach.
+
+A direct to an airport removes all the waypoints of the flight plan except origin and (new) destination. When doing that, it's now possible to select an approach for the new destination (bug correction).
+
+## Remove approach
+This feature was not working in the original fs2020 GNS530. Now it does.
+
+## Graphical enhancements
+The display screen is more readable. The font weight has been turned to "normal" instead of "bold".
+
+There is a menu option for day / night brightness
+
+The nearest airport list doesn't flick any more and a separation line has been added between airports for better reading like in the real GNS530.
+
+Activate approach is not selectable if not relevant (ex already activated or no approach).
+
+## Maps
+There are 3 maps available (1 for GNS430). You can use the CLR button to declutter map information. The first declutter level hides roads and airspaces. The third map is a terrain map using 4 colors:  red below 500AGL, yellow between 500AGL and 1000AGL, green between 1000AGL and 1500AGL, black above 1500AGL.
+
+All procedures have now an associated map that displays the procedure waypoints.
+
+## Flight plan loading
+19 flight plans can be loaded.
+
+The flight plan files must be named "fplx.pln" where x is a number between 1 and 19.
+
+The files must reside in the folder named fpl530 at the root of the MOD folder.
+
+Only the PLN format is accepted.
+
+If the PLN file comes from MSFS2020 (save option in world map) the MOD will recognize SID, STARS and APPR.
+
+If your PLN file comes from another software, the result may differ from the original flight plan because the producer software may not use the same database so SID, STAR or APPROACH may be not recognized.
+
+## Messages
+When there are messages available, the MSG indicator is set. It blinks if there are new messages not acknowledged. In order to view and acknowledge the messages, press the MSG button. There are 3 kind of messages: Advise in green, warning in yellow and caution in red.
+
+## Config file
+The config file is named config.json and is located in the directory Config/pms50-gns530 directory of the MOD. This file is not distributed but a file named example_config.json is available in this same directory. You can copy it or rename it to be your current config.json file. All entries of config file are separated by a comma excepts the last one (think as a comma separated collection).
+
+## Weather radar
+This is a not standard feature (not available in original GNS530) so by default it's not activated.
+
+In order to activate it, you must set the entry "weather_radar: on" into the config.json file.
+
+When the weather radar is activated, you can display a legend by setting the entry "weather_legend: on" into the config.json file.
+
+The weather radar is then available in the GNS530 from the map NAV page (second NAV page).
+
+Push the "ENT" button to toggle between map, radar horizontal and radar vertical modes. While in radar mode, and if you have activated the legend, you can toggle its display with the "CLR" button.
+
+## data MOD
+I publish releases very often because I think it's important to be reactive.
+
+When you override a previous installation by a new release, you loose your config file and the flight plans available in dedicated folders.
+
+To overcome this situation there is second MOD used only for this data.
+
+It's available at : https://pms50.com/fs2020/gns530/pms50-gns530-data.zip
+
+Just install it in your community folder and set the config files and flight plan files in this directory instead of the main MOD directory.
+
+What is inside this data MOD has priority against main MOD.
+
+This data MOD will not be affected by an update of the main MOD.
+
+## Cursor mode
+When in MAP NAV page (second NAV page) you can toggle the cursor mode by pressing the right navigation knob.
+
+Using this knob you can move the cursor. While in cursor mode, pressing the "ENT" button centers the map on the cursor position. The declutter and range buttons are available in cursor mode. Any other button closes the cursor mode and centers the map on the plane.
+
+In cursor mode the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.
+
+## Adding and deleting waypoints
+Adding a waypoint in the flight plan is currently broken in the sim when there is an approach loaded. I found a workaround to this situation so inserting a waypoint should just work now (with some exceptions).
+
+However I've set some limitations in order to avoid bugs. For example, you cannot insert a waypoint in a procedure. This makes sense since a procedure is a whole. If you want to bypass some waypoints of a procedure and/or fly somewhere else you can use direct To and activate leg.
+
+There are also some limitations on removing waypoints. You cannot remove a procedure waypoint. The current leg waypoint can be removed only if you are not in autopilot NAV mode.
+
+For this workaround, I'm completely rebuilding the flight plan while inserting a waypoint. Although not necessary, I recommend to switch to HDG mode before inserting a waypoint.
+
+## METAR
+The METAR data is available as second AUX page.
+
+Before using it, you must configure it:
+- Please first subscribe to https://account.avwx.rest/ (it's free) and get an API token.
+- Copy this token in the "metar_avwx_token" entry of your config.json file (see above).
+
+The METAR page provides a menu to get your origin or destination METARs in a fast way.
+
+For refreshing, press the ENT button.
+
+Optionally, the METAR data can be decoded. In order to activate this feature, you must set the "metar_decode" entry to "on" in the config file.
+
+You can select any airport.
+Selecting an airport can be done directly from the METAR page but also from the map page in cursor mode or from the flight plan (ENT key).
+
+The METAR data is a real information taken from METAR stations. The result may differ from the in game weather following your configuration. This is relevant only if you play in live weather.
+
+## TCAS
+TCAS (anti collision system) information is available from the menu of the second NAV page (Map page). When activated, the word "TCAS" is displayed in the upper left corner of the screen. The TCAS mode state is saved across game sessions. 
+
+If TCAS is not activated, all the aircrafts are represented by a small airplane pictogram whatever their distance and relative altitude.
+
+In TCAS mode aircrafts near your position are represented by the usual TCAS symbols with the following range:
+- Red square if relative distance < 2nm and relative altitude < 800ft.
+- Orange circle if relative distance < 4nm and relative altitude < 1000ft.
+- Filled blank diamond if relative distance < 6nm and relative altitude < 1200ft.
+- Un-filled blank diamond if relative distance < 30nm and relative altitude < 2700ft.
+
+Altitude deviation from own aircraft altitude is displayed (in hundreds of feet) for each target symbol.
+An arrow near the symbol tells if the aircraft is climbing or descending (altitude trend).
+
+In TCAS mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm. On the ground aircrafts (not moving) are excluded from display.
+
+TCAS algorithms used in the mod are very simple and based only on the proximity. There is no calculation about any projected collision like in real instruments.
+
+TCAS data is disabled if your own aircraft is below 500ft AGL.
 
 # Change log
 ## V 1.0.25 (dev not released)
@@ -217,149 +387,3 @@ Thank you for your understanding.
 - Airport list: Correcting flicking bug and enhancing the view
 - Adding a declutter level
 
-# Details
-## Approach loading and activation
-The original logic for the loading and activating of an approach has been changed. Here is how it works now:
-
-Loading
-
-If you choose an approach and just load it, it's then added to the flight plan but not activated. It's up to the pilot to activate it or not (activate approach in procs menu).
-
-Activating
-
-If you activate the approach before the last enroute waypoint, the autopilot goes directly to the first approach waypoint. This removes your enroute waypoints.
-
-If you activate the approach after the last enroute waypoint, the autopilot goes directly to the first approach waypoint (without U-turn!!!). This removes all the enroute waypoints.
-
-Note: If you set a Direct To, this automatically de-activates the approach. You will have to reactivate it if needed.
-
-## U-turn bug
-This FS2020 bug probably made many of us crazy. It occurs when you select/activate an approach after the last enroute waypoint. Then the autopilot comes back to the last enroute waypoint before reaching the first approach waypoint.
-
-The workaround to this bug implemented here is to remove all enroute waypoints in this situation. This is not a real problem since you already flew these waypoints.
-
-## Activate leg
-Activate leg now works also in approach.
-
-## Direct to
-The Direct To now works correctly and you can direct to an approach icao waypoint. These lasts are available in the DirectTo FPL element list without having to manually type them.
-
-A DirectTo automatically de-activates the approach if there is one loaded.
-
-A direct to an airport removes all the waypoints of the flight plan except origin and (new) destination. When doing that, it's now possible to select an approach for the new destination (bug correction).
-
-## Remove approach
-This feature was not working in the original fs2020 GNS530. Now it does.
-
-## Graphical enhancements
-The display screen is more readable. The font weight has been turned to "normal" instead of "bold".
-
-There is a menu option for day / night brightness
-
-The nearest airport list doesn't flick any more and a separation line has been added between airports for better reading like in the real GNS530.
-
-Activate approach is not selectable if not relevant (ex already activated or no approach).
-
-## Maps
-There are 3 maps available (1 for GNS430). You can use the CLR button to declutter map information. The first declutter level hides roads and airspaces. The third map is a terrain map using 4 colors:  red below 500AGL, yellow between 500AGL and 1000AGL, green between 1000AGL and 1500AGL, black above 1500AGL.
-
-All procedures have now an associated map that displays the procedure waypoints.
-
-## Flight plan loading
-19 flight plans can be loaded.
-
-The flight plan files must be named "fplx.pln" where x is a number between 1 and 19.
-
-The files must reside in the folder named fpl530 at the root of the MOD folder.
-
-Only the PLN format is accepted.
-
-If the PLN file comes from MSFS2020 (save option in world map) the MOD will recognize SID, STARS and APPR.
-
-If your PLN file comes from another software, the result may differ from the original flight plan because the producer software may not use the same database so SID, STAR or APPROACH may be not recognized (for example little navmap doesn't save procedures).
-
-## Messages
-When there are messages available, the MSG indicator is set. It blinks if there are new messages not acknowledged. In order to view and acknowledge the messages, press the MSG button. There are 3 kind of messages: Advise in green, warning in yellow and caution in red.
-
-## Config file
-The config file is named config.json and is located in the directory Config/pms50-gns530 directory of the MOD. This file is not distributed but a file named example_config.json is available in this same directory. You can copy it or rename it to be your current config.json file. All entries of config file are separated by a comma excepts the last one (think as a comma separated collection).
-
-## Weather radar
-This is a not standard feature (not available in original GNS530) so by default it's not activated.
-
-In order to activate it, you must set the entry "weather_radar: on" into the config.json file.
-
-When the weather radar is activated, you can display a legend by setting the entry "weather_legend: on" into the config.json file.
-
-The weather radar is then available in the GNS530 from the map NAV page (second NAV page).
-
-Push the "ENT" button to toggle between map, radar horizontal and radar vertical modes. While in radar mode, and if you have activated the legend, you can toggle its display with the "CLR" button.
-
-## data MOD
-I publish releases very often because I think it's important to be reactive.
-
-When you override a previous installation by a new release, you loose your config file and the flight plans available in dedicated folders.
-
-To overcome this situation there is second MOD used only for this data.
-
-It's available at : https://pms50.com/fs2020/gns530/pms50-gns530-data.zip
-
-Just install it in your community folder and set the config files and flight plan files in this directory instead of the main MOD directory.
-
-What is inside this data MOD has priority against main MOD.
-
-This data MOD will not be affected by an update of the main MOD.
-
-## Cursor mode
-When in MAP NAV page (second NAV page) you can toggle the cursor mode by pressing the right navigation knob.
-
-Using this knob you can move the cursor. While in cursor mode, pressing the "ENT" button centers the map on the cursor position. The declutter and range buttons are available in cursor mode. Any other button closes the cursor mode and centers the map on the plane.
-
-In cursor mode the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.
-
-## Adding and deleting waypoints
-Adding a waypoint in the flight plan is currently broken in the sim when there is an approach loaded. I found a workaround to this situation so inserting a waypoint should just work now.
-
-However I've set some limitations in order to avoid bugs. For example, you cannot insert a waypoint in a procedure. This makes sense since a procedure is a whole. If you want to bypass some waypoints of a procedure and/or fly somewhere else you can use direct To and activate leg.
-
-There are also some limitations on removing waypoints. You cannot remove a procedure waypoint. The current leg waypoint can be removed only if you are not in autopilot NAV mode.
-
-For this workaround, I'm completely rebuilding the flight plan while inserting a waypoint. Although not necessary, I recommend to switch to HDG mode before inserting a waypoint.
-
-## METAR
-The METAR data is available as second AUX page.
-
-Before using it, you must configure:
-- Please first subscribe to https://account.avwx.rest/ (it's free) and get an API token.
-- Copy this token in the "metar_avwx_token" entry of your config.json file (see above).
-
-The METAR page provides a menu to get your origin or destination METARs in a fast way.
-
-For refreshing, press the ENT button.
-
-Optionally, the METAR data can be decoded. In order to activate this feature, you must set the "metar_decode" entry to "on" in the config file.
-
-You can select any airport.
-Selecting an airport can be done directly from the METAR page but also from the map page in cursor mode or from the flight plan (ENT key).
-
-The METAR data is a real information taken from METAR stations. The result may differ from the in game weather following your configuration. This is relevant only if you play in live weather.
-
-## TCAS
-TCAS (anti collision system) information is available from the menu of the second NAV page (Map page). When activated, the word "TCAS" is displayed in the upper left corner of the screen. The TCAS mode state is saved across game sessions. 
-
-If TCAS is not activated, all the aircrafts are represented by a small airplane pictogram whatever their distance and relative altitude.
-
-In TCAS mode aircrafts near your position are represented by the usual TCAS symbols with the following range:
-- Red square if relative distance < 2nm and relative altitude < 800ft.
-- Orange circle if relative distance < 4nm and relative altitude < 1000ft.
-- Filled blank diamond if relative distance < 6nm and relative altitude < 1200ft.
-- Un-filled blank diamond if relative distance < 30nm and relative altitude < 2700ft.
-
-Altitude deviation from own (client) aircraft altitude is displayed (in hundreds of feet) for each target symbol.
-An arrow near the symbol tells if the aircraft is climbing or descending (altitude trend).
-
-In TCAS mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm. On the ground aircrafts (not moving) are excluded from display.
-
-TCAS algorithms used in the mod are very simple and based only on the proximity. There is no calculation about any projected collision like in real instruments.
-
-TCAS data is disabled if your own aircraft is below 500ft AGL.
