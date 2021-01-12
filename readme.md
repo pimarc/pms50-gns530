@@ -61,7 +61,7 @@ Before reporting a bug:
 - Set the weather to clear sky at midday.
 - Try with another aircraft having a different GPS if this is a flight plan issue
 
-When reporting:
+When reporting please provide:
 - All the information necessary to reproduce the bug. Be very precise
 - The exact flight plan (textual)
 - The version number as displayed when you start the GPS
