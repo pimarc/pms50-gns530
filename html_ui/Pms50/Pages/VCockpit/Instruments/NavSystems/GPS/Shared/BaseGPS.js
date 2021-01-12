@@ -153,7 +153,7 @@ class BaseGPS extends NavSystem {
         {
             this.msg_t = 0;
             let state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
-            if(this.gpsType == "530" || !this.state530)
+            if(this.gpsType == "530" || !state530)
             {
                 if(this.messageList) {
                     this.messageList.onUpdate(_deltaTime);

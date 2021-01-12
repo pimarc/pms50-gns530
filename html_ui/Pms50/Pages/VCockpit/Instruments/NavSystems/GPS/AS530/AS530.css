@@ -1838,6 +1838,7 @@ as530-element {
         color: yellow;
         display: inline-block;
         position: absolute;
+        visibility: hidden;
         right: calc(2.1367521368vh); }
         as530-element #Electricity #BotDisplay #MsgAlert[state=Blink] {
           color: black;
