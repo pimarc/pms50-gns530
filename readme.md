@@ -227,8 +227,10 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 # Change log
 ## V 1.0.25 (dev not released)
 - Fixed the CTD map issue when more than 3 maps so the GNS430 map is back in dual configuration (Cessna 172)
+- Added a terrain map to the GNS430
 - Changed word "TRAFFIC" to "TCAS" in map page
 - Turning TCAS mode now automatically sets the range to 20nm if it was greater
+- Bugfix: VNAV not working above 10000ft MSL
 ## V 1.0.24
 - Changed add waypoint and load flight plan code
 - Load flight plan: the approach transition is now the best one instead of the first one

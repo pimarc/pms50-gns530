@@ -68,10 +68,13 @@ class AS430 extends BaseGPS {
         defaultNav.element.addElement(new GPS_Map());
         var mapNav = new GPS_MapNavPage(4, [16, 3, 4, 9]);
         mapNav.element.addElement(new GPS_Map());
+        var terrainNav = new GPS_TerrainNavPage(0, []);
+        terrainNav.element.addElement(new GPS_Map());
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
                 defaultNav,
                 mapNav,
+                terrainNav,
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav()),
                 new NavSystemPage("Position", "Position", new GPS_Position()),
             ]),
