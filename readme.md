@@ -6,7 +6,7 @@ This package is an enhancement of the built-in GNS530 GPS. The goal is to offer 
 - MSFS U-turn bug workaround
 - North Up / Track up map modes
 - Terrain Map
-- Map cursor
+- Map cursor with waypoint selection
 - TCAS (anti collision system)
 - NEXTRAD weather data
 - Better DirectTo management
