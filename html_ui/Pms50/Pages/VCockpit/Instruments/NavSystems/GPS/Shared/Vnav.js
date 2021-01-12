@@ -161,8 +161,8 @@ class GPS_Vnav extends NavSystemElement {
         // Do nothing if ground speed too slow
         if(groundSpeed < 35)
             return targetInfos;
-        var currentAltitude = fastToFixed(SimVar.GetSimVarValue("GPS POSITION ALT", "feet"), 0);
-        var targetAltitude = this.altitude.textContent;
+        var currentAltitude = SimVar.GetSimVarValue("GPS POSITION ALT", "feet");
+        var targetAltitude = parseInt(this.altitude.textContent);
 
         // Don't calculate anything if near the target altitude
         if(targetAltitude > currentAltitude - 100 && targetAltitude < currentAltitude + 100)

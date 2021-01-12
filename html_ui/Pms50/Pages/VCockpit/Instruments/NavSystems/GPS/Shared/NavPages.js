@@ -630,7 +630,14 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.toggleTCAS();
         }
     }
-
+    onEnter() {
+        if(this.map && !this.displayWeather) {
+            if(this.tcas)
+                this.gps.getChildById("TCAS").setAttribute("style", "display: block");
+            else
+                this.gps.getChildById("TCAS").setAttribute("style", "display: none");
+        }
+    }
     onEvent(_event){
         if(this.map && !this.displayWeather && this.map.eBingMode == EBingMode.CURSOR) {
             let cursorSpeed = 2;
@@ -1196,12 +1203,16 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
         this.mslHundreds = this.gps.getChildById("TerrainMslValueHu" + this.mapnum);
     }
     onEnter() {
-        if(this.map)
+        if(this.map) {
             this.map.mapConfigId = 1;
+            this.map.eBingRef = EBingReference.PLANE;
+        }
     }
     onExit() {
-        if(this.map)
+        if(this.map) {
             this.map.mapConfigId = 0;
+            this.map.eBingRef = EBingReference.SEA;
+        }
     }
     onEvent(_event){
         super.onEvent(_event);

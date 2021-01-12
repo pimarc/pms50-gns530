@@ -225,6 +225,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         this._id = "npc-airplaine-" + this.name;
         this._pos = new Vec2();
         this.TCASModeChanged = false;
+        this.debug = WTDataStore.globalGet("Debug", false);
     }
     id(map) {
         return this._id + "-map-" + map.index;
@@ -260,7 +261,6 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         container.appendChild(this._text);
         container.setAttribute("x", fastToFixed(((1000 - map.config.airplaneIconSize * 0.7) * 0.5), 0));
         container.setAttribute("y", fastToFixed(((1000 - map.config.airplaneIconSize * 0.7) * 0.5), 0));
-        this.debug = WTDataStore.globalGet("Debug", false);
         return container;
     }
     updateDraw(map) {
