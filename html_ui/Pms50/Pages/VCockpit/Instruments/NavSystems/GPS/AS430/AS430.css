@@ -303,7 +303,7 @@ as430-element {
           margin-top: calc(1.0526315789vh);
           margin-bottom: calc(1.0526315789vh); }
 /* PM Modif: Range display */
-        as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5, as430-element #Electricity #TopDisplay #GpsPart .Range4 {
+        as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5_2, as430-element #Electricity #TopDisplay #GpsPart .Range4 {
           position: absolute;
           z-index: 2;
           background-color: black;
@@ -316,10 +316,14 @@ as430-element {
           as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as430-element #Electricity #TopDisplay #GpsPart .Range4 {
             bottom: 2%; }
           as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5 {
-            left: 25%;
-            bottom: 15%;
+              left: 25%;
+              bottom: 15%;
           }
-          as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapRangeUnit2, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 #MapRangeUnit3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5 #MapRangeUnit5, as430-element #Electricity #TopDisplay #GpsPart .Range4 .MapRangeUnit4 {
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5_2 {
+              left: 37%;
+              bottom: 30%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapRangeUnit2, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 #MapRangeUnit3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5 #MapRangeUnit5, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5_2 #MapRangeUnit5_2, as430-element #Electricity #TopDisplay #GpsPart .Range4 .MapRangeUnit4 {
             position: relative;
             left: -1vh;
             font-size: 2.2vh;
@@ -530,7 +534,7 @@ as430-element {
             position: absolute;
             left: 0;
             right: 0; }
-          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #NavCompass5 {
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #NavCompass5, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #NavCompass5_2 {
             position: absolute;
             z-index: 1;
             display: flex;
@@ -543,6 +547,9 @@ as430-element {
            }
           as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #NavCompass5 img {
             width: 92vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #NavCompass5_2 img {
+            width: 46vh;
           }
           as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText2, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficTrkText {
             position: absolute;

@@ -1275,6 +1275,7 @@ class GPS_TrafficNavPage extends GPS_BaseNavPage {
     }
     init() {
         super.init(5, true, "110%", "66%", 2.29, 1.53, 35);
+        this.mrange2 = this.gps.getChildById("MapRangeValue" + this.mapnum + "_2");
         this.navCompassImg = null;
         if(this.map) {
             this.map.showBingMap = false;
@@ -1301,6 +1302,9 @@ class GPS_TrafficNavPage extends GPS_BaseNavPage {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        if(this.mrange2) {
+            Avionics.Utils.diffAndSet(this.mrange2, this.mapDisplayRanges[this.map.rangeIndex] / 2);
+        }
     }
     onEvent(_event){
         if (_event == "CLR_Push")  {
