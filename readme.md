@@ -218,7 +218,7 @@ In TCAS mode aircrafts near your position are represented by the usual TCAS symb
 Altitude deviation from own aircraft altitude is displayed (in hundreds of feet) for each target symbol.
 An arrow near the symbol tells if the aircraft is climbing or descending (altitude trend).
 
-In TCAS mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 20nm. On the ground aircrafts (not moving) are excluded from display.
+In TCAS mode, the declutter level 3 only displays TCAS data and the flight plan. TCAS data is available only to ranges <= 35nm. On the ground aircrafts (not moving) are excluded from display.
 
 TCAS algorithms used in the mod are very simple and based only on the proximity. There is no calculation about any projected collision like in real instruments.
 
@@ -229,6 +229,7 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 - Fixed the CTD map issue when more than 4 maps
 - GNS430 map is back in dual configuration (Cessna 172)
 - Added a terrain map to the GNS430
+- Added specific traffic NAV page to GNS530 and GNS430
 - Changed word "TRAFFIC" to "TCAS" in map page
 - Turning TCAS mode now automatically sets the range to 20nm if it was greater
 - Bugfix: VNAV not working above 10000ft MSL

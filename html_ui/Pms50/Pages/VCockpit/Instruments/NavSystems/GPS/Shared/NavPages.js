@@ -159,7 +159,7 @@ class GPS_BaseNavPage extends NavSystemPage {
             }
             if(this.dlevel)
                 Avionics.Utils.diffAndSet(this.dlevel, this.declutterLevelIndex ? "-" + this.declutterLevelIndex : "");
-            if(this.mapDisplayRanges[this.map.rangeIndex] > 20)
+            if(this.mapDisplayRanges[this.map.rangeIndex] > 35)
                 this.map.showTraffic = false;
             else
                 this.map.showTraffic = true;
@@ -1197,7 +1197,6 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
             this.map.roadNetwork.setVisible(false);
         this.map.showAirspaces = false;
         this.map.showRoads  = false;
-        this.displayData = true;
         this.map.instrument.bingMapRef = EBingReference.PLANE;
         this.mslThousands = this.gps.getChildById("TerrainMslValueTh" + this.mapnum);
         this.mslHundreds = this.gps.getChildById("TerrainMslValueHu" + this.mapnum);
@@ -1205,13 +1204,13 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
     onEnter() {
         if(this.map) {
             this.map.mapConfigId = 1;
-            this.map.eBingRef = EBingReference.PLANE;
+            this.map.bingMapRef = EBingReference.PLANE;
         }
     }
     onExit() {
         if(this.map) {
             this.map.mapConfigId = 0;
-            this.map.eBingRef = EBingReference.SEA;
+            this.map.bingMapRef = EBingReference.SEA;
         }
     }
     onEvent(_event){
@@ -1260,6 +1259,82 @@ class GPS_TerrainNav extends NavSystemElement {
     onEvent(_event) {
     }
 }
+
+
+
+
+
+class GPS_TrafficNavPage extends GPS_BaseNavPage {
+    constructor(_customValuesNumber = 6, _customValuesDefaults = [4, 3, 0, 9, 10, 7]) {
+        var cdiElem = new CDIElement();
+        var baseElem = new GPS_TrafficNav(_customValuesNumber, _customValuesDefaults);
+        super("TrafficNav", "TrafficNav", new NavSystemElementGroup([baseElem, cdiElem]));
+        this.cdiElement = cdiElem;
+        this.baseElem = baseElem;
+
+    }
+    init() {
+        super.init(5, true, "110%", "66%", 2.29, 1.53, 35);
+        this.navCompassImg = null;
+        if(this.map) {
+            this.map.showBingMap = false;
+            this.map.refreshDisplay();
+        }
+        this.navBrgImg = null;
+        this.declutterLevels = [0];
+        this.alwaysHideAirspacesAndRoads = true;
+        this.map.mapConfigId = 0;
+        this.tcas = false;
+        this.toggleTCAS();
+    }
+    onEnter() {
+        if(this.map) {
+            this.map.showBingMap = false;
+            this.map.refreshDisplay();
+        }
+    }
+    onExit() {
+        if(this.map) {
+            this.map.showBingMap = true;
+            this.map.refreshDisplay();
+        }
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+    }
+    onEvent(_event){
+        if (_event == "CLR_Push")  {
+            // Do nothing here
+        }
+        else
+            super.onEvent(_event);
+    }
+}
+
+
+
+class GPS_TrafficNav extends NavSystemElement {
+    constructor(_customValuesNumber = 6, _customValuesDefaults = [16, 3, 0, 9, 10, 7]) {
+        super(_customValuesNumber, _customValuesDefaults);
+        this.dnCustoms = [];
+        this.legSymbol = 0;
+        this.name = "TrafficNav";
+        this.customValuesNumber = _customValuesNumber;
+        this.customValuesDefault = _customValuesDefaults;
+    }
+    init() {
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+}
+
+
 
 class GPS_ComNav extends NavSystemElement {
     constructor(_nbFreqMax = 5) {

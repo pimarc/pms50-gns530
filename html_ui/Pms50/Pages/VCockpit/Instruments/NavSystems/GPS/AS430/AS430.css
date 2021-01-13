@@ -199,7 +199,7 @@ as430-element {
         position: absolute;
         height: 100%;
         width: 80%; }
-        as430-element #Electricity #TopDisplay #GpsPart #DefaultNav, as430-element #Electricity #TopDisplay #GpsPart #MapNav, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav, as430-element #Electricity #TopDisplay #GpsPart #ComNav, as430-element #Electricity #TopDisplay #GpsPart #Position, as430-element #Electricity #TopDisplay #GpsPart #Satellite, as430-element #Electricity #TopDisplay #GpsPart #VNav, as430-element #Electricity #TopDisplay #GpsPart #Terrain, as430-element #Electricity #TopDisplay #GpsPart #DRCT, as430-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as430-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
+        as430-element #Electricity #TopDisplay #GpsPart #DefaultNav, as430-element #Electricity #TopDisplay #GpsPart #MapNav, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav, as430-element #Electricity #TopDisplay #GpsPart #ComNav, as430-element #Electricity #TopDisplay #GpsPart #Position, as430-element #Electricity #TopDisplay #GpsPart #Satellite, as430-element #Electricity #TopDisplay #GpsPart #VNav, as430-element #Electricity #TopDisplay #GpsPart #Terrain, as430-element #Electricity #TopDisplay #GpsPart #DRCT, as430-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as430-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
         as430-element #Electricity #TopDisplay #GpsPart #Procedures, as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection, as430-element #Electricity #TopDisplay #GpsPart #AirportLocation, as430-element #Electricity #TopDisplay #GpsPart #AirportRunway, as430-element #Electricity #TopDisplay #GpsPart #AirportFrequency, as430-element #Electricity #TopDisplay #GpsPart #AirportApproach,
         as430-element #Electricity #TopDisplay #GpsPart #AirportArrival, as430-element #Electricity #TopDisplay #GpsPart #AirportDeparture, as430-element #Electricity #TopDisplay #GpsPart #Intersection, as430-element #Electricity #TopDisplay #GpsPart #NDB, as430-element #Electricity #TopDisplay #GpsPart #VOR, as430-element #Electricity #TopDisplay #GpsPart #UserWaypoint, as430-element #Electricity #TopDisplay #GpsPart #NRSTAirport, as430-element #Electricity #TopDisplay #GpsPart #NRSTIntersection,
         as430-element #Electricity #TopDisplay #GpsPart #NRSTNDB, as430-element #Electricity #TopDisplay #GpsPart #NRSTVOR, as430-element #Electricity #TopDisplay #GpsPart #NRSTUser, as430-element #Electricity #TopDisplay #GpsPart #NRSTCenter, as430-element #Electricity #TopDisplay #GpsPart #NRSTFlightService, as430-element #Electricity #TopDisplay #GpsPart #NRSTAirspace, as430-element #Electricity #TopDisplay #GpsPart #COMSetup, as430-element #Electricity #TopDisplay #GpsPart #MSG, as430-element #Electricity #TopDisplay #GpsPart #METAR {
@@ -207,6 +207,7 @@ as430-element {
         as430-element #Electricity #TopDisplay #GpsPart[state=DefaultNav] #DefaultNav,
         as430-element #Electricity #TopDisplay #GpsPart[state=MapNav] #MapNav,
         as430-element #Electricity #TopDisplay #GpsPart[state=TerrainNav] #TerrainNav,
+        as430-element #Electricity #TopDisplay #GpsPart[state=TrafficNav] #TrafficNav,
         as430-element #Electricity #TopDisplay #GpsPart[state=ComNav] #ComNav,
         as430-element #Electricity #TopDisplay #GpsPart[state=Position] #Position,
         as430-element #Electricity #TopDisplay #GpsPart[state=Satellite] #Satellite,
@@ -302,7 +303,7 @@ as430-element {
           margin-top: calc(1.0526315789vh);
           margin-bottom: calc(1.0526315789vh); }
 /* PM Modif: Range display */
-        as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3, as430-element #Electricity #TopDisplay #GpsPart .Range4 {
+        as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5, as430-element #Electricity #TopDisplay #GpsPart .Range4 {
           position: absolute;
           z-index: 2;
           background-color: black;
@@ -314,11 +315,11 @@ as430-element {
           line-height: 4.5vh; }
           as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2, as430-element #Electricity #TopDisplay #GpsPart .Range4 {
             bottom: 2%; }
-          as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 {
+          as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5 {
             left: 25%;
             bottom: 15%;
           }
-          as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapRangeUnit2, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 #MapRangeUnit3, as430-element #Electricity #TopDisplay #GpsPart .Range4 .MapRangeUnit4 {
+          as430-element #Electricity #TopDisplay #GpsPart #MapNav #Range2 #MapRangeUnit2, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav #Range3 #MapRangeUnit3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #Range5 #MapRangeUnit5, as430-element #Electricity #TopDisplay #GpsPart .Range4 .MapRangeUnit4 {
             position: relative;
             left: -1vh;
             font-size: 2.2vh;
@@ -515,6 +516,63 @@ as430-element {
             position: relative;
             bottom: 3px;
             font-size: 3vh;
+          }
+
+
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #MapInstrument5 {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: black;
+            overflow: hidden; }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #MapInstrument5 bing-map {
+            transform: rotateX(0);
+            position: absolute;
+            left: 0;
+            right: 0; }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #NavCompass5 {
+            position: absolute;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            left: 0;
+            top: 1vh;
+            width: 100%;
+            height: 100%;
+           }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #NavCompass5 img {
+            width: 92vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText2, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText3, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficTrkText {
+            position: absolute;
+            z-index: 2;
+            background-color: black;
+            padding: 1vh;
+            text-align: center;
+            color: #6ecdee;
+            font-size: 5vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText {
+            left: 0;
+            top: 0;
+            line-height: 4vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficTrkText {
+            left: 55%;
+            top: 1vh;
+            line-height: 4vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText2 {
+            right: 0;
+            top: 0;
+            text-align: right;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #TrafficNav #TrafficText3 {
+            right: 0;
+            top: 6vh;
+            text-align: right;
+            color: #4ce22c;
           }
 
 
@@ -887,7 +945,7 @@ as430-element {
                         margin-top: 3vh; }
                         as430-element #Electricity #TopDisplay #GpsPart #WaypointSelection .Title {
                       font-size: calc(6.4102564103vh); }
-                      as430-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSPosNS, as530-as430 #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSPosEW {
+                      as430-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSPosNS, as430-element #Electricity #TopDisplay #GpsPart #WaypointSelection #WPSPosEW {
                     height: calc(7.264957265vh); }
                     as430-element #Electricity #TopDisplay #GpsPart #WaypointSelection .Half {
                     width: 48%; }
