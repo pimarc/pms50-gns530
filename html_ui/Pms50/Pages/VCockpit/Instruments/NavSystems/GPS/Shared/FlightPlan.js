@@ -678,7 +678,8 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
                                 // Try restoring cursor
                                 setTimeout(() => {
                                     this.gps.ActiveSelection(this.defaultSelectables);
-                                    this.fplSelectable.index = savedIndex+1;
+                                    this.fplSelectable.index = savedIndex;
+                                    this.fplSelectable.incrementIndex();
                                     this.fplSelectable.offset = savedOffset;
                                 }, 2000);
                             }
