@@ -1187,7 +1187,7 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
 
     }
     init() {
-        super.init(3, true, "110%", "66%", 2.29, 1.53, 100);
+        super.init(3, true, "100%", "66%", 2.1, 1.53, 100);
         this.navCompassImg = null;
         this.navBrgImg = null;
         this.declutterLevels = [0, 17];
@@ -1274,7 +1274,7 @@ class GPS_TrafficNavPage extends GPS_BaseNavPage {
 
     }
     init() {
-        super.init(5, true, "110%", "66%", 2.29, 1.53, 35);
+        super.init(5, true, "100%", "66%", 2.1, 1.53, 35);
         this.mrange2 = this.gps.getChildById("MapRangeValue" + this.mapnum + "_2");
         this.navCompassImg = null;
         if(this.map) {

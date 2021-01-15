@@ -225,7 +225,7 @@ TCAS algorithms used in the mod are very simple and based only on the proximity.
 TCAS data is disabled if your own aircraft is below 500ft AGL.
 
 # Change log
-## V 1.0.25 (dev not released)
+## V 1.0.25
 - Fixed the CTD map issue when more than 4 maps
 - GNS430 map is back in dual configuration (Cessna 172)
 - Added a terrain map to the GNS430
