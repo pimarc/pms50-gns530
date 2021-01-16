@@ -210,6 +210,7 @@ class GPS_WaypointMap extends MapInstrumentElement {
         this.range = root.querySelector("#Range4");
         this.numupdates = 0;
         this.wpsig = "";
+        this.isActive = false;
     }
     onTemplateLoaded() {
         // We create a special map instrument not associated to the current GPS flight plan
@@ -224,6 +225,7 @@ class GPS_WaypointMap extends MapInstrumentElement {
         this.instrument._ranges = [0.5, 1, 1.5, 2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 50, 75, 100, 150, 200, 300, 400, 500];
     }
     onEnter(_mapContainer, _zoomLevel) {
+        this.isActive = true;
         this.mapContainer = _mapContainer;
         this.instrument.flightPlanManager._waypoints = [[], []];
         this.instrument.flightPlanManager._approachWaypoints = [];
@@ -245,8 +247,11 @@ class GPS_WaypointMap extends MapInstrumentElement {
             //Remove childs
             this.mapContainer.textContent = '';
         }
+        this.isActive = false;
     }
     onUpdate(_deltaTime) {
+        if(!this.isActive)
+            return;
         super.onUpdate(_deltaTime);
         // Must be always refreshed
         this.instrument.flightPlanElement.hideReachedWaypoints = false;
@@ -255,6 +260,8 @@ class GPS_WaypointMap extends MapInstrumentElement {
             Avionics.Utils.diffAndSet(this.mrange, this.instrument.getDisplayRange());
     }
     onEvent(_event) {
+        if(!this.isActive)
+            return;
         super.onEvent(_event);
     }
 
