@@ -186,6 +186,10 @@ class GPS_BaseNavPage extends NavSystemPage {
         }
     }
     toggleMapOrientation() {
+        if(this.displayWeather) {
+            this.gps.SwitchToInteractionState(0);
+            return;
+        }
         if (this.map && this.map.navMap) {
             this.trackUp = !this.trackUp;
             this.setMapOrientation();
@@ -348,6 +352,8 @@ class GPS_BaseNavPage extends NavSystemPage {
         }
     }
     toggleNexrad() {
+        if(this.displayWeather)
+            return;
         let elem = this.element.getElementOfType(GPS_Map);
         if(elem){
             if(elem.getNexrad() == this.nexrad)
@@ -356,6 +362,8 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.nexrad = !this.nexrad;
     }
     toggleTCAS() {
+        if(this.displayWeather)
+            return;
         this.tcas = !this.tcas;
         this.map.setNPCAirplaneManagerTCASMode(this.tcas);
     }
@@ -759,6 +767,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             super.onEvent(_event);
 
         if (_event == "CLR_Push")  {
+            if(this.gps.currentContextualMenu) {
+                this.gps.closePopUpElement();
+                this.gps.currentContextualMenu = null;
+                this.gps.SwitchToInteractionState(0);
+                return;
+            }
             this.gps.closePopUpElement();
             this.gps.currentContextualMenu = null;
             this.gps.SwitchToInteractionState(0);
@@ -1025,6 +1039,11 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.gps.SwitchToInteractionState(0);
     }
     toggleMapOrientation() {
+        if(this.displayWeather) {
+            this.gps.currentContextualMenu = null;
+            this.gps.SwitchToInteractionState(0);
+            return;
+        }
         super.toggleMapOrientation();
         this.gps.dataStore.set("MapTrackUp", this.trackUp);
         if (this.map && this.map.navMap) {
@@ -1056,7 +1075,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     toggleMapWeather() {
         if(this.displayWeather){
             if(this.savedDisplayData)
-                this.toggleDataDisplay();
+                this.toggleDataDisplay(true);
             if(this.tcas)
                 this.gps.getChildById("TCAS").setAttribute("style", "display: block");
             else
@@ -1066,7 +1085,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         {
             this.savedDisplayData = this.displayData;
             if(this.displayData)
-                this.toggleDataDisplay();
+                this.toggleDataDisplay(true);
             this.gps.getChildById("TCAS").setAttribute("style", "display: none");
         }
         super.toggleMapWeather();
@@ -1084,11 +1103,18 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.gps.SwitchToInteractionState(0);
     }
     toggleNexrad() {
-        super.toggleNexrad();
+        if(!this.displayWeather) {
+            super.toggleNexrad();
+        }
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
     }
     toggleTCAS() {
+        if(this.displayWeather) {
+            this.gps.currentContextualMenu = null;
+            this.gps.SwitchToInteractionState(0);
+            return;
+        }
         super.toggleTCAS();
         this.gps.dataStore.set("MapTCAS", this.tcas);
         this.gps.currentContextualMenu = null;
@@ -1116,7 +1142,12 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     toggleDisplayDataCB(){
         return this.displayWeather;
     }
-    toggleDataDisplay(){
+    toggleDataDisplay(force = false){
+        if(this.displayWeather && !force) {
+            this.gps.currentContextualMenu = null;
+            this.gps.SwitchToInteractionState(0);
+            return;
+        }
         this.displayData = this.displayData ? false : true;
         this.gps.dataStore.set("MapDisplayData", this.displayData);
 
