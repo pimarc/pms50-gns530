@@ -99,6 +99,13 @@ class GPS_METAR extends NavSystemElement {
                 this.updateMetar(this.identElement.textContent);
             }
         }
+        if (_event == "CLR_Push")  {
+            if(this.gps.currentContextualMenu) {
+                this.gps.closePopUpElement();
+                this.gps.currentContextualMenu = null;
+                this.gps.SwitchToInteractionState(0);
+            }
+        }
     }
     metar_SelectionCallback(_event, _index) {
     }
@@ -129,14 +136,18 @@ class GPS_METAR extends NavSystemElement {
     metarOriginSet() {
         this.gps.SwitchToInteractionState(0);
         var origin = this.gps.currFlightPlanManager.getOrigin();
-        this.icaoSearchField.SetWaypoint("A", origin.icao);
-        this.updateMetar(origin.ident);
+        if(origin) {
+            this.icaoSearchField.SetWaypoint("A", origin.icao);
+            this.updateMetar(origin.ident);
+        }
     }
     metarDestinationSet() {
         this.gps.SwitchToInteractionState(0);
         var destination = this.gps.currFlightPlanManager.getDestination();
-        this.icaoSearchField.SetWaypoint("A", destination.icao);
-        this.updateMetar(destination.ident);
+        if(destination) {
+            this.icaoSearchField.SetWaypoint("A", destination.icao);
+            this.updateMetar(destination.ident);
+        }
     }
     updateMetar(ident) {
         this.metarSliderGroup.setStringElements([]);

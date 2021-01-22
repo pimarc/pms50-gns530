@@ -89,7 +89,12 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.displayWeather = false;
         this.weatherModeHorizontal = true;
         this.tcas = false;
+        this.nexrad = false;
+        this.mapInitialized = false;
         this.setMapOrientation();
+    }
+    onEnter() {
+        this.mapInitialized = false;
     }
     onEvent(_event){
         super.onEvent(_event);
@@ -98,6 +103,10 @@ class GPS_BaseNavPage extends NavSystemPage {
         }
     }
     onUpdate(_deltaTime) {
+        if(!this.mapInitialized) {
+            this.initMap();
+            return;
+        }
         super.onUpdate(_deltaTime);
         if(this.windDirection && this.windVelocity){
             this.windVelocity.textContent = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
@@ -293,7 +302,7 @@ class GPS_BaseNavPage extends NavSystemPage {
             this.displayWeather = false;
             this.restoreRange();
             if(elem) {
-                if(elem.nexradOn)
+                if(this.nexrad)
                     elem.setWeather(EWeatherRadar.TOPVIEW);
                 else
                     elem.setWeather(EWeatherRadar.OFF);
@@ -340,12 +349,38 @@ class GPS_BaseNavPage extends NavSystemPage {
     }
     toggleNexrad() {
         let elem = this.element.getElementOfType(GPS_Map);
-        if(elem)
-            elem.toggleNexrad();
+        if(elem){
+            if(elem.getNexrad() == this.nexrad)
+                elem.toggleNexrad();
+        }
+        this.nexrad = !this.nexrad;
     }
     toggleTCAS() {
         this.tcas = !this.tcas;
         this.map.setNPCAirplaneManagerTCASMode(this.tcas);
+    }
+    initMap() {
+        let elem = this.element.getElementOfType(GPS_Map);
+        if(elem && elem.instrumentLoaded) {
+            // We must release the current bingmap weather mode otherwise it's not updated
+            elem.instrument.bingMap.m_showWeather = undefined;
+            elem.nexradOn = this.nexrad;
+            if(this.displayWeather) {
+                if(this.weatherModeHorizontal)
+                    elem.setWeather(EWeatherRadar.HORIZONTAL, this.weatherLegend);
+                else
+                    elem.setWeather(EWeatherRadar.VERTICAL, this.weatherLegend);
+            }
+            else {
+                if(this.nexrad)
+                    elem.setWeather(EWeatherRadar.TOPVIEW);
+                else
+                    elem.setWeather(EWeatherRadar.OFF);
+            }
+            this.map.setNPCAirplaneManagerTCASMode(this.tcas);
+            this.setDisplayElements();
+            this.mapInitialized = true;
+        }
     }
 }
 
@@ -386,6 +421,9 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
                 new ContextualMenuElement("Restart GPS?", this.reloadGPS.bind(this))
             ]);
         }
+    }
+    onEnter() {
+        super.onEnter();
     }
     onEvent(_event){
         super.onEvent(_event);
@@ -631,6 +669,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         }
     }
     onEnter() {
+        super.onEnter();
         if(this.map && !this.displayWeather) {
             if(this.tcas)
                 this.gps.getChildById("TCAS").setAttribute("style", "display: block");
@@ -1202,6 +1241,7 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
         this.mslHundreds = this.gps.getChildById("TerrainMslValueHu" + this.mapnum);
     }
     onEnter() {
+        super.onEnter();
         if(this.map) {
             this.map.mapConfigId = 1;
             this.map.bingMapRef = EBingReference.PLANE;
@@ -1289,6 +1329,7 @@ class GPS_TrafficNavPage extends GPS_BaseNavPage {
         this.toggleTCAS();
     }
     onEnter() {
+        super.onEnter();
         if(this.map) {
             this.map.showBingMap = false;
             this.map.refreshDisplay();
