@@ -225,6 +225,8 @@ TCAS algorithms used in the mod are very simple and based only on the proximity.
 TCAS data is disabled if your own aircraft is below 500ft AGL.
 
 # Change log
+## V 1.0.27 (development not release yet)
+- bugfix: Bug correction: freeze if menu items all inactive
 ## V 1.0.26
 - bugfix: procedure map now updated only when needed (save fps)
 - bugfix: weather radar and/or NEXRAD modes not updated correctly when switching between maps.
