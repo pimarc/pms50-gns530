@@ -22,6 +22,16 @@ class ContextualMenu {
         }
         Avionics.Utils.diffAndSet(_gps.contextualMenuElements, elementsHTML);
     }
+// PM Modif: Check all inactive    
+    isAllInactive() {
+        for (var i = 0; i < this.elements.length; i++) {
+            if(!this.elements[i].isInactive()) {
+                return false;
+            }
+        }
+        return true;
+    }
+// PM Modif: End Check all inactive    
 }
 class ContextualMenuConfirmation extends ContextualMenu {
     constructor(_title, _elements, _message) {

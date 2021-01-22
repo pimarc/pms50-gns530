@@ -94,16 +94,17 @@ class GPS_METAR extends NavSystemElement {
     onExit() {
     }
     onEvent(_event) {
-        if (_event == "ENT_Push") {
-            if(this.gps.currentInteractionState == 0 && this.icaoSearchField.wayPoint) {
-                this.updateMetar(this.identElement.textContent);
-            }
-        }
-        if (_event == "CLR_Push")  {
+        if(_event == "CLR_Push"
+            || _event == "NavigationPush") {
             if(this.gps.currentContextualMenu) {
                 this.gps.closePopUpElement();
                 this.gps.currentContextualMenu = null;
                 this.gps.SwitchToInteractionState(0);
+            }
+        }
+        if (_event == "ENT_Push") {
+            if(this.gps.currentInteractionState == 0 && this.icaoSearchField.wayPoint) {
+                this.updateMetar(this.identElement.textContent);
             }
         }
     }

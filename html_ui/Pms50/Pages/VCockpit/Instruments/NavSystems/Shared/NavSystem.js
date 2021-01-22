@@ -150,36 +150,49 @@ class NavSystem extends BaseInstrument {
                     break;
                 case 2:
                     if (_event == "NavigationSmallInc") {
-                        let count = 0;
-                        do {
-                            this.cursorIndex = (this.cursorIndex + 1) % this.currentContextualMenu.elements.length;
-                            if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + 5)) {
-                                this.contextualMenuDisplayBeginIndex++;
-                            }
-                            if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
-                                this.contextualMenuDisplayBeginIndex = 0;
-                            }
-                            count++;
-                        } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+// PM Modif: Bug when all menu items are inactive (probably infinite loop ?)
+                        // Check if all inactivated
+                        if(!this.currentContextualMenu.isAllInactive()) {
+                            let count = 0;
+                            do {
+                                this.cursorIndex = (this.cursorIndex + 1) % this.currentContextualMenu.elements.length;
+                                if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + 5)) {
+                                    this.contextualMenuDisplayBeginIndex++;
+                                }
+                                if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
+                                    this.contextualMenuDisplayBeginIndex = 0;
+                                }
+                                count++;
+                            } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        }
                     }
                     if (_event == "NavigationSmallDec") {
-                        let count = 0;
-                        do {
-                            this.cursorIndex = (this.cursorIndex - 1) < 0 ? (this.currentContextualMenu.elements.length - 1) : (this.cursorIndex - 1);
-                            if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
-                                this.contextualMenuDisplayBeginIndex--;
-                            }
-                            if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + 5)) {
-                                this.contextualMenuDisplayBeginIndex = this.currentContextualMenu.elements.length - 5;
-                            }
-                        } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        // Check if all inactivated
+                        if(!this.currentContextualMenu.isAllInactive()) {
+                            let count = 0;
+                            do {
+                                this.cursorIndex = (this.cursorIndex - 1) < 0 ? (this.currentContextualMenu.elements.length - 1) : (this.cursorIndex - 1);
+                                if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
+                                    this.contextualMenuDisplayBeginIndex--;
+                                }
+                                if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + 5)) {
+                                    this.contextualMenuDisplayBeginIndex = this.currentContextualMenu.elements.length - 5;
+                                }
+                            } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        }
                     }
+// PM Modif: End Bug when all menu items are inactive (probably infinite loop ?)
                     if (_event == "MENU_Push") {
                         this.SwitchToInteractionState(0);
                     }
                     if (_event == "ENT_Push") {
-                        this.currentContextualMenu.elements[this.cursorIndex].SendEvent();
-                    }
+// PM Modif: Do not send event if element is inactive (occurs when all element are incative)
+                        if(this.currentContextualMenu.elements[this.cursorIndex].isInactive())
+                            this.SwitchToInteractionState(0);
+                        else
+                            this.currentContextualMenu.elements[this.cursorIndex].SendEvent();
+// PM Modif: End Do not send event if element is inactive (occurs when all element are incative)
+}
                     break;
                 case 3:
 // PM Modif: Cursor mode uses a fake interaction state 3
