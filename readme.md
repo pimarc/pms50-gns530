@@ -1,5 +1,5 @@
 
-# Documentation for the GNS530 MOD Package
+# GNS530 MOD
 
 This package is an enhancement of the built-in GNS530 GPS. The goal is to offer an instrument that comes as close as possible to the original.
 
