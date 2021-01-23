@@ -1,6 +1,12 @@
+
 # Documentation for the GNS530 MOD Package
 
 This package is an enhancement of the built-in GNS530 GPS. The goal is to offer an instrument that comes as close as possible to the original.
+
+# Latest release
+https://pms50.com/fs2020/gns530/pms50-gns530.zip
+
+See Installation section below.
 
 # Main features
 - MSFS U-turn bug workaround
@@ -39,7 +45,7 @@ Get the latest release from  https://pms50.com/fs2020/gns530/pms50-gns530.zip
 
 Unzip the file in your Community folder and restart the sim.
 
-If you download from GitHub, BE CAREFUL to download only the releases (button release at the right of the GitHub screen). GitHub sources may be not stable.
+If you download from GitHub, BE CAREFUL to download only the releases (button release at the right of the GitHub screen). DONT'USE THE "CODE" button. GitHub sources may be not stable.
 
 Sometimes users reported that it was necessary to reboot the machine (maybe after a MSFS patch?).
 
