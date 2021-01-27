@@ -14,6 +14,11 @@ class GPS_COMSetup extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
+        let simValue = SimVar.GetSimVarValue("COM SPACING MODE:" + this.gps.comIndex, "Enum");
+        if(simValue != this.spacingMode) {
+            this.spacingMode = simValue;
+            this.gps.dataStore.set("ChannelSpacingMode", this.spacingMode);
+        }
         Avionics.Utils.diffAndSet(this.channelSpacingValue, this.spacingMode == 0 ? "25.0 KHZ" : "8.33 KHZ");
     }
     onExit() {
