@@ -234,6 +234,7 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 ## V 1.0.27 (development not yet released)
 - bugfix: Bug correction: freeze if menu items all inactive
 - bugfix: Channel spacing was not responding to an external change
+- bugfix: Flight plan import was producing CTDs with some waypoints linked to an airport
 ## V 1.0.26
 - bugfix: procedure map now updated only when needed (save fps)
 - bugfix: weather radar and/or NEXRAD modes not updated correctly when switching between maps.

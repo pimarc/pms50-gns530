@@ -1271,12 +1271,15 @@ class FPLCatalogItem {
                     if(icao){
                         let ident = icao.getElementsByTagName("ICAOIdent")[0] ? icao.getElementsByTagName("ICAOIdent")[0].textContent : "";
                         this.ident = ident;
-                        // Prepare icao format TRRRRRRIIIII each part with right leading 0s (T=Type, R=Region, I=Ident)
+                        // Prepare icao format TRRAAAAIIIII each part with right leading 0s (T=Type, R=Region, A=Linked airport I=Ident)
                         while(ident.length < 5)
                             ident += " ";
                         let region = icao.getElementsByTagName("ICAORegion")[0] ? icao.getElementsByTagName("ICAORegion")[0].textContent : "";
-                        while(region.length < 6)
+                        while(region.length < 2)
                             region += " ";
+                        let linkedairport = icao.getElementsByTagName("ICAOAirport")[0] ? icao.getElementsByTagName("ICAOAirport")[0].textContent : "";
+                        while(linkedairport.length < 4)
+                            linkedairport += " ";
                         let typeletter = "W";
                         type = type.toUpperCase();
                         if(type == "AIRPORT")
@@ -1287,7 +1290,7 @@ class FPLCatalogItem {
                             typeletter = "N";
                         else if(type == "USER")
                             typeletter = "U";
-                        let icaoString = typeletter + region + ident;
+                        let icaoString = typeletter + region + linkedairport + ident;
                         if((sid == "") && (star == "")) {
                             // Do not add waypoints that are part of sid or star
                             this.icaoWaypoints.push(icaoString);
