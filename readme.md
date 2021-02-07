@@ -97,7 +97,7 @@ If you activate the approach before the last enroute waypoint, the autopilot goe
 
 If you activate the approach after the last enroute waypoint, the autopilot goes directly to the first approach waypoint (without U-turn!!!). This removes all the enroute waypoints.
 
-Note: If you set a Direct To, this automatically de-activates the approach. You will have to reactivate it if needed.
+Note: If you set a Direct To, this automatically de-activates the approach. It will be re-activated automatically if your target waypoint is part of your approach, 2nm before reaching the target.
 
 ## U-turn bug
 This FS2020 bug probably made many of us crazy. It occurs when you select/activate an approach after the last enroute waypoint. Then the autopilot comes back to the last enroute waypoint before reaching the first approach waypoint.
