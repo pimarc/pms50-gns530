@@ -196,6 +196,17 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
     }
 }
 
+// Special flight plan manager class to be used with waypoint procedure map
+// We just override the isActiveApproach to be always false
+// Otherwise, the path between waypoints is not displayed if there is an active approach on the flight plan
+class GPS_FlightPlanManagerForWaypointMap extends FlightPlanManager {
+    constructor(_instrument) {
+        super(...arguments);
+    }
+    isActiveApproach(forceSimVarCall = false) {
+        return false;
+    }
+}
 class GPS_WaypointMap extends MapInstrumentElement {
     constructor() {
         super(...arguments);
@@ -215,7 +226,9 @@ class GPS_WaypointMap extends MapInstrumentElement {
     onTemplateLoaded() {
         // We create a special map instrument not associated to the current GPS flight plan
         this.instrument.init("SPECIAL_INSTRUMENT");
-        this.instrument._flightPlanManager = new FlightPlanManager(this.instrument);
+        this.instrument._flightPlanManager = new GPS_FlightPlanManagerForWaypointMap(this.instrument);
+        // Note this.instrument.flightPlanManager returns this.instrument._flightPlanManager
+        // So they are the same thing
         this.instrument.flightPlanElement.source = this.instrument.flightPlanManager;
         this.instrumentLoaded = true;
         this.instrument.eBingMode = EBingMode.VFR;
