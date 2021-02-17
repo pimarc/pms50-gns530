@@ -233,6 +233,7 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 # Change log
 ## V 1.0.28 (development not released)
 - bugfix: Procedure maps not displaying path between waypoints when an approach is activated.
+- bugfix: The GNS430 may fail to start from cold and start state.
 ## V 1.0.27
 - bugfix: Bug correction: freeze if menu items all inactive
 - bugfix: Channel spacing was not responding to an external change
