@@ -13,8 +13,8 @@ class AS430 extends BaseGPS {
         this.NbLoopInitScreen = 150;
         this.initScreen.setAttribute("style", "display: none");
         this.pageGroups = [
-            new NavSystemPageGroup("NAV", this, [
-                new GPS_DefaultNavPage(6, [4, 3, 0, 9, 10, 7], "430"),
+            new NavSystemPageGroup("AUX", this, [
+                new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
             ])
         ];
         this.messageList = new GPS_Messages();
