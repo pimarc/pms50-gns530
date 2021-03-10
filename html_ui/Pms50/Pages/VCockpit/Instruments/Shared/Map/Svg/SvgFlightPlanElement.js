@@ -88,6 +88,12 @@ class SvgFlightPlanElement extends SvgMapElement {
                 let waypoint = this.source.getActiveWaypoint();
                 let magvar = SimVar.GetSimVarValue("MAGVAR", "degrees");
                 let dir = SimVar.GetSimVarValue("GPS OBS VALUE", "degree") + magvar;
+// PM Modif: take care of map orientation
+                if(map.rotationMode == EMapRotationMode.HDGUp)
+                    dir -= SimVar.GetSimVarValue("GPS GROUND TRUE HEADING", "degree");
+                if(map.rotationMode == EMapRotationMode.TrackUp)
+                    dir -= SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+// PM Modif: End take care of map orientation
                 let wpLLA = waypoint.infos.coordinates.toLatLong();
                 let offsetLat = map.NMToPixels(360) * Math.cos(dir * Math.PI / 180);
                 let offsetLong = map.NMToPixels(360) * Math.sin(dir * Math.PI / 180);
@@ -595,6 +601,12 @@ class SvgDirectToElement extends SvgMapElement {
         if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
             let magvar = SimVar.GetSimVarValue("MAGVAR", "degrees");
             let dir = SimVar.GetSimVarValue("GPS OBS VALUE", "degree") + magvar;
+// PM Modif: take care of map orientation
+            if(map.rotationMode == EMapRotationMode.HDGUp)
+                dir -= SimVar.GetSimVarValue("GPS GROUND TRUE HEADING", "degree");
+            if(map.rotationMode == EMapRotationMode.TrackUp)
+                dir -= SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+// PM Modif: End take care of map orientation
             let offsetLat = map.NMToPixels(360) * Math.cos(dir * Math.PI / 180);
             let offsetLong = map.NMToPixels(360) * Math.sin(dir * Math.PI / 180);
             p1.x -= offsetLong;
