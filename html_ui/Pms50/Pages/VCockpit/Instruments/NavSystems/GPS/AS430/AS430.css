@@ -1545,6 +1545,11 @@ as430-element {
         as430-element #Electricity #BotDisplay #MsgAlert[state=Blink] {
           color: black;
           background-color: yellow; }
+      as430-element #Electricity #BotDisplay #Obs {
+        display: inline-block;
+        position: absolute;
+        visibility: visible;
+        right: 50vh; }
       as430-element #Electricity #BotDisplay #PagePos .PageSelect {
         border: calc(0.5263157895vh) solid #6ecdee;
         width: calc(1.4285714286vw);

@@ -45,6 +45,7 @@ class BaseGPS extends NavSystem {
         this.menuTitle = this.getChildById("MenuTitle");
         this.pagePos = this.getChildById("PagePos");
         this.msgAlert = this.getChildById("MsgAlert");
+        this.OBSState = this.getChildById("Obs");
         this.CDIState = this.getChildById("Gps");
         this.selectApproachPage = new NavSystemElementContainer("ApproachSelection", "ApproachSelection", new GPS_ApproachSelection());
         this.selectApproachPage.setGPS(this);
@@ -144,6 +145,9 @@ class BaseGPS extends NavSystem {
         if (_event == "ID") {
             SimVar.SetSimVarValue("K:RADIO_VOR" + this.navIndex + "_IDENT_TOGGLE", "boolean", 0);
         }
+        if (_event == "OBS_Push") {
+            this.toggleOBS();
+        }
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -172,6 +176,7 @@ class BaseGPS extends NavSystem {
                 }
             }
         }
+        this.OBSState.setAttribute("style", "visibility: " + (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") ? "visible" : "hidden"));
         this.comActive.innerHTML = this.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:" + this.comIndex, "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:" + this.comIndex, "Enum") == 0 ? 2 : 3);
         this.comStandby.innerHTML = this.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:" + this.comIndex, "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:" + this.comIndex, "Enum") == 0 ? 2 : 3);
         this.vlocActive.innerHTML = this.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:" + this.navIndex, "MHz"), 2);
@@ -221,6 +226,10 @@ class BaseGPS extends NavSystem {
         this.pagePos.innerHTML = pagesMenu;
         this.menuTitle.textContent = this.getCurrentPageGroup().name;
         this.checkAfterDirectTo();
+    }
+    toggleOBS() {
+        SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"));
+        SimVar.SetSimVarValue("K:GPS_OBS", "number", 0);
     }
 
     checkAfterDirectTo() {

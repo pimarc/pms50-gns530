@@ -231,7 +231,9 @@ TCAS algorithms used in the mod are very simple and based only on the proximity.
 TCAS data is disabled if your own aircraft is below 500ft AGL.
 
 # Change log
-## V 1.0.28 (development not released)
+## V 1.0.28
+- compatibility sim update 3: temporary release before checking if all features are compatible
+- enabled the OBS button as experimental feature (not tested)
 - bugfix: Procedure maps not displaying path between waypoints when an approach is activated.
 - bugfix: The GNS430 may fail to start from cold and start state.
 ## V 1.0.27

@@ -1908,6 +1908,11 @@ as530-element {
         as530-element #Electricity #BotDisplay #MsgAlert[state=Blink] {
           color: black;
           background-color: yellow; }
+      as530-element #Electricity #BotDisplay #Obs {
+        display: inline-block;
+        position: absolute;
+        visibility: visible;
+        right: 30vh; }
       as530-element #Electricity #BotDisplay #PagePos .PageSelect {
         border: calc(0.4273504274vh) solid #6ecdee;
         width: calc(1.5625vw);

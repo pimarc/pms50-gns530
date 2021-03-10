@@ -977,14 +977,14 @@ class GPS_FPLCatalog extends NavSystemElement {
         
         // Set origin
         if(waypoints.length && waypoints[0][0] == "A") {
-            await Coherent.call("SET_ORIGIN", waypoints[0]);
+            await Coherent.call("SET_ORIGIN", waypoints[0], false);
             firstEnrouteWaypointIndex++;
             hasOrigin = true;
         }
         
         // Set destination
         if(waypoints.length > 1 && waypoints[lastEnrouteWaypointIndex][0] == "A") {
-            await Coherent.call("SET_DESTINATION", waypoints[lastEnrouteWaypointIndex]);
+            await Coherent.call("SET_DESTINATION", waypoints[lastEnrouteWaypointIndex], false);
             lastEnrouteWaypointIndex--;
             hasDestination = true;
         }
@@ -1413,13 +1413,13 @@ class GPS_FlightPlanForSave {
         // Set origin
         var indexfpl= 0;
         if(this.origin) {
-            await Coherent.call("SET_ORIGIN", this.origin.icao);
+            await Coherent.call("SET_ORIGIN", this.origin.icao, false);
             indexfpl++;
         }
 
         // Set destination
         if(this.destination) {
-            await Coherent.call("SET_DESTINATION", this.destination.icao);
+            await Coherent.call("SET_DESTINATION", this.destination.icao, false);
         }
 
         // Set enroute waypoints
