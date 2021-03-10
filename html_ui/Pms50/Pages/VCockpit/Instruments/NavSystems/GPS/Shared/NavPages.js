@@ -1528,7 +1528,7 @@ class GPS_ComNav extends NavSystemElement {
         var elements = [];
         if (infos && infos.frequencies) {
             for (let i = 0; i < infos.frequencies.length; i++) {
-                elements.push('<div><div class="Align LeftDisplay">' + infos.frequencies[i].name.slice(0, 22) + '</div> <div class="Align RightValue SelectableElement">' + this.gps.frequencyFormat(infos.frequencies[i].mhValue, 3) + '</div></div>');
+                elements.push('<div><div class="Align LeftDisplay">' + infos.frequencies[i].getTypeName().slice(0, 22) + '</div> <div class="Align RightValue SelectableElement">' + this.gps.frequencyFormat(infos.frequencies[i].mhValue, 3) + '</div></div>');
             }
         }
         this.frequenciesSelectionGroup.setStringElements(elements);
