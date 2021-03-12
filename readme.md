@@ -231,6 +231,8 @@ TCAS algorithms used in the mod are very simple and based only on the proximity.
 TCAS data is disabled if your own aircraft is below 500ft AGL.
 
 # Change log
+## V 1.0.29
+- compatibility sim update 3
 ## V 1.0.28
 - compatibility sim update 3: temporary release before checking if all features are compatible
 - enabled the OBS button as experimental feature (not tested)
