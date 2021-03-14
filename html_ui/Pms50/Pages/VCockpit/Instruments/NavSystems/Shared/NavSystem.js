@@ -227,7 +227,9 @@ class NavSystem extends BaseInstrument {
                     if (_event == "NavigationLargeInc") {
                         this.lastRelevantICAO = null;
                         this.lastRelevantICAOType = null;
-                        if (this.pageGroups.length > 1 && !this.currentEventLinkedPageGroup) {
+// PM Modif: Don't loop navigation (thanks to dusty674)
+                        if (this.pageGroups.length > 1 && !this.currentEventLinkedPageGroup && this.currentPageGroupIndex < (this.pageGroups.length-1)) {
+// PM Modif: End Don't loop navigation (thanks to dusty674)
                             this.pageGroups[this.currentPageGroupIndex].onExit();
                             this.currentPageGroupIndex = (this.currentPageGroupIndex + 1) % this.pageGroups.length;
                             this.pageGroups[this.currentPageGroupIndex].onEnter();
@@ -236,7 +238,9 @@ class NavSystem extends BaseInstrument {
                     if (_event == "NavigationLargeDec") {
                         this.lastRelevantICAO = null;
                         this.lastRelevantICAOType = null;
-                        if (this.pageGroups.length > 1 && !this.currentEventLinkedPageGroup) {
+// PM Modif: Don't loop navigation (thanks to dusty674)
+                        if (this.pageGroups.length > 1 && !this.currentEventLinkedPageGroup && this.currentPageGroupIndex > 0) {
+// PM Modif: End Don't loop navigation (thanks to dusty674)
                             this.pageGroups[this.currentPageGroupIndex].onExit();
                             this.currentPageGroupIndex = (this.currentPageGroupIndex + this.pageGroups.length - 1) % this.pageGroups.length;
                             this.pageGroups[this.currentPageGroupIndex].onEnter();

@@ -231,6 +231,9 @@ TCAS algorithms used in the mod are very simple and based only on the proximity.
 TCAS data is disabled if your own aircraft is below 500ft AGL.
 
 # Change log
+## V 1.0.30 (dev not released)
+- Changed navigation group order (last is now nearest pages)
+- Group navigation do not loop any more
 ## V 1.0.29
 - compatibility sim update 3
 ## V 1.0.28

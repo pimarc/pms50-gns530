@@ -92,16 +92,16 @@ class AS430 extends BaseGPS {
                 new NavSystemPage("NDB", "NDB", new GPS_NDBWaypoint()),
                 new NavSystemPage("VOR", "VOR", new GPS_VORWaypoint())
             ]),
+            new NavSystemPageGroup("AUX", this, [
+                new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
+                new NavSystemPage("METAR", "METAR", new GPS_METAR(this.airportWaypointsIcaoSearchField, 6))
+            ]),
             new NavSystemPageGroup("NRST", this, [
                 new NavSystemPage("NRSTAirport", "NRSTAirport", new GPS_NearestAirports()),
                 new NavSystemPage("NRSTIntersection", "NRSTIntersection", new GPS_NearestIntersection()),
                 new NavSystemPage("NRSTNDB", "NRSTNDB", new GPS_NearestNDB()),
                 new NavSystemPage("NRSTVOR", "NRSTVOR", new GPS_NearestVOR()),
                 new NavSystemPage("NRSTAirspace", "NRSTAirspace", new GPS_NearestAirpaces()),
-            ]),
-            new NavSystemPageGroup("AUX", this, [
-                new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
-                new NavSystemPage("METAR", "METAR", new GPS_METAR(this.airportWaypointsIcaoSearchField, 6))
             ])
         ];
         this.addEventLinkedPageGroup("DirectTo_Push", new NavSystemPageGroup("DRCT", this, [new NavSystemPage("DRCT", "DRCT", new GPS_DirectTo())]));
