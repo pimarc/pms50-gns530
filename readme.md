@@ -8,6 +8,14 @@ https://pms50.com/fs2020/gns530/pms50-gns530.zip
 
 See Installation section below.
 
+# Donation
+
+If you enjoyed this software, you can participate in the development effort by clicking on the following link:
+
+https://pms50.com/fs2020/donateGNS530mod.html
+
+I cannot thank each of you individually so thank you to everyone who supports me.
+
 # Main features
 - MSFS U-turn bug workaround
 - North Up / Track up map modes
@@ -31,13 +39,6 @@ See Installation section below.
 - Many graphical enhancements
 - Night/day lighting
 
-# Donation
-
-If you enjoyed this software, you can participate in the development effort by clicking on the following link:
-
-https://pms50.com/fs2020/donateGNS530mod.html
-
-I cannot thank each of you individually so thank you to everyone who supports me.
 
 # Installation
 
@@ -59,7 +60,8 @@ You can report bugs here https://github.com/pimarc/pms50-gns530/issues
 Before reporting a bug:
 - Read the readme file (maybe not a real bug but a normal behavior)
 - Install the latest release of the MOD 
-- Remove any other MOD
+- Remove any other MOD or livery
+- Remove any external hardware or software involved with MSFS
 - Take some time to search for the fastest sequence that reproduces the bug
 - Re-install the MOD
 - Restart the sim
@@ -72,11 +74,12 @@ When reporting please provide:
 - The exact flight plan (textual)
 - The version number as displayed when you start the GPS
 - The aircraft type
-- The list of installed Mods
+- The list of installed Mods and liveries.
 
 If I'm not able to reproduce the issue, it will be very difficult to fix.
 Messages just like "I got a froze" or "I got a CTD" without further information will not be taken into care.
 I can spend all the necessary time to help but I need real information to do that.
+I cannot support here external hardware, software nor liveries. Please try without them before requesting support.
 Thank you for your understanding.
 
 # Current MSFS bugs
