@@ -343,6 +343,16 @@ class NavSystem extends BaseInstrument {
         this.initAcknowledged = false;
         this.budgetedItemId = 0;
     }
+    // PM Modif: Allow to block the updates if the GPS is hidden in the cockpit (GPS switching)
+    canUpdate() {
+        super.canUpdate();
+        let variableToGet = "L:" + this.instrumentIdentifier + "_HIDDEN";
+        if(SimVar.GetSimVarValue(variableToGet, "bool"))
+            return false;
+        else
+            return true;
+    }
+    // PM Modif: End Allow to block the updates if the GPS is hidden in the cockpit (GPS switching)
     Update() {
         super.Update();
         if (NavSystem._iterations < 10000) {
