@@ -101,6 +101,16 @@ class BaseGPS extends NavSystem {
             }
         }
     }
+    Init() {
+        super.Init();
+        // Get channel spacing from config
+        let currentSpacingMode = SimVar.GetSimVarValue("COM SPACING MODE:" + this.comIndex, "Enum");
+        this.spacingMode = this.dataStore.get("ChannelSpacingMode", currentSpacingMode);
+        if(this.spacingMode != currentSpacingMode)
+            SimVar.SetSimVarValue("K:COM_" + this.comIndex + "_SPACING_MODE_SWITCH", "number", 0);
+        // Update to storage (useful for first time)
+        this.dataStore.set("ChannelSpacingMode", this.spacingMode);
+    }
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "LeftSmallKnob_Push") {
