@@ -186,6 +186,9 @@ Using this knob you can move the cursor. While in cursor mode, pressing the "ENT
 
 In cursor mode the MOD automatically selects the nearest Waypoint to be the direct TO target. So if you then press the "direct To" button, the nearest waypoint is preselected. It's a convenient way to do a DirectTO from the map.
 
+## OBS
+OBS angle can be set from the GNS530 Main NAV page (first NAV page) by pressing the right knob. You then enter in the "OBS angle set mode" and you can set the value with the right knob (by 10 degrees or 1 degree step ). The "OBS angle set mode" turns off automatically after 5 seconds of inactivity or if you press again the right knob.
+
 ## Adding and deleting waypoints
 Adding a waypoint in the flight plan is currently broken in the sim when there is an approach loaded. I found a workaround to this situation so inserting a waypoint should just work now (with some exceptions).
 
@@ -237,6 +240,8 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 ## V 1.0.30 (dev not released)
 - Changed navigation group order (last is now nearest pages)
 - Group navigation do not loop any more
+- Adding OBS angle setting
+- Bug fixing in spacing mode state saving
 ## V 1.0.29
 - compatibility sim update 3
 ## V 1.0.28
