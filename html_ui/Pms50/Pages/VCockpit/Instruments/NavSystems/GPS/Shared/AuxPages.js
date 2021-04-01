@@ -8,18 +8,11 @@ class GPS_COMSetup extends NavSystemElement {
         this.defaultSelectables = [
             new SelectableElement(this.gps, this.channelSpacingValue, this.channelSpacingCB.bind(this))
         ];
-        this.spacingMode = this.gps.dataStore.get("ChannelSpacingMode", SimVar.GetSimVarValue("COM SPACING MODE:" + this.gps.comIndex, "Enum"));
-        this.channelSpacingSet(this.spacingMode);
     }
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        let simValue = SimVar.GetSimVarValue("COM SPACING MODE:" + this.gps.comIndex, "Enum");
-        if(simValue != this.spacingMode) {
-            this.spacingMode = simValue;
-            this.gps.dataStore.set("ChannelSpacingMode", this.spacingMode);
-        }
-        Avionics.Utils.diffAndSet(this.channelSpacingValue, this.spacingMode == 0 ? "25.0 KHZ" : "8.33 KHZ");
+        Avionics.Utils.diffAndSet(this.channelSpacingValue, SimVar.GetSimVarValue("COM SPACING MODE:" + this.gps.comIndex, "Enum") == 1 ? "8.33 kHz" : "25.0 kHz");
     }
     onExit() {
     }
@@ -33,8 +26,7 @@ class GPS_COMSetup extends NavSystemElement {
     channelSpacingSet(_mode) {
         if (SimVar.GetSimVarValue("COM SPACING MODE:" + this.gps.comIndex, "Enum") != _mode) {
             SimVar.SetSimVarValue("K:COM_" + this.gps.comIndex + "_SPACING_MODE_SWITCH", "number", 0);
-            this.spacingMode = _mode;
-            this.gps.dataStore.set("ChannelSpacingMode", this.spacingMode);
+            this.gps.dataStore.set("ChannelSpacingMode", _mode);
         }
         this.gps.SwitchToInteractionState(0);
     }

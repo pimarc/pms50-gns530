@@ -86,6 +86,14 @@ class SvgFlightPlanElement extends SvgMapElement {
             if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
                 activeWaypointIndex = this.source.getActiveWaypointIndex(false, true);
                 let waypoint = this.source.getActiveWaypoint();
+// PM Modif: trying to limit the distance in order to avoid the flicking bug of the OBS line
+                let distance = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
+                distance = distance + (map._NMWidth/2 * 1.5);
+                if(distance < (map._NMWidth * 1.5))
+                    distance = map._NMWidth * 1.5;
+                if(distance < 10)
+                    distance = 10;
+// PM Modif: End trying to limit the distance in order to avoid the flicking bug of the OBS line
                 let magvar = SimVar.GetSimVarValue("MAGVAR", "degrees");
                 let dir = SimVar.GetSimVarValue("GPS OBS VALUE", "degree") + magvar;
 // PM Modif: take care of map orientation
@@ -95,8 +103,10 @@ class SvgFlightPlanElement extends SvgMapElement {
                     dir -= SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
 // PM Modif: End take care of map orientation
                 let wpLLA = waypoint.infos.coordinates.toLatLong();
-                let offsetLat = map.NMToPixels(360) * Math.cos(dir * Math.PI / 180);
-                let offsetLong = map.NMToPixels(360) * Math.sin(dir * Math.PI / 180);
+// PM Modif: trying to limit the distance in order to avoid the flicking bug of the OBS line
+                let offsetLat = map.NMToPixels(distance) * Math.cos(dir * Math.PI / 180);
+                let offsetLong = map.NMToPixels(distance) * Math.sin(dir * Math.PI / 180);
+// PM Modif: End trying to limit the distance in order to avoid the flicking bug of the OBS line
                 let prev = map.coordinatesToXY(wpLLA);
                 prev.x -= offsetLong;
                 prev.y += offsetLat;
@@ -598,6 +608,9 @@ class SvgDirectToElement extends SvgMapElement {
         else if (this.targetLla) {
             p2 = map.coordinatesToXY(this.targetLla);
         }
+// PM Modif: Nothing special for directTo line while in OBS mode
+// Maybe we could also hide it completly
+/*
         if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
             let magvar = SimVar.GetSimVarValue("MAGVAR", "degrees");
             let dir = SimVar.GetSimVarValue("GPS OBS VALUE", "degree") + magvar;
@@ -614,6 +627,8 @@ class SvgDirectToElement extends SvgMapElement {
             p2.x -= p1.x - p2.x;
             p2.y -= p1.y - p2.y;
         }
+ */
+// PM Modif: End Nothing special for directTo line while in OBS mode
         let dx = p2.x - p1.x;
         let dy = p2.y - p1.y;
         let d = Math.sqrt(dx * dx + dy * dy);

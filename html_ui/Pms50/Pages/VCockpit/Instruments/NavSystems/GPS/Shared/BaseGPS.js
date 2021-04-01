@@ -80,6 +80,13 @@ class BaseGPS extends NavSystem {
             }
         });
         //PM Modif: End Add debugging tool WebUI-DevKit (must be on the community folder)
+        // reset OBS
+        let state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
+        if(this.gpsType == "530" || !state530)
+        {
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean"))
+                this.toggleOBS();
+        }
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -177,10 +184,17 @@ class BaseGPS extends NavSystem {
             }
         }
         this.OBSState.setAttribute("style", "visibility: " + (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") ? "visible" : "hidden"));
+        // Update spacing mode in config if an external software changed it
+        let currentSpacingMode = SimVar.GetSimVarValue("COM SPACING MODE:" + this.comIndex, "Enum");
+        if(this.spacingMode != currentSpacingMode) {
+            this.spacingMode = currentSpacingMode;
+            this.dataStore.set("ChannelSpacingMode", this.spacingMode);
+        }
         this.comActive.innerHTML = this.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:" + this.comIndex, "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:" + this.comIndex, "Enum") == 0 ? 2 : 3);
         this.comStandby.innerHTML = this.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:" + this.comIndex, "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:" + this.comIndex, "Enum") == 0 ? 2 : 3);
         this.vlocActive.innerHTML = this.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:" + this.navIndex, "MHz"), 2);
         this.vlocStandby.innerHTML = this.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:" + this.navIndex, "MHz"), 2);
+
         if (this.currentlySelectedFreq == 0) {
             this.comStandby.setAttribute("state", "Selected");
             this.vlocStandby.setAttribute("state", "Unselected");

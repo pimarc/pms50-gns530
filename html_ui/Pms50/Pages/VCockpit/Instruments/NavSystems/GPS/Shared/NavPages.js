@@ -429,9 +429,18 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
                 new ContextualMenuElement("Restart GPS?", this.reloadGPS.bind(this))
             ]);
         }
+
+        if(this.gps.gpsType == "530") {
+            this.OBSAngleContainer = this.gps.getChildById("MapObsAngle");
+            this.OBSAngle = this.OBSAngleContainer.getElementsByClassName("value")[0];
+        }
     }
-    onEnter() {
-        super.onEnter();
+    onExit() {
+        if(this.timeOutId)
+            clearTimeout(this.timeOutId);
+        if(this.gps.gpsType == "530")
+            this.OBSAngleContainer.setAttribute("state", "");
+        super.onExit();
     }
     onEvent(_event){
         super.onEvent(_event);
@@ -440,16 +449,83 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
             this.gps.currentContextualMenu = null;
             this.gps.SwitchToInteractionState(0);
         }
-        if (_event == "MENU_Push")  {
+        else if (_event == "MENU_Push")  {
             // Unblock declutter when leaving menu
             this.gps.currentContextualMenu = null;
         }
+        else if (_event == "RightSmallKnob_Push")  {
+            if(this.gps.gpsType != "530")
+                return;
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") && this.gps.currentInteractionState != 3) {
+                this.gps.SwitchToInteractionState(3);
+                this.displayObsAngle();
+            }
+            else {
+                if(this.timeOutId)
+                    clearTimeout(this.timeOutId);
+                this.OBSAngleContainer.setAttribute("state", "");
+                this.gps.SwitchToInteractionState(0);
+            }
+        }
+        else if (_event == "RightLargeKnob_Right")  {
+            if(this.gps.gpsType != "530")
+                return;
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+                this.displayObsAngle();
+                for(let i=0; i<10; i++)
+                    SimVar.SetSimVarValue("K:GPS_OBS_INC", "number", 0);
+            }
+        }
+        else if (_event == "RightLargeKnob_Left")  {
+            if(this.gps.gpsType != "530")
+                return;
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+                this.displayObsAngle();
+                for(let i=0; i<10; i++)
+                    SimVar.SetSimVarValue("K:GPS_OBS_DEC", "number", 0);
+            }
+        }
+        else if (_event == "RightSmallKnob_Right")  {
+            if(this.gps.gpsType != "530")
+                return;
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+                this.displayObsAngle();
+                SimVar.SetSimVarValue("K:GPS_OBS_INC", "number", 0);
+            }
+        }
+        else if (_event == "RightSmallKnob_Left")  {
+            if(this.gps.gpsType != "530")
+                return;
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+                this.displayObsAngle();
+                SimVar.SetSimVarValue("K:GPS_OBS_DEC", "number", 0);
+            }
+        }
+    }
+    displayObsAngle() {
+        if(this.timeOutId)
+            clearTimeout(this.timeOutId);
+        this.OBSAngleContainer.setAttribute("state", "Active");
+        this.timeOutId = setTimeout(() => {
+            this.OBSAngleContainer.setAttribute("state", "");
+            this.gps.SwitchToInteractionState(0);
+        }, 5000);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         if(this.initialUpdate) {
             this.initialUpdate = false;
             this.gps.currFlightPlanManager.updateFlightPlan();
+        }
+        if(this.gps.gpsType == "530") {
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean"))
+                Avionics.Utils.diffAndSet(this.OBSAngle, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree"), 0), 3) + "°");
+            else if(this.gps.currentInteractionState == 3) {
+                if(this.timeOutId)
+                    clearTimeout(this.timeOutId);
+                this.OBSAngleContainer.setAttribute("state", "");
+                this.gps.SwitchToInteractionState(0);
+            }             
         }
     }
     restoreDefaults() {

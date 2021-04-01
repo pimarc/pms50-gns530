@@ -569,6 +569,27 @@ as530-element {
                 transform: rotate(180deg);
               }
 /* PM Modif: End Wind display */
+              /* OBS Angle */
+              as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapObsAngle {
+                width: 15%;
+                height: 15%;
+                position: absolute;
+                left: 0;;
+                top:40%;
+                display:none;
+                flex-direction: column;
+                justify-content: space-evenly;
+                align-items: center;
+                background-color: #80000080;
+                font-size: 5vh;
+              }
+              as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapObsAngle[state=Active] {
+                display:flex;
+              }
+              as530-element #Electricity #TopDisplay #GpsPart #DefaultNav #MapObsAngle .value {
+                font-size: 6vh;
+                padding-left: 0.5vh;
+              }
 /* PM Modif: NavCompass display */
           as530-element #Electricity #TopDisplay #GpsPart #MapNav #CursorMode {
             position: absolute;
@@ -633,7 +654,7 @@ as530-element {
           width: 10%;
           height: 10%; }
 /* PM Modif: End North indicator */
-        as530-element #Electricity #TopDisplay #GpsPart #MapNav #TCAS {
+      as530-element #Electricity #TopDisplay #GpsPart #MapNav #TCAS {
           position: absolute;
           display: none;
           font-size: 4vh;

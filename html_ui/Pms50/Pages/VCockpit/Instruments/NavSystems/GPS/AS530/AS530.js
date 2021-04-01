@@ -143,6 +143,13 @@ class AS530_VorInfos extends NavSystemElement {
 //PM Modif: End check for LOC or VOR
     }
     onEnter() {
+        // Get channel spacing from config
+        let currentSpacingMode = SimVar.GetSimVarValue("COM SPACING MODE:" + this.gps.comIndex, "Enum");
+        this.spacingMode = this.gps.dataStore.get("ChannelSpacingMode", currentSpacingMode);
+        if(this.spacingMode != currentSpacingMode)
+            SimVar.SetSimVarValue("K:COM_" + this.gps.comIndex + "_SPACING_MODE_SWITCH", "number", 0);
+        // Update to storage (useful for first time)
+        this.gps.dataStore.set("ChannelSpacingMode", this.spacingMode);
     }
     onExit() {
     }
