@@ -238,7 +238,7 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 
 # Change log
 ## V 1.0.31
-- Bug fixing in spacing mode state saving
+- bugfix in spacing mode state saving
 ## V 1.0.30
 - Changed navigation group order (last is now nearest pages)
 - Group navigation do not loop any more
