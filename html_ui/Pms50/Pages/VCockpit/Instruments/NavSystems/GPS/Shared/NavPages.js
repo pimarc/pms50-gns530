@@ -470,7 +470,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         else if (_event == "RightLargeKnob_Right")  {
             if(this.gps.gpsType != "530")
                 return;
-            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") && this.gps.currentInteractionState == 3) {
                 this.displayObsAngle();
                 for(let i=0; i<10; i++)
                     SimVar.SetSimVarValue("K:GPS_OBS_INC", "number", 0);
@@ -479,7 +479,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         else if (_event == "RightLargeKnob_Left")  {
             if(this.gps.gpsType != "530")
                 return;
-            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") && this.gps.currentInteractionState == 3) {
                 this.displayObsAngle();
                 for(let i=0; i<10; i++)
                     SimVar.SetSimVarValue("K:GPS_OBS_DEC", "number", 0);
@@ -488,7 +488,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         else if (_event == "RightSmallKnob_Right")  {
             if(this.gps.gpsType != "530")
                 return;
-            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") && this.gps.currentInteractionState == 3) {
                 this.displayObsAngle();
                 SimVar.SetSimVarValue("K:GPS_OBS_INC", "number", 0);
             }
@@ -496,7 +496,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         else if (_event == "RightSmallKnob_Left")  {
             if(this.gps.gpsType != "530")
                 return;
-            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") && this.gps.currentInteractionState == 3) {
                 this.displayObsAngle();
                 SimVar.SetSimVarValue("K:GPS_OBS_DEC", "number", 0);
             }

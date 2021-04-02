@@ -237,6 +237,8 @@ TCAS algorithms used in the mod are very simple and based only on the proximity.
 TCAS data is disabled if your own aircraft is below 500ft AGL.
 
 # Change log
+## V 1.0.32
+- bugfix OBS angle selection
 ## V 1.0.31
 - bugfix in spacing mode state saving
 ## V 1.0.30
