@@ -217,7 +217,7 @@ Selecting an airport can be done directly from the METAR page but also from the 
 The METAR data is a real information taken from METAR stations. The result may differ from the in game weather following your configuration. This is relevant only if you play in live weather.
 
 ## TCAS
-TCAS (anti collision system) information is available from the menu of the second NAV page (Map page). When activated, the word "TCAS" is displayed in the upper left corner of the screen. The TCAS mode state is saved across game sessions. 
+TCAS (anti collision system) information is available from the menu of the second NAV page (Map page). When activated, the word "TCAS" is displayed in the upper left corner of the screen. The TCAS mode state is saved across game sessions.
 
 If TCAS is not activated, all the aircrafts are represented by a small airplane pictogram whatever their distance and relative altitude.
 
@@ -235,6 +235,8 @@ In TCAS mode, the declutter level 3 only displays TCAS data and the flight plan.
 TCAS algorithms used in the mod are very simple and based only on the proximity. There is no calculation about any projected collision like in real instruments.
 
 TCAS data is disabled if your own aircraft is below 500ft AGL.
+
+TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
 ## V 1.0.32
