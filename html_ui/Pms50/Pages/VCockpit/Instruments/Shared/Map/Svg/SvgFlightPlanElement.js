@@ -83,7 +83,9 @@ class SvgFlightPlanElement extends SvgMapElement {
         let departureRunwayCase;
         let activeWaypointIndex = -1;
         if (this.source) {
-            if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+// PM Modif: Added noObs flag for the procedure maps
+            if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") && !this.noObs) {
+// PM Modif: End Added noObs flag for the procedure maps
                 activeWaypointIndex = this.source.getActiveWaypointIndex(false, true);
                 let waypoint = this.source.getActiveWaypoint();
 // PM Modif: trying to limit the distance in order to avoid the flicking bug of the OBS line

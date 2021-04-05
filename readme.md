@@ -239,6 +239,8 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
+## V 1.0.33 (not yet released)
+- bugfix: procedure map legs not well displayed when OBS is active
 ## V 1.0.32
 - bugfix OBS angle selection
 ## V 1.0.31

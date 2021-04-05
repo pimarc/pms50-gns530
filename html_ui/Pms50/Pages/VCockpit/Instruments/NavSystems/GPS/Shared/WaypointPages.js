@@ -235,6 +235,7 @@ class GPS_WaypointMap extends MapInstrumentElement {
         this.instrument.noCenterOnPlane = true;
         this.instrument.flightPlanElement.hideReachedWaypoints = false;
         this.instrument.flightPlanElement.highlightActiveLeg = false;
+        this.instrument.flightPlanElement.noObs = true; // Do not display OBS line here
         this.instrument._ranges = [0.5, 1, 1.5, 2, 3, 5, 10, 15, 20, 25, 30, 35, 40, 50, 75, 100, 150, 200, 300, 400, 500];
     }
     onEnter(_mapContainer, _zoomLevel) {
