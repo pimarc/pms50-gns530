@@ -68,6 +68,7 @@ class BaseGPS extends NavSystem {
         this.debug = false;
         this.icaoFromMap = null;
         this.dataStore = new WTDataStore(this);
+        this.vsr = 0;
         //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
         this.loadConfig(() => {
             this.debug = this.getConfigKey("debug", false);
@@ -247,6 +248,11 @@ class BaseGPS extends NavSystem {
                 pagesMenu += '<div class="PageSelect" state="Inactive"></div>';
             }
         }
+
+        // Update VSR if Vcalc used
+        if(this.VnavPage)
+            this.vsr = this.VnavPage.GetVsr();
+
         this.pagePos.innerHTML = pagesMenu;
         this.menuTitle.textContent = this.getCurrentPageGroup().name;
         this.checkAfterDirectTo();

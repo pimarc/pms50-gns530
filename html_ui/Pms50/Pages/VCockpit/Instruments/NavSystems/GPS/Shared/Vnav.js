@@ -226,4 +226,8 @@ class GPS_Vnav extends NavSystemElement {
         targetInfos = [vsr, timeToDescent];
         return targetInfos;
     }
+    GetVsr(){
+        var targetInfo = this.GetTargetInfo();
+        return targetInfo && targetInfo.length ? parseInt(targetInfo[0]) : 0;
+    }
 }

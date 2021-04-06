@@ -4,6 +4,9 @@ class CustomValue {
         this.nameDisplay = _gps.getChildById(_nameID);
         this.valueDisplay = _gps.getChildById(_valueID);
         this.unitDisplay = _gps.getChildById(_unitID);
+//PM Modif: keep GPS
+        this.gps = _gps;
+//PM Modif: End keep GPS
     }
     Update() {
         let flightPlanActive = SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean");
@@ -93,11 +96,13 @@ class CustomValue {
                 else
                     this.valueDisplay.textContent = "___";
                 break;
+//PM Modif: Added VSR is Vertical Speed Required to Target following VCALC (VSR is at GPS unit level)
             case 13:
                 this.nameDisplay.textContent = "VSR";
-                this.unitDisplay.innerHTML = "ft<br/>/s";
-                this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(SimVar.GetSimVarValue("GPS WP VERTICAL SPEED", "feet per second"), 0);
+                this.unitDisplay.innerHTML = "ft<br/>/m";
+                this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(this.gps.vsr, 0);
                 break;
+//PM Modif: End Added VSR is Vertical Speed Required to Target following VCALC
             case 14:
                 this.nameDisplay.textContent = "ALT";
                 this.unitDisplay.innerHTML = "f<br/>t";
@@ -113,6 +118,13 @@ class CustomValue {
                 this.unitDisplay.innerHTML = "";
                 this.valueDisplay.textContent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
                 break;
+//PM Modif: Added VS
+            case 17:
+                this.nameDisplay.textContent = "VS";
+                this.unitDisplay.innerHTML = "ft<br/>/s";
+                this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(SimVar.GetSimVarValue("GPS WP VERTICAL SPEED", "feet per second"), 0);
+                break;
+//PM Modif: End Added VS
         }
     }
 }

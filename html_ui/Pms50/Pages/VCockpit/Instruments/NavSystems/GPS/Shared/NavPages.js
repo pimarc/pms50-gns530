@@ -598,6 +598,7 @@ class GPS_DefaultNav extends NavSystemElement {
             new ContextualMenuElement("ALT&nbsp;-&nbsp;Altitude", this.customValueSet_CB.bind(this, 14)),
             new ContextualMenuElement("BARO&nbsp;-&nbsp;Baro", this.customValueSet_CB.bind(this, 15)),
             new ContextualMenuElement("WPT&nbsp;-&nbsp;Target&nbsp;Waypoint", this.customValueSet_CB.bind(this, 16)),
+            new ContextualMenuElement("VS&nbsp;-&nbsp;Vert&nbsp;Speed", this.customValueSet_CB.bind(this, 17))
         ]);
         this.restoreCustomValues();
     }
@@ -1282,6 +1283,7 @@ class GPS_MapNav extends NavSystemElement {
             new ContextualMenuElement("ALT&nbsp;-&nbsp;Altitude", this.customValueSet_CB.bind(this, 14)),
             new ContextualMenuElement("BARO&nbsp;-&nbsp;Baro", this.customValueSet_CB.bind(this, 15)),
             new ContextualMenuElement("WPT&nbsp;-&nbsp;Target&nbsp;Waypoint", this.customValueSet_CB.bind(this, 16)),
+            new ContextualMenuElement("VS&nbsp;-&nbsp;Vert&nbsp;Speed", this.customValueSet_CB.bind(this, 17))
         ]);
         this.restoreCustomValues();
         }

@@ -107,7 +107,8 @@ class AS530 extends BaseGPS {
             ]));
         this.addEventLinkedPageGroup("PROC_Push", new NavSystemPageGroup("PROC", this, [new NavSystemPage("Procedures", "Procedures", new GPS_Procedures())]));
         this.addEventLinkedPageGroup("MSG_Push", new NavSystemPageGroup("MSG", this, [new NavSystemPage("MSG", "MSG", this.messageList)]));
-        this.addEventLinkedPageGroup("VNAV_Push", new NavSystemPageGroup("VNAV", this, [new NavSystemPage("VNAV", "Vnav", new GPS_Vnav())]));
+        this.VnavPage = new GPS_Vnav();
+        this.addEventLinkedPageGroup("VNAV_Push", new NavSystemPageGroup("VNAV", this, [new NavSystemPage("VNAV", "Vnav", this.VnavPage)]));
         this.addIndependentElementContainer(new NavSystemElementContainer("VorInfos", "RadioPart", new AS530_VorInfos()));
         this.addIndependentElementContainer(new NavSystemElementContainer("WaypointMap", "WaypointMap", new GPS_WaypointMap()));
         this.addIndependentElementContainer(new NavSystemElementContainer("MSG", "MSG", new AS530_InitMessageList()));
