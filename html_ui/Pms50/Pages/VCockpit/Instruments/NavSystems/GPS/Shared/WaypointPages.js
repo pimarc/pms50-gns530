@@ -6,7 +6,7 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
     }
     init() {
         this.ident = this.gps.getChildById("APTLocIdent");
-        this.privateLogo = this.gps.getChildById("APTLocPrivateLogo");
+        this.privateLogo = this.gps.getChildById("APTLocPrivateLogoImg");
         this.private = this.gps.getChildById("APTLocPrivate");
         this.facilityName = this.gps.getChildById("APTLocFacilityName");
         this.city = this.gps.getChildById("APTLocCity");
@@ -45,10 +45,10 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.privateLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogo, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.privateLogo.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogo, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -163,6 +163,7 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
         }
         else {
             this.private.textContent = "Unknown";
+            Avionics.Utils.diffAndSetAttribute(this.privateLogo, "src", "");
             this.facilityName.textContent = "______________________";
             this.city.textContent = "______________________";
             if (this.region) {
@@ -377,7 +378,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
     }
     init() {
         this.identElement = this.gps.getChildById("APTRwyIdent");
-        this.privateLogoElement = this.gps.getChildById("APTRwyPrivateLogo");
+        this.privateLogoElement = this.gps.getChildById("APTRwyPrivateLogoImg");
         this.privateElement = this.gps.getChildById("APTRwyPrivate");
         this.nameElement = this.gps.getChildById("APTRwyName");
         this.lengthElement = this.gps.getChildById("APTRwyLength");
@@ -425,10 +426,10 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         if (infos && infos.icao && infos instanceof AirportInfo) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.privateLogoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.privateLogoElement.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
             }
              switch (infos.privateType) {
                 case 0:
@@ -548,7 +549,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            this.privateLogoElement.innerHTML = "";
+            Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
             this.privateElement.textContent = "Unknown";
             this.nameElement.textContent = "";
             this.lengthElement.textContent = "0";
@@ -701,7 +702,7 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
     }
     init() {
         this.identElement = this.gps.getChildById("APTFreqIdent");
-        this.logoElement = this.gps.getChildById("APTFreqLogo");
+        this.logoElement = this.gps.getChildById("APTFreqLogoImg");
         this.privateElement = this.gps.getChildById("APTFreqPrivate");
         this.mainElement = this.gps.getChildById("APTFreqMain");
         this.sliderElement = this.gps.getChildById("APTFreqSlider");
@@ -738,10 +739,10 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.logoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.logoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.logoElement.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.logoElement, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -767,7 +768,7 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            this.logoElement.innerHTML = "";
+            Avionics.Utils.diffAndSetAttribute(this.logoElement, "src", "");
             this.privateElement.textContent = "Unknown";
         }
     }
@@ -783,7 +784,8 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
         if (_event == "ENT_Push") {
             var infos = this.icaoSearchField.getUpdatedInfos();
             if (infos.frequencies[_index].mhValue >= 118) {
-                SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1 ? "" : this.gps.comIndex) + "_STBY_RADIO_SET", "Frequency BCD16", infos.frequencies[_index].bcd16Value);
+                SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1  ? "" : this.gps.comIndex) + "_STBY_RADIO_SET_HZ", "Hz", infos.frequencies[_index].mhValue * 1000 * 1000);
+//                SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1 ? "" : this.gps.comIndex) + "_STBY_RADIO_SET", "Frequency BCD16", infos.frequencies[_index].bcd16Value);
             }
             else {
                 SimVar.SetSimVarValue("K:NAV" + this.gps.navIndex + "_STBY_SET", "Frequency BCD16", infos.frequencies[_index].bcd16Value);
@@ -808,7 +810,7 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
     }
     init() {
         this.identElement = this.gps.getChildById("APTApproachIdent");
-        this.privateLogoElement = this.gps.getChildById("APTApproachPrivateLogo");
+        this.privateLogoElement = this.gps.getChildById("APTApproachPrivateLogoImg");
         this.privateElement = this.gps.getChildById("APTApproachPrivate");
         this.approachElement = this.gps.getChildById("APTApproachApproach");
         this.transitionElement = this.gps.getChildById("APTApproachTransition");
@@ -887,10 +889,10 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.privateLogoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.privateLogoElement.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -924,6 +926,7 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
+            Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
             this.privateElement.textContent = "Unknown";
             this.approachElement.textContent = "";
             this.transitionElement.textContent = "";
@@ -1112,7 +1115,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
     }
     init() {
         this.identElement = this.gps.getChildById("APTArrivalIdent");
-        this.privateLogoElement = this.gps.getChildById("APTArrivalPrivateLogo");
+        this.privateLogoElement = this.gps.getChildById("APTArrivalPrivateLogoImg");
         this.privateElement = this.gps.getChildById("APTArrivalPrivate");
         this.arrivalElement = this.gps.getChildById("APTArrivalArrival");
         this.transitionElement = this.gps.getChildById("APTArrivalTransition");
@@ -1198,10 +1201,10 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.privateLogoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.privateLogoElement.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -1244,6 +1247,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
+            Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
             this.privateElement.textContent = "Unknown";
             this.arrivalElement.textContent = "";
             this.transitionElement.textContent = "";
@@ -1467,7 +1471,7 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
     }
     init() {
         this.identElement = this.gps.getChildById("APTDepartureIdent");
-        this.privateLogoElement = this.gps.getChildById("APTDeparturePrivateLogo");
+        this.privateLogoElement = this.gps.getChildById("APTDeparturePrivateLogoImg");
         this.privateElement = this.gps.getChildById("APTDeparturePrivate");
         this.departureElement = this.gps.getChildById("APTDepartureDeparture");
         this.transitionElement = this.gps.getChildById("APTDepartureTransition");
@@ -1551,10 +1555,10 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.privateLogoElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.privateLogoElement.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -1597,6 +1601,7 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
+            Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
             this.privateElement.textContent = "Unknown";
             this.departureElement.textContent = "";
             this.transitionElement.textContent = "";
@@ -1814,7 +1819,7 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
     }
     init() {
         this.identElement = this.gps.getChildById("INTIdent");
-        this.symbolElement = this.gps.getChildById("INTSymbol");
+        this.symbolElement = this.gps.getChildById("INTSymbolImg");
         this.regionElement = this.gps.getChildById("INTRegion");
         this.posNSElement = this.gps.getChildById("INTPosNS");
         this.posEWElement = this.gps.getChildById("INTPosEW");
@@ -1846,10 +1851,10 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.symbolElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.symbolElement.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
             }
             this.regionElement.textContent = infos.region;
             this.posNSElement.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
@@ -1860,6 +1865,7 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
         }
         else {
             this.regionElement.textContent = "_____";
+            Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
             this.posNSElement.textContent = "_ __°__.__'";
             this.posEWElement.textContent = "____°__.__'";
             this.nearestVORElement.textContent = "_____";
@@ -1907,7 +1913,7 @@ class GPS_NDBWaypoint extends NavSystemElement {
     }
     init() {
         this.identElement = this.gps.getChildById("NDBIdent");
-        this.symbolElement = this.gps.getChildById("NDBSymbol");
+        this.symbolElement = this.gps.getChildById("NDBSymbolImg");
         this.facilityElement = this.gps.getChildById("NDBFacility");
         this.cityElement = this.gps.getChildById("NDBCity");
         this.regionElement = this.gps.getChildById("NDBRegion");
@@ -1939,10 +1945,10 @@ class GPS_NDBWaypoint extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.symbolElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.symbolElement.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
             }
             this.facilityElement.textContent = infos.name;
             this.cityElement.textContent = infos.city;
@@ -1959,7 +1965,7 @@ class GPS_NDBWaypoint extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            this.symbolElement.innerHTML = "";
+            Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
             this.facilityElement.textContent = "______________________";
             this.cityElement.textContent = "______________________";
             this.regionElement.textContent = "__________";
@@ -2009,7 +2015,7 @@ class GPS_VORWaypoint extends NavSystemElement {
     }
     init() {
         this.identElement = this.gps.getChildById("VORIdent");
-        this.symbolElement = this.gps.getChildById("VORSymbol");
+        this.symbolElement = this.gps.getChildById("VORSymbolImg");
         this.facilityElement = this.gps.getChildById("VORFacility");
         this.cityElement = this.gps.getChildById("VORCity");
         this.regionElement = this.gps.getChildById("VORRegion");
@@ -2043,10 +2049,10 @@ class GPS_VORWaypoint extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.symbolElement.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                this.symbolElement.innerHTML = '';
+                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
             }
             this.facilityElement.textContent = infos.name;
             this.cityElement.textContent = infos.city;
@@ -2070,7 +2076,7 @@ class GPS_VORWaypoint extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            this.symbolElement.innerHTML = "";
+            Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
             this.facilityElement.textContent = "______________________";
             this.cityElement.textContent = "______________________";
             this.regionElement.textContent = "__________";

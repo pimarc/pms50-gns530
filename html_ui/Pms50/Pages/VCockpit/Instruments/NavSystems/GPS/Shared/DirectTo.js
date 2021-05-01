@@ -6,7 +6,7 @@ class GPS_DirectTo extends NavSystemElement {
     }
     init() {
         this.icao = this.gps.getChildById("DRCTIcao");
-        this.airportPrivateLogo = this.gps.getChildById("DRCTAirportPrivateLogo");
+        this.airportPrivateLogo = this.gps.getChildById("DRCTAirportPrivateLogoImg");
         this.region = this.gps.getChildById("DRCTRegion");
         this.facilityName = this.gps.getChildById("DRCTFacilityName");
         this.city = this.gps.getChildById("DRCTCity");
@@ -61,10 +61,10 @@ class GPS_DirectTo extends NavSystemElement {
             this.icao.textContent = infos.icao;
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.airportPrivateLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
-            else{
-                this.airportPrivateLogo.innerHTML = '';
+            else {
+                Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "");
             }
             this.region.textContent = infos.region;
             this.facilityName.textContent = infos.name;
@@ -80,6 +80,7 @@ class GPS_DirectTo extends NavSystemElement {
         }
         else {
             this.icao.textContent = "_____";
+            Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "");
             this.region.textContent = "__________";
             this.facilityName.textContent = "______________________";
             this.city.textContent = "______________________";

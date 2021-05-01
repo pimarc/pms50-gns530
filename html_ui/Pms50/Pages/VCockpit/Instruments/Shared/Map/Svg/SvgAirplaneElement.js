@@ -306,8 +306,11 @@ class SvgNPCAirplaneElement extends SvgMapElement {
             this.svgElement.setAttribute("y", fastToFixed((this._pos.y - map.config.airplaneIconSize / map.overdrawFactor * 0.7 * 0.5), 1));
         }
         if (this.useTCAS) {
+//PM Modif: Following Laurin(thanks to him) GET_AIR_TRAFFIC returns altitude in MSL meters and not AGL feet
             let altitudeAGL = map.planeAltitude;
-            let deltaAltitude = Math.abs(altitudeAGL - this.alt);
+            let altitudeMSL = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
+//PM Modif: End Following Laurin(thanks to him) GET_AIR_TRAFFIC returns altitude in MSL meters and not AGL feet
+            let deltaAltitude = Math.abs(altitudeMSL - this.alt);
             let displayIt = false;
             if(this.debug)
                 displayIt = true;
@@ -328,7 +331,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this._lastCase = 0;
                 }
                 this.setArrow(true);
-                this.setText(true, deltaAltitude, "#ff0000ff");
+                this.setText(true, this.alt - altitudeMSL, "#ff0000ff");
             }
             else if (displayIt && distanceHorizontal < 4 && deltaAltitude < 1000) {
                 if (this._lastCase !== 1) {
@@ -339,7 +342,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this._lastCase = 1;
                 }
                 this.setArrow(true);
-                this.setText(true, deltaAltitude, "#e38c56ff");
+                this.setText(true, this.alt - altitudeMSL, "#e38c56ff");
             }
             else if (displayIt && distanceHorizontal < 6 && deltaAltitude < 1200) {
                     if (this._lastCase !== 2) {
@@ -350,7 +353,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this._lastCase = 2;
                 }
                 this.setArrow(true);
-                this.setText(true, deltaAltitude, "#ffffffff");
+                this.setText(true, this.alt - altitudeMSL, "#ffffffff");
             }
             else if (displayIt && distanceHorizontal < 30 && deltaAltitude < 2700) {
                     if (this._lastCase !== 3) {
@@ -361,7 +364,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this._lastCase = 3;
                 }
                 this.setArrow(true);
-                this.setText(true, deltaAltitude, "#ffffffff");
+                this.setText(true, this.alt - altitudeMSL, "#ffffffff");
             }
             else {
                 if (this._lastCase !== 4) {
@@ -414,7 +417,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
             this._text.setAttribute("y", (deltaAltitudeForDisplay > 0 ? "0" : "80"));
             this._text.setAttribute("font-size", "36");
             this._text.setAttribute("fill", color);
-            this._text.innerHTML = (deltaAltitudeForDisplay > 0 ? "+" : "-") + Utils.leadingZeros(deltaAltitudeForDisplay, 2);
+            this._text.innerHTML = (deltaAltitudeForDisplay > 0 ? "+" : "") + Utils.leadingZeros(deltaAltitudeForDisplay, 2);
         }
     }
 

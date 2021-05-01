@@ -95,7 +95,8 @@ class GPS_NearestAirports extends NavSystemElement {
         switch (_event) {
             case "ENT_Push":
                 if (this.nearestAirportList.airports[Math.floor(_index / 2)].frequencyMHz >= 118) {
-                    SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1 ? "" : this.gps.comIndex) + "_STBY_RADIO_SET", "Frequency BCD16", this.nearestAirportList.airports[Math.floor(_index / 2)].frequencyBCD16);
+                    SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1 ? "" : this.gps.comIndex) + "_STBY_RADIO_SET_HZ", "Hz", this.nearestAirportList.airports[Math.floor(_index / 2)].frequencyMHz * 1000 * 1000);
+//                    SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1 ? "" : this.gps.comIndex) + "_STBY_RADIO_SET", "Frequency BCD16", this.nearestAirportList.airports[Math.floor(_index / 2)].frequencyBCD16);
                 }
                 // Don't display frequency if it's zero
                 else if(this.nearestAirportList.airports[Math.floor(_index / 2)].frequencyMHz > 0) {

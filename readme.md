@@ -242,6 +242,9 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 ## V 1.0.33 (not yet released)
 - bugfix: VSR (Vertical Speed Required) field was set to VS instead of VSR
 - bugfix: procedure map legs not well displayed when OBS is active
+- bugfix: frequency selection: missing last digit
+- bugfix: traffic display: bad altitude
+- bugfix: waypoint info symbol flickering
 - Added VS as a field
 ## V 1.0.32
 - bugfix OBS angle selection

@@ -10,6 +10,7 @@ class CustomValue {
     }
     Update() {
         let flightPlanActive = SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean");
+        let value = "";
         switch (this.valueIndex) {
             case 0:
                 this.nameDisplay.textContent = "BRG";
@@ -100,7 +101,8 @@ class CustomValue {
             case 13:
                 this.nameDisplay.textContent = "VSR";
                 this.unitDisplay.innerHTML = "ft<br/>/m";
-                this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(this.gps.vsr, 0);
+                value = this.gps.vsr > 0 ? fastToFixed(this.gps.vsr, 0) : "___";
+                this.valueDisplay.textContent = !flightPlanActive ? "___" : value;
                 break;
 //PM Modif: End Added VSR is Vertical Speed Required to Target following VCALC
             case 14:

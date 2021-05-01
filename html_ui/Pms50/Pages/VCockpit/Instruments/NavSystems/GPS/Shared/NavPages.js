@@ -1527,7 +1527,8 @@ class GPS_ComNav extends NavSystemElement {
     activeFrequency_CB(_event, _index) {
         if (_event == "ENT_Push") {
             if (this.airportListOnPlan[this.airportListIndex].GetInfos().frequencies[_index].mhValue >= 118) {
-                SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1 ? "" : this.gps.comIndex) + "_STBY_RADIO_SET", "Frequency BCD16", this.airportListOnPlan[this.airportListIndex].GetInfos().frequencies[_index].bcd16Value);
+                SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1  ? "" : this.gps.comIndex) + "_STBY_RADIO_SET_HZ", "Hz", this.airportListOnPlan[this.airportListIndex].GetInfos().frequencies[_index].mhValue * 1000 * 1000);
+//                SimVar.SetSimVarValue("K:COM" + (this.gps.comIndex == 1 ? "" : this.gps.comIndex) + "_STBY_RADIO_SET", "Frequency BCD16", this.airportListOnPlan[this.airportListIndex].GetInfos().frequencies[_index].bcd16Value);
             }
             else {
                 SimVar.SetSimVarValue("K:NAV" + this.gps.navIndex + "_STBY_SET", "Frequency BCD16", this.airportListOnPlan[this.airportListIndex].GetInfos().frequencies[_index].bcd16Value);

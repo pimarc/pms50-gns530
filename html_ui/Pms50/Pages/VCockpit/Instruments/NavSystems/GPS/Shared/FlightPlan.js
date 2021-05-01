@@ -725,7 +725,7 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
     init(_root) {
         this.root = _root;
         this.icao = this.gps.getChildById("WPSIcao");
-        this.airportPrivateLogo = this.gps.getChildById("WPSAirportPrivateLogo");
+        this.airportPrivateLogo = this.gps.getChildById("WPSAirportPrivateLogoImg");
         this.region = this.gps.getChildById("WPSRegion");
         this.facilityName = this.gps.getChildById("WPSFacilityName");
         this.city = this.gps.getChildById("WPSCity");
@@ -770,10 +770,10 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
             this.icao.textContent = infos.icao;
             var logo = infos.imageFileName();
             if (logo != "") {
-                this.airportPrivateLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
-            else{
-                this.airportPrivateLogo.innerHTML = '';
+            else {
+                Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "");
             }
             this.region.textContent = infos.region;
             this.facilityName.textContent = infos.name;
@@ -783,6 +783,7 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
         }
         else {
             this.icao.textContent = "_____";
+            Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "");
             this.region.textContent = "__________";
             this.facilityName.textContent = "______________________";
             this.city.textContent = "______________________";
