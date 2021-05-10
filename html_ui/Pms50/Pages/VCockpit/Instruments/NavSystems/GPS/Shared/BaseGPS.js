@@ -519,6 +519,23 @@ class BaseGPS extends NavSystem {
                 callback("");
         }
     }
+    // Laurin traffic implementation https://github.com/laurinius/MSFSTrafficService
+    // See also SvgAirplaneElement.js
+    checkLaurinServer() {
+        let httpRequest = new XMLHttpRequest();
+        httpRequest.timeout = 1000;
+        httpRequest.onload = function() {
+            try {
+                arr = JSON.parse(this.responseText);
+            } catch (e) {}
+            SimVar.SetSimVarValue("L:GNS530_USE_TRAFFIC_LAURIN", "bool", this.responseText == "true");
+        };
+        httpRequest.ontimeout = function() {
+            SimVar.SetSimVarValue("L:GNS530_USE_TRAFFIC_LAURIN", "bool", false);
+        };
+        httpRequest.open("GET", "http://localhost:8383/ready");
+        httpRequest.send(null);
+    }
 }
 
 

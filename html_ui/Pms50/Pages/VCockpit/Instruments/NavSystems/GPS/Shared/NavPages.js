@@ -1439,6 +1439,7 @@ class GPS_TrafficNavPage extends GPS_BaseNavPage {
     }
     onEnter() {
         super.onEnter();
+        this.gps.checkLaurinServer();
         if(this.map) {
             this.map.showBingMap = false;
             this.map.refreshDisplay();

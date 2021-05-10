@@ -126,6 +126,26 @@ class SvgAirplaneElement extends SvgMapElement {
         return iconPath;
     }
 }
+
+//PM Modif: Laurin code
+function httpTraffic(callback) {
+    let httpRequest = new XMLHttpRequest();
+    httpRequest.timeout = 1000;
+    httpRequest.onload = function() {
+        let arr = [];
+        try {
+            arr = JSON.parse(this.responseText);
+        } catch (e) {}
+        callback(arr);
+    };
+    httpRequest.ontimeout = function() {
+        callback([]);
+    };
+    httpRequest.open("GET", "http://localhost:8383/traffic");
+    httpRequest.send(null);
+}
+//PM Modif: End Laurin code
+
 class NPCAirplaneManager {
     constructor() {
         this.npcAirplanes = [];
@@ -139,7 +159,10 @@ class NPCAirplaneManager {
         this._timer++;
         if (this._timer >= 60) {
             this._timer = 0;
-            Coherent.call("GET_AIR_TRAFFIC").then((obj) => {
+//PM Modif: Laurin code
+//            Coherent.call("GET_AIR_TRAFFIC").then((obj) => {
+            let trafficCallback = (obj) => {
+        //PM Modif: End Laurin code
                 for (let i = 0; i < this.npcAirplanes.length; i++) {
                     let npcAirplane = this.npcAirplanes[i];
                     npcAirplane.alive = 0;
@@ -155,7 +178,10 @@ class NPCAirplaneManager {
                     npcAirplane.alive = 3;
                     npcAirplane.targetLat = obj[i].lat;
                     npcAirplane.targetLon = obj[i].lon;
-                    npcAirplane.targetAlt = obj[i].alt;
+//PM Modif: Following Laurin(thanks to him) GET_AIR_TRAFFIC returns altitude in MSL meters and not AGL feet
+                    //npcAirplane.targetAlt = obj[i].alt;
+                    npcAirplane.targetAlt = obj[i].alt / 0.3048;
+//PM Modif: End Following Laurin(thanks to him) GET_AIR_TRAFFIC returns altitude in MSL meters and not AGL feet
                     npcAirplane.targetHeading = obj[i].heading;
                     if (isFinite(npcAirplane.lat) && isFinite(npcAirplane.lon) && isFinite(npcAirplane.alt)) {
                         npcAirplane.deltaLat = (npcAirplane.targetLat - npcAirplane.lat) / 60;
@@ -167,7 +193,17 @@ class NPCAirplaneManager {
                         }
                     }
                 }
-            });
+//PM Modif: Laurin code
+//            });
+            };
+//PM Modif: End Laurin code
+//PM Modif: Laurin code
+            if (SimVar.GetSimVarValue("L:GNS530_USE_TRAFFIC_LAURIN", "bool")) {
+				httpTraffic(trafficCallback);
+			} else {
+				Coherent.call("GET_AIR_TRAFFIC").then(trafficCallback);
+			}
+//PM Modif: End Laurin code
         }
         for (let i = 0; i < this.npcAirplanes.length; i++) {
             let npcAirplane = this.npcAirplanes[i];
@@ -417,7 +453,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
             this._text.setAttribute("y", (deltaAltitudeForDisplay > 0 ? "0" : "80"));
             this._text.setAttribute("font-size", "36");
             this._text.setAttribute("fill", color);
-            this._text.innerHTML = (deltaAltitudeForDisplay > 0 ? "+" : "") + Utils.leadingZeros(deltaAltitudeForDisplay, 2);
+            this._text.innerHTML = (deltaAltitudeForDisplay > 0 ? "+" : "-") + Utils.leadingZeros(Math.abs(deltaAltitudeForDisplay), 2);
         }
     }
 
