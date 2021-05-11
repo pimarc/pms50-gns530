@@ -248,6 +248,11 @@ context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
                     }
                 }
                 if (isFinite(this._alpha)) {
+//PM Modif: Correct angle for track up
+                    if (map.rotationMode != EMapRotationMode.NorthUp) {
+                        this._alpha -= map.mapUpDirection;
+                    }
+//PM Modif: End Correct angle for track up
                     this.svgElement.setAttribute("transform", "rotate(" + this._alpha.toFixed(0) + " " + this.x.toFixed(0) + " " + this.y.toFixed(0) + ")");
                 }
                 if (!this._label) {

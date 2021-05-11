@@ -245,6 +245,7 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 - bugfix: frequency selection: missing last digit
 - bugfix: traffic display: bad altitude
 - bugfix: waypoint info symbol flickering
+- bugfix: Airport symbol orientation to the main runway
 - Added VS as a field
 - Added MSFSTrafficService compatibility (https://github.com/laurinius/MSFSTrafficService)
 ## V 1.0.32
