@@ -151,7 +151,7 @@ If your PLN file comes from another software, the result may differ from the ori
 When there are messages available, the MSG indicator is set. It blinks if there are new messages not acknowledged. In order to view and acknowledge the messages, press the MSG button. There are 3 kind of messages: Advise in green, warning in yellow and caution in red.
 
 ## Config file
-The config file is named config.json and is located in the directory Config/pms50-gns530 directory of the MOD. This file is not distributed but a file named example_config.json is available in this same directory. You can copy it or rename it to be your current config.json file. All entries of config file are separated by a comma excepts the last one (think as a comma separated collection).
+The config file is named config.json and is located in the directory Config/pms50-gns530 directory of the MOD. This file is not distributed but a file named example_config.json is available in this same directory. You can copy it or rename it to be your current config.json file. All entries of config file are separated by a comma except the last one (think as a comma separated collection).
 
 ## Weather radar
 This is a not standard feature (not available in original GNS530) so by default it's not activated.
@@ -239,7 +239,7 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
-## V 1.0.33 (not yet released)
+## V 1.0.33
 - bugfix: VSR (Vertical Speed Required) field was set to VS instead of VSR
 - bugfix: procedure map legs not well displayed when OBS is active
 - bugfix: frequency selection: missing last digit
