@@ -175,23 +175,28 @@ class BaseGPS extends NavSystem {
         {
             this.msg_t = 0;
             let state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
-            if(this.gpsType == "530" || !state530)
-            {
-                if(this.messageList) {
-                    this.messageList.onUpdate(_deltaTime);
-                    if (this.messageList.hasMessages()) {
-                        this.msgAlert.setAttribute("style", "visibility: visible");
-                        if (this.messageList.hasNewMessages()) {
-                            this.msgAlert.setAttribute("state", this.blinkGetState(1000, 500) ? "Blink" : "None");
+            if(!this.getConfigKey("disable_messaging", false)) {
+                if(this.gpsType == "530" || !state530)
+                {
+                    if(this.messageList) {
+                        this.messageList.onUpdate(_deltaTime);
+                        if (this.messageList.hasMessages()) {
+                            this.msgAlert.setAttribute("style", "visibility: visible");
+                            if (this.messageList.hasNewMessages()) {
+                                this.msgAlert.setAttribute("state", this.blinkGetState(1000, 500) ? "Blink" : "None");
+                            }
+                            else {
+                                this.msgAlert.setAttribute("state", "None");
+                            }
                         }
                         else {
-                            this.msgAlert.setAttribute("state", "None");
+                            this.msgAlert.setAttribute("style", "visibility: hidden");
                         }
                     }
-                    else {
-                        this.msgAlert.setAttribute("style", "visibility: hidden");
-                    }
                 }
+            }
+            else {
+                this.msgAlert.setAttribute("style", "visibility: hidden");
             }
         }
         this.OBSState.setAttribute("style", "visibility: " + (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") ? "visible" : "hidden"));

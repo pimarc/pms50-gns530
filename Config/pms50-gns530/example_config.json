@@ -2,5 +2,10 @@
   "weather_radar": "off",
   "weather_legend": "on",
   "metar_avwx_token": "",
-  "metar_decode": "off"
+  "metar_decode": "off",
+  "wa_uturn_bug": "on",
+  "wa_add_waypoint_bug": "on",
+  "disable_messaging": "off",
+  "disable_airspace_messages": "off",
+  "disable_traffic": "off"
 }

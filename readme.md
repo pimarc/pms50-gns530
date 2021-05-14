@@ -248,6 +248,7 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 - bugfix: Airport symbol orientation to the main runway
 - Added VS as a field
 - Added MSFSTrafficService compatibility (https://github.com/laurinius/MSFSTrafficService)
+- Added config options to help debugging
 ## V 1.0.32
 - bugfix OBS angle selection
 ## V 1.0.31

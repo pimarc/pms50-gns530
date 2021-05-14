@@ -168,7 +168,7 @@ class GPS_BaseNavPage extends NavSystemPage {
             }
             if(this.dlevel)
                 Avionics.Utils.diffAndSet(this.dlevel, this.declutterLevelIndex ? "-" + this.declutterLevelIndex : "");
-            if(this.mapDisplayRanges[this.map.rangeIndex] > 35)
+            if(this.mapDisplayRanges[this.map.rangeIndex] > 35 || this.gps.getConfigKey("disable_traffic", false))
                 this.map.showTraffic = false;
             else
                 this.map.showTraffic = true;
@@ -365,7 +365,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         if(this.displayWeather)
             return;
         this.tcas = !this.tcas;
-        this.map.setNPCAirplaneManagerTCASMode(this.tcas);
+        this.map.setNPCAirplaneManagerTCASMode(this.gps.getConfigKey("disable_traffic", false) ? false : this.tcas);
     }
     initMap() {
         let elem = this.element.getElementOfType(GPS_Map);
@@ -385,7 +385,7 @@ class GPS_BaseNavPage extends NavSystemPage {
                 else
                     elem.setWeather(EWeatherRadar.OFF);
             }
-            this.map.setNPCAirplaneManagerTCASMode(this.tcas);
+            this.map.setNPCAirplaneManagerTCASMode(this.gps.getConfigKey("disable_traffic", false) ? false : this.tcas);
             this.setDisplayElements();
             this.mapInitialized = true;
         }
