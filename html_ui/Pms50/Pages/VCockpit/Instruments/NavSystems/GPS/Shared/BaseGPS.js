@@ -344,6 +344,7 @@ class BaseGPS extends NavSystem {
             removeWaypointForApproachMethod(() => {
                 Coherent.call("ACTIVATE_APPROACH").then(() => {
                     this.currFlightPlanManager._approachActivated = true;
+                    SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
                     this.currFlightPlanManager.updateCurrentApproach();
                     this.setApproachFrequency();
                     callback();
@@ -353,6 +354,7 @@ class BaseGPS extends NavSystem {
         else {
             Coherent.call("ACTIVATE_APPROACH").then(() => {
                 this.currFlightPlanManager._approachActivated = true;
+                SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
                 this.currFlightPlanManager.updateCurrentApproach();
                 this.setApproachFrequency();
                 callback();

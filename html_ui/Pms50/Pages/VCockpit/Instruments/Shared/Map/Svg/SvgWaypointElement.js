@@ -106,7 +106,7 @@ class SvgWaypointElement extends SvgMapElement {
         this._textWidth = ctx.measureText(text).width;
         this._textHeight = fontSize * 0.675;
         let ident;
-        let activeWaypoint = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(false, true);
+        let activeWaypoint = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(true);
         if (activeWaypoint) {
             ident = activeWaypoint.ident;
         }
@@ -202,7 +202,13 @@ context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
             this.x = pos.x;
             this.y = pos.y;
         }
-        let wp = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(false, true);
+//PM Modif: Not sure about the Asobo code in sim update 4
+        let wp = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(true);
+        if (this.source && this.source.instrument && this.source.instrument.flightPlanManager) {
+            wp = this.source.instrument.flightPlanManager.getActiveWaypoint(true);
+        }
+//PM Modif: End Not sure about the Asobo code in sim update 4
+
 //PM Modif: Check also ident
         let isActiveWaypoint = this.source === wp || (wp && wp.icao === this.source.icao) || (wp && wp.ident === this.source.ident);
 //PM Modif: End Check also ident

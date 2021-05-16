@@ -526,9 +526,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
                 if(!is_approach_index){
                     // Activating a leg outside the approach deactive it
                     if(this.gps.currFlightPlanManager.isActiveApproach()){
-                        Coherent.call("DEACTIVATE_APPROACH").then(() => {
-                            // Do nothing
-                        });
+                        this.gps.currFlightPlanManager.deactivateApproach();
                     }
                 }
                 // Remove any direct to before activating leg
