@@ -6,6 +6,6 @@
   "wa_uturn_bug": "on",
   "wa_add_waypoint_bug": "on",
   "disable_messaging": "off",
-  "disable_airspace_messages": "off",
+  "disable_airspace_messages": "on",
   "disable_traffic": "off"
 }

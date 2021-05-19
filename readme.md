@@ -241,6 +241,8 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 # Change log
 ## V 1.0.34 (not yet released)
 - Compatibility with sim update 4
+- Weather radar calibration
+- Airspace message option disabled by default
 ## V 1.0.33
 - bugfix: VSR (Vertical Speed Required) field was set to VS instead of VSR
 - bugfix: procedure map legs not well displayed when OBS is active

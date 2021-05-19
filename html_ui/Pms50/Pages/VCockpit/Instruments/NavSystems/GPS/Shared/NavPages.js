@@ -1821,12 +1821,17 @@ class GPS_Map extends MapInstrumentElement {
                 }
             }
             if (this.weatherAltTexts && this.weatherAltTexts.length >= 2) {
-                this.weatherAltTexts[0].textContent = "+" + fastToFixed(range * 1200, 0) + "ft";
-                this.weatherAltTexts[1].textContent = "-" + fastToFixed(range * 1200, 0) + "ft";
+                this.weatherAltTexts[0].textContent = "+" + fastToFixed(range * 800, 0) + "ft";
+                this.weatherAltTexts[1].textContent = "-" + fastToFixed(range * 800, 0) + "ft";
             }
         }
     }
     setWeather(_mode, _legend = true) {
+        if (_mode == EWeatherRadar.HORIZONTAL || _mode == EWeatherRadar.VERTICAL) {
+            this.instrument.overdrawFactor = 0.73;
+        }
+        else
+            this.instrument.overdrawFactor = 1;
         this.instrument.showWeather(_mode);
         let svgRoot = this.instrument.weatherSVG;
         if (svgRoot) {

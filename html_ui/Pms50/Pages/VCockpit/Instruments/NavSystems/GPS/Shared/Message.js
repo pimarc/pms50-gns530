@@ -193,7 +193,7 @@ class GPS_Annunciations extends PFD_Annunciations {
         this.addMessage(Annunciation_MessageType.WARNING, "Attempt to delete proc waypoint", this.deleteWpProc);
         this.addMessage(Annunciation_MessageType.WARNING, "Cannot add waypoint at this place", this.addWp);
         this.addMessage(Annunciation_MessageType.WARNING, "Approach is not active", this.approachNotActive);
-        if(!this.gps.getConfigKey("disable_airspace_messages", false)) {
+        if(!this.gps.getConfigKey("disable_airspace_messages", true)) {
             this.addMessage(Annunciation_MessageType.ADVISORY, "Near airspace -- less than 2nm", this.airspaceNear);
             this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace ahead -- less than 10 min", this.airspaceAhead);
             this.addMessage(Annunciation_MessageType.ADVISORY, "Airspace near and ahead", this.airspaceNearAhead);
@@ -238,7 +238,7 @@ class GPS_Annunciations extends PFD_Annunciations {
             }
         }
         this.t_UpdateAirspaces++;
-        if(this.gps && this.gps.airspaceList && !this.gps.getConfigKey("disable_airspace_messages", false) && this.t_UpdateAirspaces > 10) {
+        if(this.gps && this.gps.airspaceList && !this.gps.getConfigKey("disable_airspace_messages", true) && this.t_UpdateAirspaces > 10) {
             this.t_UpdateAirspaces = 0;
             this.gps.airspaceList.Update();
         }
