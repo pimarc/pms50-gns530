@@ -1127,7 +1127,7 @@ class GPS_FPLCatalog extends NavSystemElement {
         }
 
         // Do final stuff
-        await Coherent.call("RECOMPUTE_ACTIVE_WAYPOINT_INDEX");
+//        await Coherent.call("RECOMPUTE_ACTIVE_WAYPOINT_INDEX");
         this.gps.currFlightPlanManager.updateFlightPlan(() => {
             let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
             if (elem) {
@@ -1138,7 +1138,6 @@ class GPS_FPLCatalog extends NavSystemElement {
         // We must go back to the FPL page
         var pageGroup = null;
         for (let i = 0; i < this.gps.eventLinkedPageGroups.length; i++) {
-            var pageGroup = this.gps.eventLinkedPageGroups[i].pageGroup;
             if(this.gps.eventLinkedPageGroups[i].pageGroup.name == "FPL") {
                 pageGroup = this.gps.eventLinkedPageGroups[i].pageGroup;
                 break;
@@ -1455,7 +1454,7 @@ class GPS_FlightPlanForSave {
             }
         }
         // Do final stuff
-        await Coherent.call("RECOMPUTE_ACTIVE_WAYPOINT_INDEX");
+//        await Coherent.call("RECOMPUTE_ACTIVE_WAYPOINT_INDEX");
         this.gps.currFlightPlanManager.updateFlightPlan(() => {
             let elem = this.gps.getElementOfType(MFD_ActiveFlightPlan_Element);
             if (elem) {

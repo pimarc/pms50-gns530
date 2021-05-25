@@ -101,7 +101,7 @@ class CustomValue {
             case 13:
                 this.nameDisplay.textContent = "VSR";
                 this.unitDisplay.innerHTML = "ft<br/>/m";
-                value = this.gps.vsr > 0 ? fastToFixed(this.gps.vsr, 0) : "___";
+                value = this.gps.vsr != 0 ? fastToFixed(this.gps.vsr, 0) : "___";
                 this.valueDisplay.textContent = !flightPlanActive ? "___" : value;
                 break;
 //PM Modif: End Added VSR is Vertical Speed Required to Target following VCALC
