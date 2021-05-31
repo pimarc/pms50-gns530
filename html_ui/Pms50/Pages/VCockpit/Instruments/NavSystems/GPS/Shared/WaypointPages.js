@@ -179,7 +179,7 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
         }
     }
     onExit() {
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
         }
@@ -621,7 +621,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
     onExit() {
         if(this.mapElement)
             this.mapElement.onExit();
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
         }
@@ -773,7 +773,7 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
         }
     }
     onExit() {
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
         }
@@ -971,7 +971,7 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
     onExit() {
         if(this.mapElement)
             this.mapElement.onExit();
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
         }
@@ -1317,7 +1317,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
     onExit() {
         if(this.mapElement)
             this.mapElement.onExit();
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
         }
@@ -1671,7 +1671,7 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
     onExit() {
         if(this.mapElement)
             this.mapElement.onExit();
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "A";
         }
@@ -1874,7 +1874,7 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
         }
     }
     onExit() {
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "W";
         }
@@ -1976,7 +1976,7 @@ class GPS_NDBWaypoint extends NavSystemElement {
         }
     }
     onExit() {
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "N";
         }
@@ -2088,7 +2088,7 @@ class GPS_VORWaypoint extends NavSystemElement {
         }
     }
     onExit() {
-        if(this.initialIcao && this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao != this.initialIcao) {
+        if(this.icaoSearchField && this.icaoSearchField.getUpdatedInfos().icao) {
             this.gps.lastRelevantICAO = this.icaoSearchField.getUpdatedInfos().icao;
             this.gps.lastRelevantICAOType = "V";
         }

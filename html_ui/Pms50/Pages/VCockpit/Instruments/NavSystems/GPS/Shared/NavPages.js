@@ -877,7 +877,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         if (_event == "ENT_Push")  {
             if(this.gps.getConfigKey("weather_radar", false) && this.gps.gpsType == "530")
             {
-                if(!this.gps.currentContextualMenu)
+                if(!this.gps.currentContextualMenu) {
                     if(!this.displayWeather || !this.weatherModeHorizontal) {
                         if(!this.weatherModeHorizontal)
                             this.toggleWeatherMode();
@@ -885,7 +885,16 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                     }
                     else
                         this.toggleWeatherMode();
+                    // PM bug in the sim's kernel, we have to disable and restore nexrad
+                    // with a time out otherwise, there is a strange display.
+                    if(this.nexrad) {
+                        setTimeout(() => {
+                            super.toggleNexrad();
+                            super.toggleNexrad();
+                        }, 200);
+                    }
                 }
+            }
         }
         if (_event == "NavigationPush")  {
             if(this.gps.currentInteractionState != 2) {
