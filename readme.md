@@ -8,14 +8,6 @@ https://pms50.com/fs2020/gns530/pms50-gns530.zip
 
 See Installation section below.
 
-# Donation
-
-If you enjoyed this software, you can participate in the development effort by clicking on the following link:
-
-https://pms50.com/fs2020/donateGNS530mod.html
-
-I cannot thank each of you individually so thank you to everyone who supports me.
-
 # Main features
 - MSFS U-turn bug workaround
 - North Up / Track up map modes
