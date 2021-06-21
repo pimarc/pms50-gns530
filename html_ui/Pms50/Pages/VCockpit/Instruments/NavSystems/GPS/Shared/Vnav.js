@@ -27,23 +27,36 @@ class GPS_Vnav extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
         var targetInfo = this.GetTargetInfo();
-        if(!targetInfo || !targetInfo.length){
+        let msgApproaching = false;
+        let msgArriving = false;
+        if(targetInfo && targetInfo.length) {
+            this.vsr.textContent =  targetInfo[0];
+            var timeToDescent = targetInfo[1];
+            var hours = parseInt( timeToDescent / 3600 ) % 24;
+            var minutes = parseInt( timeToDescent / 60 ) % 60;
+            var seconds = timeToDescent % 60;
+            var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+
+            hours = Math.floor(timeToDescent / 3600);
+            timeToDescent %= 3600;
+            minutes = Math.floor(timeToDescent / 60);
+            seconds = timeToDescent % 60;
+            this.status.textContent = timeToDescent > 20 ? "Begin Descent in " + result : "Descend to target"; 
+
+            // Update local variable for messaging
+            if(timeToDescent < 60 && timeToDescent > 5)
+                msgApproaching = true;
+            let currentAltitude = SimVar.GetSimVarValue("GPS POSITION ALT", "feet");
+            if(this.targetAltitude > currentAltitude - 500 && this.targetAltitude < currentAltitude + 500)
+                msgArriving = true;
+        }
+        else {
             this.vsr.textContent = "_____";
             this.status.textContent = "";
-            return;
         }
-        this.vsr.textContent =  targetInfo[0];
-        var timeToDescent = targetInfo[1];
-        var hours = parseInt( timeToDescent / 3600 ) % 24;
-        var minutes = parseInt( timeToDescent / 60 ) % 60;
-        var seconds = timeToDescent % 60;
-        var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
-
-        hours = Math.floor(timeToDescent / 3600);
-        timeToDescent %= 3600;
-        minutes = Math.floor(timeToDescent / 60);
-        seconds = timeToDescent % 60;
-        this.status.textContent = timeToDescent > 20 ? "Begin Descent in " + result : "Descend to target"; 
+        // Update local variable for messaging
+        SimVar.SetSimVarValue("L:PMS50_GNS530_MSG_VCALC_APPR", "bool", msgApproaching);
+        SimVar.SetSimVarValue("L:PMS50_GNS530_MSG_VCALC_ARR", "bool", msgArriving);
     }
     onExit() {
         this.gps.closeConfirmWindow();

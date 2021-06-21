@@ -231,9 +231,11 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
-## V 1.0.35 (not yet released)
+## V 1.0.35
 - bugfix: DirectTo waypoint was not preselected from waypoint pages
 - bugfix: Bad Nexrad display after weather radar view
+- added VNAV page to GNS430
+- added NEXRAD indicator
 ## V 1.0.34
 - Compatibility with sim update 4
 - Weather radar calibration

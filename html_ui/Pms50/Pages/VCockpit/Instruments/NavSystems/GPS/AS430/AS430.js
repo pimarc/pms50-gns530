@@ -72,6 +72,7 @@ class AS430 extends BaseGPS {
         terrainNav.element.addElement(new GPS_Map());
         var trafficNav = new GPS_TrafficNavPage(0, []);
         trafficNav.element.addElement(new GPS_Map());
+        this.VnavPage = new GPS_Vnav();
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
                 defaultNav,
@@ -80,6 +81,7 @@ class AS430 extends BaseGPS {
                 trafficNav,
                 new NavSystemPage("ComNav", "ComNav", new GPS_ComNav()),
                 new NavSystemPage("Position", "Position", new GPS_Position()),
+                new NavSystemPage("VNAV", "Vnav", this.VnavPage)
             ]),
             new NavSystemPageGroup("WPT", this, [
                 new NavSystemPage("AirportLocation", "AirportLocation", new GPS_AirportWaypointLocation(this.airportWaypointsIcaoSearchField)),

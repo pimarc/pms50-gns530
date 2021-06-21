@@ -201,6 +201,8 @@ class GPS_Annunciations extends PFD_Annunciations {
         }
         this.addMessage(Annunciation_MessageType.ADVISORY, "No departure airport", this.airportOrigin);
         this.addMessage(Annunciation_MessageType.ADVISORY, "No arrival airport", this.airportDestination);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "Approaching top of descent", this.VCALCApproaching);
+        this.addMessage(Annunciation_MessageType.ADVISORY, "Arriving at VCALC target altitude", this.VCALCArriving);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.ADVISORY, "Test Obs < 10", this.testObs);
 //        this.addMessage(Annunciation_MessageType.WARNING, "Test message 1", this.sayTrue);
@@ -390,6 +392,12 @@ class GPS_Annunciations extends PFD_Annunciations {
         if(!destination || destination.GetInfos().getWaypointType() != "A" )
             return true;
         return false;
+    }
+    VCALCApproaching() {
+        return SimVar.GetSimVarValue("L:PMS50_GNS530_MSG_VCALC_APPR", "bool");
+    }
+    VCALCArriving() {
+        return SimVar.GetSimVarValue("L:PMS50_GNS530_MSG_VCALC_ARR", "bool");
     }
     testObs() {
         let obs = SimVar.GetSimVarValue("NAV OBS:1", "degrees");

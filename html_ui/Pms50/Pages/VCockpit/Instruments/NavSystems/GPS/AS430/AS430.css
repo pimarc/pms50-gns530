@@ -199,7 +199,7 @@ as430-element {
         position: absolute;
         height: 100%;
         width: 80%; }
-        as430-element #Electricity #TopDisplay #GpsPart #DefaultNav, as430-element #Electricity #TopDisplay #GpsPart #MapNav, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav, as430-element #Electricity #TopDisplay #GpsPart #ComNav, as430-element #Electricity #TopDisplay #GpsPart #Position, as430-element #Electricity #TopDisplay #GpsPart #Satellite, as430-element #Electricity #TopDisplay #GpsPart #VNav, as430-element #Electricity #TopDisplay #GpsPart #Terrain, as430-element #Electricity #TopDisplay #GpsPart #DRCT, as430-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as430-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
+        as430-element #Electricity #TopDisplay #GpsPart #DefaultNav, as430-element #Electricity #TopDisplay #GpsPart #MapNav, as430-element #Electricity #TopDisplay #GpsPart #TerrainNav, as430-element #Electricity #TopDisplay #GpsPart #TrafficNav, as430-element #Electricity #TopDisplay #GpsPart #ComNav, as430-element #Electricity #TopDisplay #GpsPart #Position, as430-element #Electricity #TopDisplay #GpsPart #Satellite, as430-element #Electricity #TopDisplay #GpsPart #Vnav, as430-element #Electricity #TopDisplay #GpsPart #Terrain, as430-element #Electricity #TopDisplay #GpsPart #DRCT, as430-element #Electricity #TopDisplay #GpsPart #FlightPlanEdit, as430-element #Electricity #TopDisplay #GpsPart #FPLCatalog,
         as430-element #Electricity #TopDisplay #GpsPart #Procedures, as430-element #Electricity #TopDisplay #GpsPart #ApproachSelection, as430-element #Electricity #TopDisplay #GpsPart #ArrivalSelection, as430-element #Electricity #TopDisplay #GpsPart #DepartureSelection, as430-element #Electricity #TopDisplay #GpsPart #AirportLocation, as430-element #Electricity #TopDisplay #GpsPart #AirportRunway, as430-element #Electricity #TopDisplay #GpsPart #AirportFrequency, as430-element #Electricity #TopDisplay #GpsPart #AirportApproach,
         as430-element #Electricity #TopDisplay #GpsPart #AirportArrival, as430-element #Electricity #TopDisplay #GpsPart #AirportDeparture, as430-element #Electricity #TopDisplay #GpsPart #Intersection, as430-element #Electricity #TopDisplay #GpsPart #NDB, as430-element #Electricity #TopDisplay #GpsPart #VOR, as430-element #Electricity #TopDisplay #GpsPart #UserWaypoint, as430-element #Electricity #TopDisplay #GpsPart #NRSTAirport, as430-element #Electricity #TopDisplay #GpsPart #NRSTIntersection,
         as430-element #Electricity #TopDisplay #GpsPart #NRSTNDB, as430-element #Electricity #TopDisplay #GpsPart #NRSTVOR, as430-element #Electricity #TopDisplay #GpsPart #NRSTUser, as430-element #Electricity #TopDisplay #GpsPart #NRSTCenter, as430-element #Electricity #TopDisplay #GpsPart #NRSTFlightService, as430-element #Electricity #TopDisplay #GpsPart #NRSTAirspace, as430-element #Electricity #TopDisplay #GpsPart #COMSetup, as430-element #Electricity #TopDisplay #GpsPart #MSG, as430-element #Electricity #TopDisplay #GpsPart #METAR {
@@ -211,7 +211,7 @@ as430-element {
         as430-element #Electricity #TopDisplay #GpsPart[state=ComNav] #ComNav,
         as430-element #Electricity #TopDisplay #GpsPart[state=Position] #Position,
         as430-element #Electricity #TopDisplay #GpsPart[state=Satellite] #Satellite,
-        as430-element #Electricity #TopDisplay #GpsPart[state=VNav] #VNav,
+        as430-element #Electricity #TopDisplay #GpsPart[state=Vnav] #Vnav,
         as430-element #Electricity #TopDisplay #GpsPart[state=Terrain] #Terrain,
         as430-element #Electricity #TopDisplay #GpsPart[state=DRCT] #DRCT,
         as430-element #Electricity #TopDisplay #GpsPart[state=FlightPlanEdit] #FlightPlanEdit,
@@ -1396,7 +1396,54 @@ as430-element {
         as430-element #Electricity #TopDisplay #GpsPart #MSG #Messages {
           width: 98%;
           height: calc(73.6842105263vh); }
-        as430-element #Electricity #TopDisplay #GpsPart #ContextualMenu {
+          v-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock .unit{
+            padding-left: 1px;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock .VnavItem {
+            margin-top: 4vh;
+            width: 90%;
+            margin-left: 5%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavTargetAltitude .Value {
+            display: flex;
+            width: 100%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavTargetAltitude #VnavTargetAltitudeValueUnit {
+            width: 50%;
+            padding: 0 5vh 0 5vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavTargetPosition .Value {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr #VnavProfile, as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr #VnavVsr {
+            text-align: center;
+            width: 42%;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr #VnavProfile .Title, as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavProfileAndVsr #VnavVsr .Title {
+            text-align: left;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavStatus {
+            display: none;
+            padding: 0 2vh 0 2vh;
+            min-height: 8.5vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #Vnav #VnavBlock #VnavStatus #VnavStatusValue {
+            padding: 0 2vh 0 2vh;
+            min-height: 8.5vh;
+          }
+          as430-element #Electricity #TopDisplay #GpsPart #ContextualMenu {
           position: absolute;
           top: 50%;
           left: 50%;

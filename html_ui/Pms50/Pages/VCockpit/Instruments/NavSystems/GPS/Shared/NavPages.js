@@ -748,6 +748,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.cursorDataLeft = this.gps.getChildById("CursorModeLeft");
         this.cursorDataRight = this.gps.getChildById("CursorModeRight");
         this.tcas = this.gps.dataStore.get("MapTCAS", false);
+        this.tcasIndicator = this.gps.getChildById("TCAS");
         if(this.tcas) {
             this.tcas = false;
             this.toggleTCAS();
@@ -756,10 +757,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     onEnter() {
         super.onEnter();
         if(this.map && !this.displayWeather) {
-            if(this.tcas)
-                this.gps.getChildById("TCAS").setAttribute("style", "display: block");
-            else
-                this.gps.getChildById("TCAS").setAttribute("style", "display: none");
+            this.setTCASIndicator();
         }
     }
     onEvent(_event){
@@ -832,10 +830,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                       this.northIndicator.setAttribute("style", "visibility: visible");
                     if(this.cursorData)
                         this.cursorData.setAttribute("style", "display: none");
-                    if(this.tcas)
-                        this.gps.getChildById("TCAS").setAttribute("style", "display: block");
-                    else
-                        this.gps.getChildById("TCAS").setAttribute("style", "display: none");
+                    this.setTCASIndicator();
                 }
                 super.onEvent(_event);
             }
@@ -915,7 +910,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                             this.northIndicator.setAttribute("style", "visibility: hidden");
                         if(this.cursorData)
                             this.cursorData.setAttribute("style", "display: flex");
-                        this.gps.getChildById("TCAS").setAttribute("style", "display: none");
+                        this.setTCASIndicator(false);
                     }
                     else if (this.map.eBingMode === EBingMode.CURSOR) {
                         this.map.deactivateCursor();
@@ -933,10 +928,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                            this.northIndicator.setAttribute("style", "visibility: visible");
                         if(this.cursorData)
                             this.cursorData.setAttribute("style", "display: none");
-                        if(this.tcas)
-                            this.gps.getChildById("TCAS").setAttribute("style", "display: block");
-                        else
-                            this.gps.getChildById("TCAS").setAttribute("style", "display: none");
+                        this.setTCASIndicator();
                     }
                 }
             }
@@ -1162,17 +1154,14 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         if(this.displayWeather){
             if(this.savedDisplayData)
                 this.toggleDataDisplay(true);
-            if(this.tcas)
-                this.gps.getChildById("TCAS").setAttribute("style", "display: block");
-            else
-                this.gps.getChildById("TCAS").setAttribute("style", "display: none");
+                this.setTCASIndicator();
         }
         else
         {
             this.savedDisplayData = this.displayData;
             if(this.displayData)
                 this.toggleDataDisplay(true);
-            this.gps.getChildById("TCAS").setAttribute("style", "display: none");
+            this.setTCASIndicator(false);
         }
         super.toggleMapWeather();
         this.gps.currentContextualMenu = null;
@@ -1194,6 +1183,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         }
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
+        this.setTCASIndicator();
     }
     toggleTCAS() {
         if(this.displayWeather) {
@@ -1206,7 +1196,6 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
         if(this.tcas) {
-            this.gps.getChildById("TCAS").setAttribute("style", "display: block");
             // Set the range to max 20
             while(this.mapDisplayRanges[this.map.rangeIndex] > 20 && this.map.rangeIndex >= 0)
                 this.map.zoomIn();
@@ -1221,9 +1210,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.map.showObstacles = false;
             }
         }
-        else {
-            this.gps.getChildById("TCAS").setAttribute("style", "display: none");
-        }
+        this.setTCASIndicator();
     }
     toggleDisplayDataCB(){
         return this.displayWeather;
@@ -1252,6 +1239,26 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
     }
     changeFieldsStateCB() {
         return !this.displayData;
+    }
+    setTCASIndicator(display = true) {
+        if(display) {
+            if(this.tcas || this.nexrad) {
+                let text = "";
+                if(this.tcas)
+                    text = "TCAS";
+                if(this.nexrad) {
+                    if(text.length)
+                        text += "<br/>"
+                    text += "NEXRAD";
+                }
+                Avionics.Utils.diffAndSet(this.tcasIndicator, text);
+                Avionics.Utils.diffAndSetAttribute(this.tcasIndicator, "style", "display: block");
+            }
+            else
+                Avionics.Utils.diffAndSetAttribute(this.tcasIndicator, "style", "display: none");
+        }
+        else
+            Avionics.Utils.diffAndSetAttribute(this.tcasIndicator, "style", "display: none");
     }
 }
 
