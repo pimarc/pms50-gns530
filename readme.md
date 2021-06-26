@@ -231,6 +231,8 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
+## V 1.0.36 (not yet released)
+- bugfix: bad LOC runway name
 ## V 1.0.35
 - bugfix: DirectTo waypoint was not preselected from waypoint pages
 - bugfix: Bad Nexrad display after weather radar view

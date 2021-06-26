@@ -179,6 +179,8 @@ class AS530_VorInfos extends NavSystemElement {
                 // Hide rad title if LOC and display LOC name
                 this.radTitle.setAttribute("style", "display: none");
                 radial = SimVar.GetSimVarValue("NAV NAME:1", "string") != "" ? SimVar.GetSimVarValue("NAV NAME:1", "string"):"____";
+                // Get only last word
+                radial = radial.substring(radial.lastIndexOf(" "));
                 // Limit to 8 chars
                 radial = radial.slice(0,8);
             }
