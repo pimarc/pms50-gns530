@@ -101,5 +101,18 @@
       "alt": 1500,
       "color": "#000000"
     }
+  ],
+
+  "netBingAltitudeColors3": [],
+  "netBingWaterColor3": "#000000",
+  "netBingHeightColor3": [
+    {
+      "alt": 0,
+      "color": "#000000"
+    },
+    {
+      "alt": 9000,
+      "color": "#000000"
+    }
   ]
 }

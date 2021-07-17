@@ -16,6 +16,7 @@ class AS530 extends BaseGPS {
                 new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
             ])
         ];
+        this.doInit();
         this.messageList = new GPS_Messages();
         this.messageList.setGPS(this);
     }
@@ -36,7 +37,7 @@ class AS530 extends BaseGPS {
             if(this.cnt > this.NbLoopInitScreen){
                 this.toInit = false;
                 this.hotStart = false;
-                this.doInit();
+//                this.doInit();
                 this.initScreen.setAttribute("style", "display: none");
             }
         }
@@ -61,21 +62,21 @@ class AS530 extends BaseGPS {
     }
 
     doInit(){
-        var defaultNav = new GPS_DefaultNavPage(5, [3, 4, 9, 7, 10], "530");
-        defaultNav.element.addElement(new GPS_Map());
-        var mapNav = new GPS_MapNavPage(5, [16, 3, 10, 4, 9]);
-        mapNav.element.addElement(new GPS_Map());
-        var terrainNav = new GPS_TerrainNavPage(0, []);
-        terrainNav.element.addElement(new GPS_Map());
-        var trafficNav = new GPS_TrafficNavPage(0, []);
-        trafficNav.element.addElement(new GPS_Map());
+        this.defaultNav = new GPS_DefaultNavPage(5, [3, 4, 9, 7, 10], "530");
+        this.defaultNav.element.addElement(new GPS_Map());
+        this.mapNav = new GPS_MapNavPage(5, [16, 3, 10, 4, 9]);
+        this.mapNav.element.addElement(new GPS_Map());
+        this.terrainNav = new GPS_TerrainNavPage(0, []);
+        this.terrainNav.element.addElement(new GPS_Map());
+        this.trafficNav = new GPS_TrafficNavPage(0, []);
+        this.trafficNav.element.addElement(new GPS_Map());
         this.pageGroups = [
             new NavSystemPageGroup("NAV", this, [
-                defaultNav,
-                mapNav,
-                terrainNav,
-                trafficNav,
-                new NavSystemPage("ComNav", "ComNav", new GPS_ComNav(10)),
+                this.defaultNav,
+                this.mapNav,
+                this.terrainNav,
+                this.trafficNav,
+                new NavSystemPage("ComNav", "ComNav", new GPS_ComNav(10))
             ]),
             new NavSystemPageGroup("WPT", this, [
                 new NavSystemPage("AirportLocation", "AirportLocation", new GPS_AirportWaypointLocation(this.airportWaypointsIcaoSearchField)),
@@ -97,7 +98,7 @@ class AS530 extends BaseGPS {
                 new NavSystemPage("NRSTIntersection", "NRSTIntersection", new GPS_NearestIntersection(8)),
                 new NavSystemPage("NRSTNDB", "NRSTNDB", new GPS_NearestNDB(8)),
                 new NavSystemPage("NRSTVOR", "NRSTVOR", new GPS_NearestVOR(8)),
-                new NavSystemPage("NRSTAirspace", "NRSTAirspace", new GPS_NearestAirpaces()),
+                new NavSystemPage("NRSTAirspace", "NRSTAirspace", new GPS_NearestAirpaces())
             ])
         ];
         this.addEventLinkedPageGroup("DirectTo_Push", new NavSystemPageGroup("DRCT", this, [new NavSystemPage("DRCT", "DRCT", new GPS_DirectTo())]));
@@ -190,12 +191,12 @@ class AS530_VorInfos extends NavSystemElement {
             ident = SimVar.GetSimVarValue("NAV IDENT:1", "string") != "" ? SimVar.GetSimVarValue("NAV IDENT:1", "string"):"____";
             distance = (Math.round((SimVar.GetSimVarValue("NAV DME:1", "Nautical Miles")*10))/10).toFixed(1);
         }
-        Avionics.Utils.diffAndSet(this.vor, ident);
-        Avionics.Utils.diffAndSet(this.typ, type);
-        Avionics.Utils.diffAndSet(this.rad, radial);
+        diffAndSetText(this.vor, ident);
+        diffAndSetText(this.typ, type);
+        diffAndSetText(this.rad, radial);
         if(distance > 99.9)
             distance = Math.trunc(distance);
-        Avionics.Utils.diffAndSet(this.dis, distance);
+        diffAndSetText(this.dis, distance);
 //PM Modif: End World4Fly Mod integration (Wrong radial and Rounded DME) and check for LOC or VOR
     }
 }

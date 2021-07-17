@@ -169,7 +169,7 @@ class BaseGPS extends NavSystem {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        Avionics.Utils.diffAndSet(this.CDIState, SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean") == 0 ? "VLOC" : "GPS");
+        diffAndSetText(this.CDIState, SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean") == 0 ? "VLOC" : "GPS");
         this.msg_t++;
         if(this.msg_t > 5)
         {

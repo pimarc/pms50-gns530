@@ -45,10 +45,10 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogo, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.privateLogo, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogo, "src", "");
+                diffAndSetAttribute(this.privateLogo, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -163,7 +163,7 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
         }
         else {
             this.private.textContent = "Unknown";
-            Avionics.Utils.diffAndSetAttribute(this.privateLogo, "src", "");
+            diffAndSetAttribute(this.privateLogo, "src", "");
             this.facilityName.textContent = "______________________";
             this.city.textContent = "______________________";
             if (this.region) {
@@ -227,10 +227,10 @@ class GPS_WaypointMap extends MapInstrumentElement {
     onTemplateLoaded() {
         // We create a special map instrument not associated to the current GPS flight plan
         this.instrument.init("SPECIAL_INSTRUMENT");
-        this.instrument._flightPlanManager = new GPS_FlightPlanManagerForWaypointMap(this.instrument);
+        this.instrument._flightPlanManager = new GPS_FlightPlanManagerForWaypointMap(this.gps);
         // Note this.instrument.flightPlanManager returns this.instrument._flightPlanManager
         // So they are the same thing
-        this.instrument.flightPlanElement.source = this.instrument.flightPlanManager;
+        this.instrument.flightPlanElement.source = this.instrument._flightPlanManager;
         this.instrumentLoaded = true;
         this.instrument.eBingMode = EBingMode.VFR;
         this.instrument.noCenterOnPlane = true;
@@ -272,7 +272,7 @@ class GPS_WaypointMap extends MapInstrumentElement {
         this.instrument.flightPlanElement.hideReachedWaypoints = false;
         this.instrument.flightPlanElement.highlightActiveLeg = false;
         if(this.mrange)
-            Avionics.Utils.diffAndSet(this.mrange, this.instrument.getDisplayRange());
+            diffAndSetText(this.mrange, this.instrument.getDisplayRange());
     }
     onEvent(_event) {
         if(!this.isActive)
@@ -426,10 +426,10 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         if (infos && infos.icao && infos instanceof AirportInfo) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
+                diffAndSetAttribute(this.privateLogoElement, "src", "");
             }
              switch (infos.privateType) {
                 case 0:
@@ -549,7 +549,7 @@ class GPS_AirportWaypointRunways extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
+            diffAndSetAttribute(this.privateLogoElement, "src", "");
             this.privateElement.textContent = "Unknown";
             this.nameElement.textContent = "";
             this.lengthElement.textContent = "0";
@@ -739,10 +739,10 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.logoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.logoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.logoElement, "src", "");
+                diffAndSetAttribute(this.logoElement, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -768,7 +768,7 @@ class GPS_AirportWaypointFrequencies extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.logoElement, "src", "");
+            diffAndSetAttribute(this.logoElement, "src", "");
             this.privateElement.textContent = "Unknown";
         }
     }
@@ -889,10 +889,10 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
+                diffAndSetAttribute(this.privateLogoElement, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -926,7 +926,7 @@ class GPS_AirportWaypointApproaches extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
+            diffAndSetAttribute(this.privateLogoElement, "src", "");
             this.privateElement.textContent = "Unknown";
             this.approachElement.textContent = "";
             this.transitionElement.textContent = "";
@@ -1201,10 +1201,10 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
+                diffAndSetAttribute(this.privateLogoElement, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -1247,7 +1247,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
+            diffAndSetAttribute(this.privateLogoElement, "src", "");
             this.privateElement.textContent = "Unknown";
             this.arrivalElement.textContent = "";
             this.transitionElement.textContent = "";
@@ -1555,10 +1555,10 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.privateLogoElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
+                diffAndSetAttribute(this.privateLogoElement, "src", "");
             }
             switch (infos.privateType) {
                 case 0:
@@ -1601,7 +1601,7 @@ class GPS_AirportWaypointDepartures extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.privateLogoElement, "src", "");
+            diffAndSetAttribute(this.privateLogoElement, "src", "");
             this.privateElement.textContent = "Unknown";
             this.departureElement.textContent = "";
             this.transitionElement.textContent = "";
@@ -1851,10 +1851,10 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
+                diffAndSetAttribute(this.symbolElement, "src", "");
             }
             this.regionElement.textContent = infos.region;
             this.posNSElement.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
@@ -1865,7 +1865,7 @@ class GPS_IntersectionWaypoint extends NavSystemElement {
         }
         else {
             this.regionElement.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
+            diffAndSetAttribute(this.symbolElement, "src", "");
             this.posNSElement.textContent = "_ __°__.__'";
             this.posEWElement.textContent = "____°__.__'";
             this.nearestVORElement.textContent = "_____";
@@ -1945,10 +1945,10 @@ class GPS_NDBWaypoint extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
+                diffAndSetAttribute(this.symbolElement, "src", "");
             }
             this.facilityElement.textContent = infos.name;
             this.cityElement.textContent = infos.city;
@@ -1965,7 +1965,7 @@ class GPS_NDBWaypoint extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
+            diffAndSetAttribute(this.symbolElement, "src", "");
             this.facilityElement.textContent = "______________________";
             this.cityElement.textContent = "______________________";
             this.regionElement.textContent = "__________";
@@ -2049,10 +2049,10 @@ class GPS_VORWaypoint extends NavSystemElement {
         if (infos && infos.icao) {
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.symbolElement, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
+                diffAndSetAttribute(this.symbolElement, "src", "");
             }
             this.facilityElement.textContent = infos.name;
             this.cityElement.textContent = infos.city;
@@ -2076,7 +2076,7 @@ class GPS_VORWaypoint extends NavSystemElement {
         }
         else {
             this.identElement.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", "");
+            diffAndSetAttribute(this.symbolElement, "src", "");
             this.facilityElement.textContent = "______________________";
             this.cityElement.textContent = "______________________";
             this.regionElement.textContent = "__________";

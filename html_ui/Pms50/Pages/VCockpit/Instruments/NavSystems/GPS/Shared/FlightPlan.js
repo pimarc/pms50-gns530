@@ -768,10 +768,10 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
             this.icao.textContent = infos.icao;
             var logo = infos.imageFileName();
             if (logo != "") {
-                Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+                diffAndSetAttribute(this.airportPrivateLogo, "src", "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "");
+                diffAndSetAttribute(this.airportPrivateLogo, "src", "");
             }
             this.region.textContent = infos.region;
             this.facilityName.textContent = infos.name;
@@ -781,7 +781,7 @@ class GPS_FPLWaypointSelection extends NavSystemElement {
         }
         else {
             this.icao.textContent = "_____";
-            Avionics.Utils.diffAndSetAttribute(this.airportPrivateLogo, "src", "");
+            diffAndSetAttribute(this.airportPrivateLogo, "src", "");
             this.region.textContent = "__________";
             this.facilityName.textContent = "______________________";
             this.city.textContent = "______________________";

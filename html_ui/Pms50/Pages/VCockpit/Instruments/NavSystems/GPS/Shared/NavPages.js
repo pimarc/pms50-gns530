@@ -58,6 +58,12 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.dlevel = this.gps.getChildById("MapDeclutterLevel" + this.mapnum);
         this.map = this.gps.getChildById("MapInstrument" + this.mapnum);
         this.mapDisplayRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 350, 500, 1000, 1500, 2000];
+        this.weatherRanges = [10, 20, 30, 40, 50, 60, 80, 100];
+        this.weatherDisplayRanges = [5, 10, 20, 40, 60, 80, 100, 120];
+        // This range factor allows to calibrate the scale for weather radar
+        let rangeFactor = 0.36;
+        for(let i=0; i<this.weatherRanges.length; i++)
+            this.weatherRanges[i] *= rangeFactor;
         this.weatherRangeIndex = 0;
         this.weatherLegend = this.gps.getConfigKey("weather_legend", false);
         this.mapSavedRanges = [];
@@ -65,6 +71,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         if(this.map){
             this.map.intersectionMaxRange = 16;
             this.map.mapScaleFactor = 1.4;
+            this.map.weatherDisplayRanges = this.weatherDisplayRanges;
         }
         this.navCompassImg = this.gps.getChildById("NavCompassBackgroundImg" + this.mapnum);
         this.navCompass = this.gps.getChildById("NavCompass" + this.mapnum);
@@ -94,6 +101,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.setMapOrientation();
     }
     onEnter() {
+        super.onEnter();
         this.mapInitialized = false;
     }
     onEvent(_event){
@@ -128,6 +136,10 @@ class GPS_BaseNavPage extends NavSystemPage {
         if(this.trackUp && (this.navCompassImg || this.northIndicatorImg)){
             // magnetic north
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
+            let gs = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            // On the ground if no speed we use the heading
+            if(gs < 5)
+                trk = fastToFixed(SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 1);
             if(trk != this.lasttrk){
                 // Last trk is used to save time in update (no rotation if no change)
                 if(this.navCompassImg)
@@ -164,10 +176,10 @@ class GPS_BaseNavPage extends NavSystemPage {
                 }
             }
             if(this.mrange) {
-                Avionics.Utils.diffAndSet(this.mrange, this.mapDisplayRanges[this.map.rangeIndex]);
+                diffAndSetText(this.mrange, this.mapDisplayRanges[this.map.rangeIndex]);
             }
             if(this.dlevel)
-                Avionics.Utils.diffAndSet(this.dlevel, this.declutterLevelIndex ? "-" + this.declutterLevelIndex : "");
+                diffAndSetText(this.dlevel, this.declutterLevelIndex ? "-" + this.declutterLevelIndex : "");
             if(this.mapDisplayRanges[this.map.rangeIndex] > 35 || this.gps.getConfigKey("disable_traffic", false))
                 this.map.showTraffic = false;
             else
@@ -289,7 +301,8 @@ class GPS_BaseNavPage extends NavSystemPage {
         this.mapSavedRanges = this.map._ranges;
         this.mapSavedRangeIndex = this.map.rangeIndex;
         this.map.rangeIndex = this.weatherRangeIndex;
-        this.map._ranges = this.map.weatherRanges;
+        this.map._ranges = this.weatherRanges;
+        this.map.weahterDisplayRanges = this.weatherRanges;
         if(this.map.rangeIndex > this.map._ranges.length)
             this.map.rangeIndex = 0;
     }
@@ -519,7 +532,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         }
         if(this.gps.gpsType == "530") {
             if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean"))
-                Avionics.Utils.diffAndSet(this.OBSAngle, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree"), 0), 3) + "°");
+                diffAndSetText(this.OBSAngle, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree"), 0), 3) + "°");
             else if(this.gps.currentInteractionState == 3) {
                 if(this.timeOutId)
                     clearTimeout(this.timeOutId);
@@ -1251,14 +1264,14 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                         text += "<br/>"
                     text += "NEXRAD";
                 }
-                Avionics.Utils.diffAndSet(this.tcasIndicator, text);
-                Avionics.Utils.diffAndSetAttribute(this.tcasIndicator, "style", "display: block");
+                diffAndSetHTML(this.tcasIndicator, text);
+                diffAndSetAttribute(this.tcasIndicator, "style", "display: block");
             }
             else
-                Avionics.Utils.diffAndSetAttribute(this.tcasIndicator, "style", "display: none");
+                diffAndSetAttribute(this.tcasIndicator, "style", "display: none");
         }
         else
-            Avionics.Utils.diffAndSetAttribute(this.tcasIndicator, "style", "display: none");
+            diffAndSetAttribute(this.tcasIndicator, "style", "display: none");
     }
 }
 
@@ -1377,6 +1390,7 @@ class GPS_TerrainNavPage extends GPS_BaseNavPage {
             this.map.mapConfigId = 0;
             this.map.bingMapRef = EBingReference.SEA;
         }
+        super.onExit();
     }
     onEvent(_event){
         super.onEvent(_event);
@@ -1436,20 +1450,19 @@ class GPS_TrafficNavPage extends GPS_BaseNavPage {
         super("TrafficNav", "TrafficNav", new NavSystemElementGroup([baseElem, cdiElem]));
         this.cdiElement = cdiElem;
         this.baseElem = baseElem;
-
     }
     init() {
         super.init(5, true, "100%", "66%", 2.1, 1.53, 35);
         this.mrange2 = this.gps.getChildById("MapRangeValue" + this.mapnum + "_2");
         this.navCompassImg = null;
-        if(this.map) {
-            this.map.showBingMap = false;
-            this.map.refreshDisplay();
-        }
+        // if(this.map) {
+        //     this.map.showBingMap = false;
+        //     this.map.refreshDisplay();
+        // }
         this.navBrgImg = null;
         this.declutterLevels = [0];
         this.alwaysHideAirspacesAndRoads = true;
-        this.map.mapConfigId = 0;
+        this.map.mapConfigId = 2;
         this.tcas = false;
         this.toggleTCAS();
     }
@@ -1457,20 +1470,23 @@ class GPS_TrafficNavPage extends GPS_BaseNavPage {
         super.onEnter();
         this.gps.checkLaurinServer();
         if(this.map) {
-            this.map.showBingMap = false;
-            this.map.refreshDisplay();
+            this.map.mapConfigId = 2;
+            //this.map.showBingMap = false;
+            //this.map.refreshDisplay();
         }
     }
     onExit() {
         if(this.map) {
-            this.map.showBingMap = true;
-            this.map.refreshDisplay();
+            this.map.mapConfigId = 0;
+        //     this.map.showBingMap = true;
+        //     this.map.refreshDisplay();
         }
+        super.onExit();
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         if(this.mrange2) {
-            Avionics.Utils.diffAndSet(this.mrange2, this.mapDisplayRanges[this.map.rangeIndex] / 2);
+            diffAndSetText(this.mrange2, this.mapDisplayRanges[this.map.rangeIndex] / 2);
         }
     }
     onEvent(_event){
@@ -1829,7 +1845,7 @@ class GPS_Map extends MapInstrumentElement {
     onUpdate(_deltaTime) {
         if (this.instrumentLoaded) {
             this.instrument.update(_deltaTime);
-            let range = this.instrument.getWeatherRange();
+            let range = this.instrument.weatherDisplayRanges[this.instrument.rangeIndex];
             if (this.weatherTexts) {
                 let ratio = 1.0 / this.weatherTexts.length;
                 for (let i = 0; i < this.weatherTexts.length; i++) {
@@ -1943,8 +1959,8 @@ class GPS_Map extends MapInstrumentElement {
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "380");
-                        text.setAttribute("y", "-430");
+                        text.setAttribute("x", "345");
+                        text.setAttribute("y", "-480");
                         text.setAttribute("fill", "white");
                         text.setAttribute("font-size", "30");
                         textGroup.appendChild(text);
