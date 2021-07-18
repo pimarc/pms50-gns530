@@ -1172,7 +1172,7 @@ class GPS_AirportWaypointArrivals extends NavSystemElement {
                     this.selectedRunway = this.lastSelectedRunway;
                     let arrival = this.getSelectedArrival(infos);
                     if(arrival.runwayTransitions.length)
-                        this.selectedRunway = 0;
+                        this.selectedRunway = this.gps.currFlightPlanManager.getArrivalRunwayIndex();
                 }
             }
             if(this.selectedArrival == -1 && infos.arrivals.length){

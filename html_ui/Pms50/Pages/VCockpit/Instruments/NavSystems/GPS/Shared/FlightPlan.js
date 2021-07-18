@@ -918,8 +918,8 @@ class GPS_FPLCatalog extends NavSystemElement {
         for (i = 0; i < 19; i++) {
             let item = this.fplList.fpls[i];
             let itemIndex = item.index < 10 ? "0" + item.index : item.index;
-            if(item.xmlFpl != null && item.departure != "" && item.destination != ""){
-                var line = '<td class="SelectableElement">' + itemIndex + "</td><td>" + item.departure + " / " + item.destination + "</td>";
+            if(item.xmlFpl != null && item.originIdent != "" && item.destinationIdent != ""){
+                var line = '<td class="SelectableElement">' + itemIndex + "</td><td>" + item.originIdent + " / " + item.destinationIdent + "</td>";
                 numItems++;
                 lines.push(line);
             }
@@ -961,37 +961,37 @@ class GPS_FPLCatalog extends NavSystemElement {
                 return true;
         }
     }
-    async importToGame() {
+    async importToGame(_callback) {
         // Clear flight plan
         await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", 0);
         await Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN");
 
         // Get flight plan
         let fpl = this.fplList.fpls[this.realindex];
-        let waypoints = fpl.icaoWaypoints;
         let firstEnrouteWaypointIndex = 0;
-        let lastEnrouteWaypointIndex = waypoints.length-1;
+        let lastEnrouteWaypointIndex = fpl.icaoWaypoints.length-1;
         let hasOrigin = false;
         let hasDestination = false;
         
         // Set origin
-        if(waypoints.length && waypoints[0][0] == "A") {
-            await Coherent.call("SET_ORIGIN", waypoints[0], false);
+        if(fpl.icaoWaypoints[0][0] == "A") {
+            await Coherent.call("SET_ORIGIN", fpl.icaoWaypoints[0], false);
             firstEnrouteWaypointIndex++;
             hasOrigin = true;
         }
         
         // Set destination
-        if(waypoints.length > 1 && waypoints[lastEnrouteWaypointIndex][0] == "A") {
-            await Coherent.call("SET_DESTINATION", waypoints[lastEnrouteWaypointIndex], false);
+        if(fpl.icaoWaypoints[lastEnrouteWaypointIndex][0] == "A") {
+            await Coherent.call("SET_DESTINATION", fpl.icaoWaypoints[lastEnrouteWaypointIndex], false);
             lastEnrouteWaypointIndex--;
             hasDestination = true;
         }
 
         // Set enroute waypoints
-        for(var i=firstEnrouteWaypointIndex; i<=lastEnrouteWaypointIndex; i++){
-            if(waypoints[i].indexOf(":") == -1) {
-                await Coherent.call("ADD_WAYPOINT", waypoints[i], i, true);
+        let i = 0;
+        for(i=firstEnrouteWaypointIndex; i<=lastEnrouteWaypointIndex; i++){
+            if(fpl.icaoWaypoints[i].indexOf(":") == -1) {
+                await Coherent.call("ADD_WAYPOINT", fpl.icaoWaypoints[i], i, true);
             }
             else {
                 // User waypoint
@@ -1026,22 +1026,38 @@ class GPS_FPLCatalog extends NavSystemElement {
             }
         }
 
+
         // Set departure
-        if(hasOrigin && fpl.sid) {
-            let waypoint = await this.gps.currFlightPlanManager.instrument.facilityLoader.getFacility(waypoints[0]);
+        if(hasOrigin && fpl.departureName.length) {
+            let waypoint = await this.gps.currFlightPlanManager.instrument.facilityLoader.getFacility(fpl.icaoWaypoints[0]);
             if(waypoint) {
-                let indexdeparture = -1;
+                let departureIndex = -1;
                 let infos = waypoint.GetInfos();
-                for (let i = 0; i < infos.departures.length; i++) {
-                    if(infos.departures[i].name == fpl.sid) {
-                        indexdeparture = i;
+                for (i = 0; i < infos.departures.length; i++) {
+                    if(infos.departures[i].name.toUpperCase() == fpl.departureName.toUpperCase()) {
+                        departureIndex = i;
                         break;
                     }
                 }
-                if(indexdeparture >= 0) {
-                    await Coherent.call("SET_DEPARTURE_RUNWAY_INDEX", 0);
-                    await Coherent.call("SET_DEPARTURE_PROC_INDEX", indexdeparture);
-                    await Coherent.call("SET_DEPARTURE_ENROUTE_TRANSITION_INDEX", 0);
+                if(departureIndex >= 0) {
+                    let departure = infos.departures[departureIndex];
+                    let departureRunwayIndex = 0;
+                    for (i = 0; i < departure.runwayTransitions.length; i++) {
+                        if(departure.runwayTransitions[i].name.toUpperCase() == fpl.departureRunwayName.toUpperCase()) {
+                            departureRunwayIndex = i;
+                            break;
+                        }
+                    }
+                    let departureTransitionIndex = 0;
+                    for (i = 0; i < departure.enRouteTransitions.length; i++) {
+                        if(departure.enRouteTransitions[i].name.toUpperCase() == fpl.departureTransitionName.toUpperCase()) {
+                            departureTransitionIndex = i;
+                            break;
+                        }
+                    }
+                    await Coherent.call("SET_DEPARTURE_RUNWAY_INDEX", departureRunwayIndex);
+                    await Coherent.call("SET_DEPARTURE_PROC_INDEX", departureIndex);
+                    await Coherent.call("SET_DEPARTURE_ENROUTE_TRANSITION_INDEX", departureTransitionIndex);
                 }
             }
         }
@@ -1049,35 +1065,42 @@ class GPS_FPLCatalog extends NavSystemElement {
 
         // Set arrrival and approach
         if(hasDestination) {
-            let waypoint = await this.gps.currFlightPlanManager.instrument.facilityLoader.getFacility(waypoints[waypoints.length-1]);
+            let waypoint = await this.gps.currFlightPlanManager.instrument.facilityLoader.getFacility(fpl.icaoWaypoints[fpl.icaoWaypoints.length-1]);
             if(waypoint) {
                 let infos = waypoint.GetInfos();
-                if(fpl.star) {
-                    let indexarrival = -1;
-                    for (let i = 0; i < infos.arrivals.length; i++) {
-                        if(infos.arrivals[i].name == fpl.star) {
-                            indexarrival = i;
+                if(fpl.arrivalName.length) {
+                    let arrivalIndex = -1;
+                    for (i = 0; i < infos.arrivals.length; i++) {
+                        if(infos.arrivals[i].name.toUpperCase() == fpl.arrivalName.toUpperCase()) {
+                            arrivalIndex = i;
                             break;
                         }
                     }
-                    if(indexarrival >= 0) {
-                        await Coherent.call("SET_ARRIVAL_RUNWAY_INDEX", 0);
-                        await Coherent.call("SET_ARRIVAL_PROC_INDEX", indexarrival);
-                        await Coherent.call("SET_ARRIVAL_ENROUTE_TRANSITION_INDEX", 0);
+                    if(arrivalIndex >= 0) {
+                        let arrival = infos.arrivals[arrivalIndex];
+                        let arrivalRunwayIndex = 0;
+                        for (i = 0; i < arrival.runwayTransitions.length; i++) {
+                            if(arrival.runwayTransitions[i].name.toUpperCase() == fpl.arrivalRunwayName.toUpperCase()) {
+                                arrivalRunwayIndex = i;
+                                break;
+                            }
+                        }
+                        let arrivalTransitionIndex = 0;
+                        for (i = 0; i < arrival.enRouteTransitions.length; i++) {
+                            if(arrival.enRouteTransitions[i].name.toUpperCase() == fpl.arrivalTransitionName.toUpperCase()) {
+                                arrivalTransitionIndex = i;
+                                break;
+                            }
+                        }
+                        await Coherent.call("SET_ARRIVAL_RUNWAY_INDEX", arrivalRunwayIndex);
+                        await Coherent.call("SET_ARRIVAL_PROC_INDEX", arrivalIndex);
+                        await Coherent.call("SET_ARRIVAL_ENROUTE_TRANSITION_INDEX", arrivalTransitionIndex);
                     }
                 }
-                if(fpl.approach) {
-                    let rw = fpl.approachrw;
-                    if(fpl.approachrwdes.toUpperCase() != "")
-                        rw += fpl.approachrwdes.toUpperCase()[0];
-                    else
-                        rw += " ";
-                    let searchapproach = fpl.approach + " " + rw;
-                    if(fpl.approachsuffix.length)
-                        searchapproach += " " + fpl.approachsuffix;
+                if(fpl.approachName.length) {
                     let indexapproach = -1;
-                    for (let i = 0; i < infos.approaches.length; i++) {
-                        if(infos.approaches[i].name == searchapproach) {
+                    for (i = 0; i < infos.approaches.length; i++) {
+                        if(infos.approaches[i].name.toUpperCase() == fpl.approachName.toUpperCase()) {
                             indexapproach = i;
                             break;
                         }
@@ -1085,22 +1108,21 @@ class GPS_FPLCatalog extends NavSystemElement {
                     if(indexapproach >= 0) {
                         let approach = infos.approaches[indexapproach];
                         let indextransition = -1;
-                        for (let i = 0; i < approach.transitions.length; i++) {
-                            if(approach.transitions[i].name == fpl.approachtr) {
+                        for (i = 0; i < approach.transitions.length; i++) {
+                            if(approach.transitions[i].name.toUpperCase() == fpl.approachTransitionName.toUpperCase()) {
                                 indextransition = i;
                                 break;
                             }
                         }
                         if(indextransition == -1 && approach.transitions.length) {
-                            // We should get the nearest transition from last enroute wp
-                            // For now just take the first one
+                            // Not found by transition name. We should get the nearest transition from last enroute wp
                             indextransition = 0;
-                            if(fpl.approachtrIcao.length) {
-                                let waypoint = await this.gps.currFlightPlanManager.instrument.facilityLoader.getFacility(fpl.approachtrIcao);
+                            if(fpl.approachTransitionIcao.length) {
+                                let waypoint = await this.gps.currFlightPlanManager.instrument.facilityLoader.getFacility(fpl.approachTransitionIcao);
                                 if(waypoint) {
                                     let trCoordinates = waypoint.GetInfos().coordinates;
                                     let distance = 1000;
-                                    for (let i = 0; i < approach.transitions.length; i++) {
+                                    for (i = 0; i < approach.transitions.length; i++) {
                                         let transitionFirstWp = approach.transitions[i].waypoints[0];
                                         if(transitionFirstWp) {
                                             let distanceTowp = Avionics.Utils.computeDistance(transitionFirstWp.infos.coordinates, trCoordinates);
@@ -1175,7 +1197,7 @@ class FPLCatalog {
         var i;
         for(var i=0; i<19; i++){
             var item = this.fpls[i];
-            if(item.xmlFpl != null && item.departure != "" && item.destination != ""){
+            if(item.xmlFpl != null && item.originIdent != "" && item.destinationIdent != ""){
                 if(index == displayIndex)
                     break;
                 index++;
@@ -1192,83 +1214,115 @@ class FPLCatalogItem {
     constructor(_index) {
         this.index = _index;
         this.xmlFpl = null;
-        this.departure = "";
-        this.destination = "";
-        this.sid = "";
-        this.sidrw = "";
-        this.star = "";
-        this.approach = "";
-        this.approachsuffix = "";
-        this.approachrw = "";
-        this.approachrwdes = "";
-        this.approachtr = "";
-        this.approachtrIcao = "";
-        this.icaoWaypoints = [];
+        this.originIdent = "";               // Origin name ex LFRK (used for display)
+        this.destinationIdent = "";          // Destination name ex LFRN (used for display)
+        this.icaoWaypoints = [];             // All Icaos including origin (first), destination(last) and Enroute. No Sid star nor approach here
+        this.departureName = "";             // Departure name
+        this.departureRunwayName = "";       // Departure runway name
+        this.departureTransitionName = "";   // Departure transition name (usually empty)
+        this.arrivalName = "";               // Arrival name
+        this.arrivalRunwayName = "";         // Arrival runway name
+        this.arrivalTransitionName = "";     // Arrival transition name
+        this.approachName = "";              // Approach name complete including runway and runway suffix
+        this.approachTransitionName = "";    // Approach transition name
+        this.approachTransitionIcao = "";    // Approach transition icao (used if fpl from import)
+        // this.departure = "";
+        // this.destination = "";
+        // this.sid = "";
+        // this.sidrw = "";
+        // this.star = "";
+        // this.approach = "";
+        // this.approachsuffix = "";
+        // this.approachrw = "";
+        // this.approachrwdes = "";
+        // this.approachtr = "";
+        // this.approachtrIcao = "";
+        // this.icaoWaypoints = [];
     }
-    load(){
+    load(_callback){
         this.xmlFpl = null;
+        this.originIdent = "";
+        this.destinationIdent = "";
         this.icaoWaypoints = [];
-        this.departure = "";
-        this.destination = "";
-        this.sid = "";
-        this.sidrw = "";
-        this.star = "";
-        this.approach = "";
-        this.approachsuffix = "";
-        this.approachrw = "";
-        this.approachrwdes = "";
-        this.approachtr = "";
-        this.approachtrIcao = "";
-        this.icaoWaypoints = [];
-        this.ident = "";
+        this.departureName = "";
+        this.departureRunwayName = "";
+        this.departureTransitionName = "";
+        this.arrivalName = "";
+        this.arrivalRunwayName = "";
+        this.arrivalTransitionName = "";
+        this.approachName = "";
+        this.approachTransitionName = "";
+        this.approachTransitionIcao = "";
         this.loadXml("fpl" + this.index + ".pln").then((xmlFpl) => {
             this.xmlFpl = xmlFpl;
             let fpl = xmlFpl.getElementsByTagName("FlightPlan.FlightPlan");
             if(fpl.length > 0) {
+                let lastIdent = "";
                 let lastIcao = "";
-                this.departure = fpl[0].getElementsByTagName("DepartureID")[0] ? fpl[0].getElementsByTagName("DepartureID")[0].textContent : "";
-                this.destination = fpl[0].getElementsByTagName("DestinationID")[0] ? fpl[0].getElementsByTagName("DestinationID")[0].textContent : "";
+                this.originIdent = fpl[0].getElementsByTagName("DepartureID")[0] ? fpl[0].getElementsByTagName("DepartureID")[0].textContent : "";
+                this.destinationIdent = fpl[0].getElementsByTagName("DestinationID")[0] ? fpl[0].getElementsByTagName("DestinationID")[0].textContent : "";
                 let waypoints = fpl[0].getElementsByTagName("ATCWaypoint");
                 for (let i = 0; i < waypoints.length; i++) {
                     let waypointroot = waypoints[i];
                     let type = waypointroot.getElementsByTagName("ATCWaypointType")[0] ? waypointroot.getElementsByTagName("ATCWaypointType")[0].textContent : "";
                     let sid = waypointroot.getElementsByTagName("DepartureFP")[0] ? waypointroot.getElementsByTagName("DepartureFP")[0].textContent : "";
-                    if(this.sid == "" && sid != "") {
-                        this.sid = sid;
-                        let sidrw = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
-                        if(sid != "")
-                            this.sidrw = sidrw;
+                    if(this.departureName == "" && sid != "") {
+                        let departureRunway = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
+                        let departureRunwayDesignator = waypointroot.getElementsByTagName("RunwayDesignatorFP")[0] ? waypointroot.getElementsByTagName("RunwayDesignatorFP")[0].textContent : "";
+                        let rw = departureRunway;
+                        if(departureRunwayDesignator.toUpperCase() != "")
+                            rw += departureRunwayDesignator.toUpperCase()[0];
+                        else
+                            rw += " ";
+                        if(rw.length)
+                            this.departureRunwayName = "RW" + rw;
+                        this.departureTransitionName = waypointroot.getElementsByTagName("DepartureTransitionFP")[0] ? waypointroot.getElementsByTagName("DepartureTransitionFP")[0].textContent : "";
+                        this.departureName = sid;
                     }
                     let star = waypointroot.getElementsByTagName("ArrivalFP")[0] ? waypointroot.getElementsByTagName("ArrivalFP")[0].textContent : "";
-                    if(this.star == "" && star != "") {
-                        this.star = star;
+                    if(this.arrivalName == "" && star != "") {
+                        let arrivalRunway = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
+                        let arrivalRunwayDesignator = waypointroot.getElementsByTagName("RunwayDesignatorFP")[0] ? waypointroot.getElementsByTagName("RunwayDesignatorFP")[0].textContent : "";
+                        let rw = arrivalRunway;
+                        if(arrivalRunwayDesignator.toUpperCase() != "")
+                            rw += arrivalRunwayDesignator.toUpperCase()[0];
+                        else
+                            rw += " ";
+                        if(rw.length)
+                            this.arrivalRunwayName = "RW" + rw;
+                        this.arrivalTransitionName = waypointroot.getElementsByTagName("ArrivalTransitionFP")[0] ? waypointroot.getElementsByTagName("ArrivalTransitionFP")[0].textContent : "";
+                        this.arrivalName = star;
                     }
                     if(i==waypoints.length-1) {
                         // Check for approach
                         let approach = waypointroot.getElementsByTagName("ApproachTypeFP")[0] ? waypointroot.getElementsByTagName("ApproachTypeFP")[0].textContent : "";
                         if(approach != "")
                         {
-                            this.approach = approach;
-                            let approachrw = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
-                            if(approachrw != "")
-                                this.approachrw = approachrw;
-                            let approachrwdes = waypointroot.getElementsByTagName("RunwayDesignatorFP")[0] ? waypointroot.getElementsByTagName("RunwayDesignatorFP")[0].textContent : "";
-                            if(approachrwdes != "")
-                                this.approachrwdes = approachrwdes;
-                            let approachsuffix = waypointroot.getElementsByTagName("SuffixFP")[0] ? waypointroot.getElementsByTagName("SuffixFP")[0].textContent : "";
-                            if(approachsuffix != "")
-                                this.approachsuffix = approachsuffix;
-                            // Transition is the last enroute ident
-                            this.approachtr = this.ident;
-                            while(this.approachtr.length < 5)
-                                this.approachtr += " ";
-                            this.approachtrIcao = lastIcao;
+                            let approachRunway = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
+                            let approachRunwayDesignator = waypointroot.getElementsByTagName("RunwayDesignatorFP")[0] ? waypointroot.getElementsByTagName("RunwayDesignatorFP")[0].textContent : "";
+                            let approachSuffix = waypointroot.getElementsByTagName("SuffixFP")[0] ? waypointroot.getElementsByTagName("SuffixFP")[0].textContent : "";
+                            let rw = approachRunway;
+                            if(approachRunwayDesignator.toUpperCase() != "")
+                                rw += approachRunwayDesignator.toUpperCase()[0];
+                            else
+                                rw += " ";
+                            this.approachName = approach + " " + rw;
+                            if(approachSuffix.length)
+                                this.approachName += " " + approachSuffix;
+        
+                            // Transition is the last enroute ident if not given
+                            this.approachTransitionName = waypointroot.getElementsByTagName("ApproachTransitionFP")[0] ? waypointroot.getElementsByTagName("ApproachTransitionFP")[0].textContent : "";
+                            this.approachTransitionIcao = "";
+                            if(!this.approachTransitionName.length) {
+                                this.approachTransitionName = lastIdent;
+                                this.approachTransitionIcao = lastIcao;
+                            }
                         }
                     }
                     let icao = waypointroot.getElementsByTagName("ICAO")[0];
                     if(icao){
                         let ident = icao.getElementsByTagName("ICAOIdent")[0] ? icao.getElementsByTagName("ICAOIdent")[0].textContent : "";
-                        this.ident = ident;
+                        lastIdent = ident;
                         // Prepare icao format TRRAAAAIIIII each part with right leading 0s (T=Type, R=Region, A=Linked airport I=Ident)
                         while(ident.length < 5)
                             ident += " ";
@@ -1318,6 +1372,8 @@ class FPLCatalogItem {
                     }
                 }
             }
+            if(_callback)
+                _callback();
         });
     }
     loadXml(filename) {
@@ -1396,7 +1452,7 @@ class GPS_FlightPlanForSave {
         this.departureRunwayIndex = this.gps.currFlightPlanManager.getDepartureRunwayIndex();
         this.arrivalIndex = this.gps.currFlightPlanManager.getArrivalProcIndex();
         this.arrivalTransitionIndex = this.gps.currFlightPlanManager.getArrivalTransitionIndex();
-        this.arrivalRunwayIndex = 0;
+        this.arrivalRunwayIndex = this.gps.currFlightPlanManager.getArrivalRunwayIndex();
         this.approachIndex = this.gps.currFlightPlanManager.getApproachIndex();
         this.approachTransitionIndex = this.gps.currFlightPlanManager.getApproachTransitionIndex();
     }

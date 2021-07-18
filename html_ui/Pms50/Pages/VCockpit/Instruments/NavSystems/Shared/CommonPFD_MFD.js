@@ -1991,7 +1991,7 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
         }
         else
             title += "______";
-        diffAndSetText(this.titleElement, title);
+        diffAndSetHTML(this.titleElement, title);
 // PM Modif: End Make the code more clear
         if (!this.upToDateWaypoints) {
             this.updateWaypoints();
