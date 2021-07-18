@@ -1043,7 +1043,7 @@ class GPS_FPLCatalog extends NavSystemElement {
                     let departure = infos.departures[departureIndex];
                     let departureRunwayIndex = 0;
                     for (i = 0; i < departure.runwayTransitions.length; i++) {
-                        if(departure.runwayTransitions[i].name.toUpperCase() == fpl.departureRunwayName.toUpperCase()) {
+                        if(departure.runwayTransitions[i].name.trim().toUpperCase() == fpl.departureRunwayName.trim().toUpperCase()) {
                             departureRunwayIndex = i;
                             break;
                         }
@@ -1080,7 +1080,7 @@ class GPS_FPLCatalog extends NavSystemElement {
                         let arrival = infos.arrivals[arrivalIndex];
                         let arrivalRunwayIndex = 0;
                         for (i = 0; i < arrival.runwayTransitions.length; i++) {
-                            if(arrival.runwayTransitions[i].name.toUpperCase() == fpl.arrivalRunwayName.toUpperCase()) {
+                            if(arrival.runwayTransitions[i].name.trim().toUpperCase() == fpl.arrivalRunwayName.trim().toUpperCase()) {
                                 arrivalRunwayIndex = i;
                                 break;
                             }
@@ -1135,14 +1135,13 @@ class GPS_FPLCatalog extends NavSystemElement {
                                 }
                             }
                         }
-                        if(indextransition >= 0) {
-                            await Coherent.call("SET_APPROACH_INDEX", indexapproach).then(() => {
+                        await Coherent.call("SET_APPROACH_INDEX", indexapproach).then(() => {
+                            if(indextransition >= 0)
                                 Coherent.call("SET_APPROACH_TRANSITION_INDEX", indextransition);
-                                setTimeout(() => {
-                                    this.gps.setApproachFrequency();
-                                }, 2000);
-                            });
-                        }
+                            setTimeout(() => {
+                                this.gps.setApproachFrequency();
+                            }, 2000);
+                        });
                     }
                 }
             }
