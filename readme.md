@@ -232,7 +232,9 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
 ## V 1.0.36 (not yet released)
+- SU5 compatibility
 - bugfix: bad LOC runway name
+- FP import take care of runway and transition
 ## V 1.0.35
 - bugfix: DirectTo waypoint was not preselected from waypoint pages
 - bugfix: Bad Nexrad display after weather radar view

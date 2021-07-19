@@ -1098,11 +1098,23 @@ class GPS_FPLCatalog extends NavSystemElement {
                     }
                 }
                 if(fpl.approachName.length) {
+                    let approachNameToSearch = this.approachName.toUpperCase();
                     let indexapproach = -1;
                     for (i = 0; i < infos.approaches.length; i++) {
-                        if(infos.approaches[i].name.toUpperCase() == fpl.approachName.toUpperCase()) {
+                        if(infos.approaches[i].name.toUpperCase() == approachNameToSearch) {
                             indexapproach = i;
                             break;
+                        }
+                    }
+                    // Bug if the destination runway is a center one
+                    if(indexapproach == -1 && approachNameToSearch[approachNameToSearch.length-1] == "C") {
+                        approachNameToSearch = approachNameToSearch.slice(0,-1);
+                        approachNameToSearch += " ";
+                        for (i = 0; i < infos.approaches.length; i++) {
+                            if(infos.approaches[i].name.toUpperCase() == approachNameToSearch) {
+                                indexapproach = i;
+                                break;
+                            }
                         }
                     }
                     if(indexapproach >= 0) {
