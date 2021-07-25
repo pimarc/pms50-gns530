@@ -181,9 +181,25 @@ class AS530_VorInfos extends NavSystemElement {
                 this.radTitle.setAttribute("style", "display: none");
                 radial = SimVar.GetSimVarValue("NAV NAME:1", "string") != "" ? SimVar.GetSimVarValue("NAV NAME:1", "string"):"____";
                 // Get only last word
-                radial = radial.substring(radial.lastIndexOf(" "));
+                // radial = radial.substring(radial.lastIndexOf(" "));
                 // Limit to 8 chars
-                radial = radial.slice(0,8);
+                // radial = radial.slice(0,8);
+
+                //  6/26/2021 GSD:     - SU4  added more text before the ILS Runway number
+                // Format to match the Garmin GNS530 Trainer
+                // LDA RW19            ----> LDA 19
+                // ILS/GS CAT II RW01  ----> ILS 01
+                // LOC RW15            ----> LOC 15
+                // ILS/GS CAT I RW33   ----> ILS 33
+                // (1) Change "/" to " "
+                // (2) Change " RW" to ""
+                //  Return  1st-word nbsp nbsp Last-word
+                radial = radial.replace("/", " ");
+                radial = radial.replace(" RW", " ");
+                radial = radial.split(" ")[0] + " - " + radial.substring(radial.lastIndexOf(" "));
+                //  end 6/26.2021 GSD
+                // Limit to 10 chars  Max  is  "ILS space - space 19C"  Note the 19C word has a leading space
+                radial = radial.slice(0, 10);
             }
         }
         else if(SimVar.GetSimVarValue("NAV HAS DME:1", "bool")) {
