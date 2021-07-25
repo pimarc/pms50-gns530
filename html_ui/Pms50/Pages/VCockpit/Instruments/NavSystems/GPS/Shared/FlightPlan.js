@@ -1098,7 +1098,7 @@ class GPS_FPLCatalog extends NavSystemElement {
                     }
                 }
                 if(fpl.approachName.length) {
-                    let approachNameToSearch = this.approachName.toUpperCase();
+                    let approachNameToSearch = fpl.approachName.toUpperCase();
                     let indexapproach = -1;
                     for (i = 0; i < infos.approaches.length; i++) {
                         if(infos.approaches[i].name.toUpperCase() == approachNameToSearch) {
@@ -1275,6 +1275,8 @@ class FPLCatalogItem {
                 let waypoints = fpl[0].getElementsByTagName("ATCWaypoint");
                 for (let i = 0; i < waypoints.length; i++) {
                     let waypointroot = waypoints[i];
+                    let icao = waypointroot.getElementsByTagName("ICAO")[0];
+                    let ident = icao && icao.getElementsByTagName("ICAOIdent")[0] ? icao.getElementsByTagName("ICAOIdent")[0].textContent : "";
                     let type = waypointroot.getElementsByTagName("ATCWaypointType")[0] ? waypointroot.getElementsByTagName("ATCWaypointType")[0].textContent : "";
                     let sid = waypointroot.getElementsByTagName("DepartureFP")[0] ? waypointroot.getElementsByTagName("DepartureFP")[0].textContent : "";
                     if(this.departureName == "" && sid != "") {
@@ -1290,6 +1292,10 @@ class FPLCatalogItem {
                         this.departureTransitionName = waypointroot.getElementsByTagName("DepartureTransitionFP")[0] ? waypointroot.getElementsByTagName("DepartureTransitionFP")[0].textContent : "";
                         this.departureName = sid;
                     }
+                    if(sid == "" && this.departureName != "" && this.departureTransitionName == "") {
+                        // If not explicitely defined we take the last sid Wp as transition name
+                        this.departureTransitionName = lastIdent;
+                    }
                     let star = waypointroot.getElementsByTagName("ArrivalFP")[0] ? waypointroot.getElementsByTagName("ArrivalFP")[0].textContent : "";
                     if(this.arrivalName == "" && star != "") {
                         let arrivalRunway = waypointroot.getElementsByTagName("RunwayNumberFP")[0] ? waypointroot.getElementsByTagName("RunwayNumberFP")[0].textContent : "";
@@ -1301,7 +1307,9 @@ class FPLCatalogItem {
                             rw += " ";
                         if(rw.length)
                             this.arrivalRunwayName = "RW" + rw;
-                        this.arrivalTransitionName = waypointroot.getElementsByTagName("ArrivalTransitionFP")[0] ? waypointroot.getElementsByTagName("ArrivalTransitionFP")[0].textContent : "";
+                        // Arrival transition name may be explicitely defined or this is the first arrival wp 
+                        if(!this.arrivalTransitionName)
+                            this.arrivalTransitionName = waypointroot.getElementsByTagName("ArrivalTransitionFP")[0] ? waypointroot.getElementsByTagName("ArrivalTransitionFP")[0].textContent : ident;
                         this.arrivalName = star;
                     }
                     if(i==waypoints.length-1) {
@@ -1330,9 +1338,7 @@ class FPLCatalogItem {
                             }
                         }
                     }
-                    let icao = waypointroot.getElementsByTagName("ICAO")[0];
                     if(icao){
-                        let ident = icao.getElementsByTagName("ICAOIdent")[0] ? icao.getElementsByTagName("ICAOIdent")[0].textContent : "";
                         lastIdent = ident;
                         // Prepare icao format TRRAAAAIIIII each part with right leading 0s (T=Type, R=Region, A=Linked airport I=Ident)
                         while(ident.length < 5)
