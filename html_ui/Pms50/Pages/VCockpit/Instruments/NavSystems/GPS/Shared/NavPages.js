@@ -618,7 +618,10 @@ class GPS_DefaultNav extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        this.currBranchFrom.textContent = SimVar.GetSimVarValue("GPS WP PREV ID", "string").slice(0, 7);
+        diffAndSetText(this.currBranchFrom, SimVar.GetSimVarValue("GPS WP PREV ID", "string").slice(0, 7));
+        if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+            diffAndSetText(this.currBranchFrom, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree"), 0), 3) + "°");
+        }
         if (this.gps.currFlightPlanManager.getIsDirectTo()) {
             if (this.legSymbol != 1) {
                 this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png" class="imgSizeM"/>';

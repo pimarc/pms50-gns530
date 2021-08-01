@@ -69,6 +69,33 @@ class BaseGPS extends NavSystem {
         this.icaoFromMap = null;
         this.dataStore = new WTDataStore(this);
         this.vsr = 0;
+
+        //===============================================================================================
+        //    Set up    JS_LISTENER_KEYEVENT     GSD 07/03/2021
+
+        // RegisterViewListener("JS_LISTENER_KEYEVENT");
+        // this.keyListener = RegisterViewListener('JS_LISTENER_KEYEVENT', () => {
+        //     Coherent.call('INTERCEPT_KEY_EVENT', 'VOR1_OBI_INC', 0);
+        //     Coherent.call('INTERCEPT_KEY_EVENT', 'VOR1_OBI_DEC', 0);
+
+        //     this.keyListener.on('keyIntercepted', keyEventName => {
+
+        //         if (keyEventName === 'VOR1_OBI_INC') {
+        //             if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+        //                 SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:1", "degree"));
+        //             }
+        //         }
+
+        //         if (keyEventName === 'VOR1_OBI_DEC') {
+        //             if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+        //                 SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:1", "degree"));
+        //             }
+        //         }
+
+        //     });
+
+        // });
+
         //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
         this.loadConfig(() => {
             this.debug = this.getConfigKey("debug", false);
@@ -266,6 +293,17 @@ class BaseGPS extends NavSystem {
         SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"));
         SimVar.SetSimVarValue("K:GPS_OBS", "number", 0);
     }
+    // toggleOBS() {
+    //     SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"));
+    //     SimVar.SetSimVarValue("K:GPS_OBS", "number", 0);
+    //     if (!SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+    //         //  GSD  07/03/2021
+    //         // NAV OBS:1  only needs to initilized when GPS OBS is 1st selected
+    //         // Thereafter,  it is syncronized  by  VOR1_OBI_INC & VOR1_OBI_INC
+    //         // using JS_LISTENER_KEYEVENT as setup in this js file
+    //         SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:1", "degree"));
+    //     }					  
+    // }
 
     checkAfterDirectTo() {
         // Check if we are at the end of a directTo (less than 1nm to the destination WP)

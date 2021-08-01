@@ -231,6 +231,8 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
+## V 1.0.37 (not yet released)
+- Display OBS angle in CDI if OBS active
 ## V 1.0.36
 - SU5 compatibility
 - bugfix: bad LOC runway name
