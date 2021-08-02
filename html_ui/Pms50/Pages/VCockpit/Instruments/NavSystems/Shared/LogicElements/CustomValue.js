@@ -14,7 +14,7 @@ class CustomValue {
         switch (this.valueIndex) {
             case 0:
                 this.nameDisplay.textContent = "BRG";
-                this.unitDisplay.innerHTML = "o<br/>M";
+                this.unitDisplay.innerHTML = "o<br>M";
                 if(flightPlanActive)
                     this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS WP BEARING", "degree"), 0), 3);
                 else
@@ -22,7 +22,7 @@ class CustomValue {
                 break;
             case 1:
                 this.nameDisplay.textContent = "CTS";
-                this.unitDisplay.innerHTML = "o<br/>M";
+                this.unitDisplay.innerHTML = "o<br>M";
                 if(flightPlanActive)
                     this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS COURSE TO STEER", "degree"), 0), 3);
                 else
@@ -30,12 +30,12 @@ class CustomValue {
                 break;
             case 2:
                 this.nameDisplay.textContent = "XTK";
-                this.unitDisplay.innerHTML = "n<br/>m";
+                this.unitDisplay.innerHTML = "n<br>m";
                 this.valueDisplay.textContent = !flightPlanActive ? "___._" : (Math.round((SimVar.GetSimVarValue("GPS WP CROSS TRK", "Nautical Miles")*10))/10).toFixed(1);
                 break;
             case 3:
                 this.nameDisplay.textContent = "DTK";
-                this.unitDisplay.innerHTML = "o<br/>M";
+                this.unitDisplay.innerHTML = "o<br>M";
                 if(flightPlanActive)
                     this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0), 3);
                 else
@@ -43,12 +43,12 @@ class CustomValue {
                 break;
             case 4:
                 this.nameDisplay.textContent = "DIS";
-                this.unitDisplay.innerHTML = "n<br/>m";
+                this.unitDisplay.innerHTML = "n<br>m";
                 this.valueDisplay.textContent = !flightPlanActive ? "___._" : (Math.round((SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles")*10))/10).toFixed(1);
                 break;
             case 5:
                 this.nameDisplay.textContent = "ESA";
-                this.unitDisplay.innerHTML = "f<br/>t";
+                this.unitDisplay.innerHTML = "f<br>t";
                 this.valueDisplay.textContent = "___";
                 break;
             case 6:
@@ -71,27 +71,27 @@ class CustomValue {
                 break;
             case 8:
                 this.nameDisplay.textContent = "FLOW";
-                this.unitDisplay.innerHTML = "lb<br/>/h";
+                this.unitDisplay.innerHTML = "lb<br>/h";
                 this.valueDisplay.textContent = fastToFixed(SimVar.GetSimVarValue("ESTIMATED FUEL FLOW", "pound per hour"), 0);
                 break;
             case 9:
                 this.nameDisplay.textContent = "GS";
-                this.unitDisplay.innerHTML = "k<br/>t";
+                this.unitDisplay.innerHTML = "k<br>t";
                 this.valueDisplay.textContent = fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0);
                 break;
             case 10:
                 this.nameDisplay.textContent = "TRK";
-                this.unitDisplay.innerHTML = "o<br/>M";
+                this.unitDisplay.innerHTML = "o<br>M";
                 this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 0), 3);
                 break;
             case 11:
                 this.nameDisplay.textContent = "MSA";
-                this.unitDisplay.innerHTML = "f<br/>t";
+                this.unitDisplay.innerHTML = "f<br>t";
                 this.valueDisplay.textContent = "___";
                 break;
             case 12:
                 this.nameDisplay.textContent = "TKE";
-                this.unitDisplay.innerHTML = "o<br/>M";
+                this.unitDisplay.innerHTML = "o<br>M";
                 if(flightPlanActive)
                     this.valueDisplay.textContent = Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS WP TRACK ANGLE ERROR", "degree"), 0), 3);
                 else
@@ -100,19 +100,19 @@ class CustomValue {
 //PM Modif: Added VSR is Vertical Speed Required to Target following VCALC (VSR is at GPS unit level)
             case 13:
                 this.nameDisplay.textContent = "VSR";
-                this.unitDisplay.innerHTML = "ft<br/>/m";
+                this.unitDisplay.innerHTML = "ft<br>/m";
                 value = this.gps.vsr != 0 ? fastToFixed(this.gps.vsr, 0) : "___";
                 this.valueDisplay.textContent = !flightPlanActive ? "___" : value;
                 break;
 //PM Modif: End Added VSR is Vertical Speed Required to Target following VCALC
             case 14:
                 this.nameDisplay.textContent = "ALT";
-                this.unitDisplay.innerHTML = "f<br/>t";
+                this.unitDisplay.innerHTML = "f<br>t";
                 this.valueDisplay.textContent = fastToFixed(SimVar.GetSimVarValue("GPS POSITION ALT", "feet"), 0);
                 break;
             case 15:
                 this.nameDisplay.textContent = "BARO";
-                this.unitDisplay.innerHTML = "m<br/>b";
+                this.unitDisplay.innerHTML = "m<br>b";
                 this.valueDisplay.textContent = fastToFixed(SimVar.GetSimVarValue("BAROMETER PRESSURE", "Millibars"), 0);
                 break;
             case 16:
@@ -123,7 +123,7 @@ class CustomValue {
 //PM Modif: Added VS
             case 17:
                 this.nameDisplay.textContent = "VS";
-                this.unitDisplay.innerHTML = "ft<br/>/s";
+                this.unitDisplay.innerHTML = "ft<br>/s";
                 this.valueDisplay.textContent = !flightPlanActive ? "___" : fastToFixed(SimVar.GetSimVarValue("GPS WP VERTICAL SPEED", "feet per second"), 0);
                 break;
 //PM Modif: End Added VS

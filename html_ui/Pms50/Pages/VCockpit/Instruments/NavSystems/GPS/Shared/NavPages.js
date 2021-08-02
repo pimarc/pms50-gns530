@@ -21,9 +21,9 @@ class GPS_CDIElement extends NavSystemElement {
         // On the original GPS if the distance to next WP is less than 30nm, the limit to display the sursor is 1.2nm
         if(SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 30)
             limit = 1.2;
-        this.toFrom.innerHTML = "<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_tofrom.png\"" + ((dtkminusbrg > 90 && dtkminusbrg < 270) ? " style=\"transform: rotate(180deg);margin-top: 3vh;\" />" : " />");
-        this.botLeft.innerHTML = (CTD < -limit) ? "<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png\"/>&nbsp;" + displayedCTD : "";
-        this.botRight.innerHTML = (CTD > limit) ? displayedCTD + "&nbsp;<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png\"/>" : "";
+        this.toFrom.innerHTML = "<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_tofrom.png\"" + ((dtkminusbrg > 90 && dtkminusbrg < 270) ? " style=\"transform: rotate(180deg);margin-top: 3vh;\">" : ">");
+        this.botLeft.innerHTML = (CTD < -limit) ? "<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png\">&nbsp;" + displayedCTD : "";
+        this.botRight.innerHTML = (CTD > limit) ? displayedCTD + "&nbsp;<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png\">" : "";
         this.mark1.setAttribute("style", "visibility: " + ((CTD > limit || (-limit <= CTD && CTD <= limit)) ? "visible;" : "hidden;"));
         this.mark2.setAttribute("style", "visibility: " + ((CTD > limit || (-limit <= CTD && CTD <= limit)) ? "visible;" : "hidden;"));
         this.mark3.setAttribute("style", "visibility: " + ((CTD < -limit || (-limit <= CTD && CTD <= limit)) ? "visible;" : "hidden;"));
@@ -624,7 +624,7 @@ class GPS_DefaultNav extends NavSystemElement {
         }
         if (this.gps.currFlightPlanManager.getIsDirectTo()) {
             if (this.legSymbol != 1) {
-                this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png" class="imgSizeM"/>';
+                this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png" class="imgSizeM">';
                 this.legSymbol = 1;
             }
         }
@@ -638,49 +638,49 @@ class GPS_DefaultNav extends NavSystemElement {
                     case 9:
                     case 10:
                         if (this.legSymbol != 2) {
-                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png" class="imgSizeM"/>';
+                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png" class="imgSizeM">';
                             this.legSymbol = 2;
                         }
                         break;
                     case 2:
                         if (this.legSymbol != 3) {
-                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/left_turn.png" class="imgSizeM"/>';
+                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/left_turn.png" class="imgSizeM">';
                             this.legSymbol = 3;
                         }
                         break;
                     case 3:
                         if (this.legSymbol != 4) {
-                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/right_turn.png" class="imgSizeM"/>';
+                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/right_turn.png" class="imgSizeM">';
                             this.legSymbol = 4;
                         }
                         break;
                     case 4:
                         if (this.legSymbol != 5) {
-                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/arc_left.png" class="imgSizeM"/>';
+                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/arc_left.png" class="imgSizeM">';
                             this.legSymbol = 5;
                         }
                         break;
                     case 5:
                         if (this.legSymbol != 6) {
-                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/arc_right.png" class="imgSizeM"/>';
+                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/arc_right.png" class="imgSizeM">';
                             this.legSymbol = 6;
                         }
                         break;
                     case 6:
                         if (this.legSymbol != 7) {
-                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/left_hand.png" class="imgSizeM"/>';
+                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/left_hand.png" class="imgSizeM">';
                             this.legSymbol = 7;
                         }
                         break;
                     case 7:
                         if (this.legSymbol != 8) {
-                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/right_hand.png" class="imgSizeM"/>';
+                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/right_hand.png" class="imgSizeM">';
                             this.legSymbol = 8;
                         }
                         break;
                     case 11:
                         if (this.legSymbol != 9) {
-                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/vectors_to_final.png" class="imgSizeM"/>';
+                            this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/vectors_to_final.png" class="imgSizeM">';
                             this.legSymbol = 9;
                         }
                         break;
@@ -688,7 +688,7 @@ class GPS_DefaultNav extends NavSystemElement {
             }
             else {
                 if (this.legSymbol != 2) {
-                    this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png" class="imgSizeM"/>';
+                    this.currBranchArrow.innerHTML = '<img src="/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png" class="imgSizeM">';
                     this.legSymbol = 2;
                 }
             }
@@ -983,7 +983,7 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 }
             }
             let cc = this.getCursorCoordinates();
-            this.cursorDataRight.innerHTML = this.gps.latitudeFormat(cc.lat) + "<br />" + this.gps.longitudeFormat(cc.long);
+            this.cursorDataRight.innerHTML = this.gps.latitudeFormat(cc.lat) + "<br>" + this.gps.longitudeFormat(cc.long);
             let text = "MAP CURSOR";
             if(this.selectedsvgMapElement && this.selectedsvgMapElement.selected && this.selectedsvgMapElement.source) {
                 text = this.selectedsvgMapElement.source.ident;
@@ -1002,9 +1002,9 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 if(coordinates)
                     cc = coordinates;
             }
-            text += "<br />";
+            text += "<br>";
             text += fastToFixed(Avionics.Utils.computeGreatCircleHeading(new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")), cc) - SimVar.GetSimVarValue("MAGVAR", "degrees"), 0) + "°";
-            text += " " + fastToFixed(Avionics.Utils.computeGreatCircleDistance(new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")), cc), 1) + '<div class="Align unit">n<br />m</div>';
+            text += " " + fastToFixed(Avionics.Utils.computeGreatCircleDistance(new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")), cc), 1) + '<div class="Align unit">n<br>m</div>';
             this.cursorDataLeft.innerHTML = text;
         }
     }
@@ -1605,7 +1605,7 @@ class GPS_ComNav extends NavSystemElement {
             this.terrainType.textContent = this.gps.airportPrivateTypeStrFromEnum(this.airportListOnPlan[this.airportListIndex].GetInfos().privateType);
             var logo = this.airportListOnPlan[this.airportListIndex].GetInfos().imageFileName();
             if (logo != "") {
-                this.terrainTypeLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM"/>';
+                this.terrainTypeLogo.innerHTML = '<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/' + logo + '" class="imgSizeM">';
             }
             else {
                 this.terrainTypeLogo.innerHTML = "";

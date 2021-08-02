@@ -1,13 +1,13 @@
 class GPS_WaypointLine extends MFD_WaypointLine {
     getString() {
-        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
+        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td>';
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
             if(infos && infos.ident) {
                 return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 8) : this.waypoint.ident.slice(0, 8)) + '</td><td>'
-                + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
-                + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
-                + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
+                + this.getDtk() + '<div class="Align unit">&nbsp;o<br>&nbsp;M</div>' + '</td><td>'
+                + this.getDistance() + '<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td><td>'
+                + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br>&nbsp;m</div>' + '</td>';
             }
             else if (this.element.emptyLine != "")
                 return this.element.emptyLine;
@@ -217,14 +217,14 @@ class GPS_WaypointLine extends MFD_WaypointLine {
 }
 class GPS_ApproachWaypointLine extends MFD_ApproachWaypointLine {
     getString() {
-        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
+        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td>';
         if (this.waypoint) {
             let infos = this.waypoint.GetInfos();
             if(infos && infos.ident) {
                 return '<td class="SelectableElement Select0">' + (infos.ident != "" ? infos.ident.slice(0, 8) : this.waypoint.ident.slice(0, 8)) + '</td><td>'
-                    + this.getDtk() + '<div class="Align unit">&nbsp;o<br/>&nbsp;M</div>' + '</td><td>'
-                    + this.getDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>'
-                    + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br/>&nbsp;m</div>' + '</td>';
+                    + this.getDtk() + '<div class="Align unit">&nbsp;o<br>&nbsp;M</div>' + '</td><td>'
+                    + this.getDistance() + '<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td><td>'
+                    + this.getCumDistance() + '<div class="Align unit">&nbsp;n<br>&nbsp;m</div>' + '</td>';
             }
             else if (this.element.emptyLine != "")
                 return this.element.emptyLine;
@@ -431,7 +431,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
             super(GPS_WaypointLine, GPS_ApproachWaypointLine, 7, 4);
         else
             super(GPS_WaypointLine, GPS_ApproachWaypointLine, 5, 4);
-        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br/>&nbsp;M</div></td><td>___<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br/>&nbsp;m</div></td>';
+        this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br>&nbsp;M</div></td><td>___<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td>';
     }
     init(_root) {
         super.init(_root);

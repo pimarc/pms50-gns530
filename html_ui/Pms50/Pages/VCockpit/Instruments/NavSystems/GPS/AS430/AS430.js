@@ -33,7 +33,7 @@ class AS430 extends BaseGPS {
                 this.NbLoopInitScreen = 50;
             }
             this.initScreen.setAttribute("style", "display: flex");
-            this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br /> Initializing...";
+            this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br> Initializing...";
             this.cnt++;
             // Init delayed after 50 updates
             if(this.cnt > this.NbLoopInitScreen){

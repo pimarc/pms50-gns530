@@ -233,6 +233,7 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 # Change log
 ## V 1.0.37 (not yet released)
 - Display OBS angle in CDI if OBS active
+- bugfix: images not displayed or flicking in nearest pages
 ## V 1.0.36
 - SU5 compatibility
 - bugfix: bad LOC runway name
