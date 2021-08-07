@@ -530,11 +530,10 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
                     }
                 }
                 // Remove any direct to before activating leg
-                if(this.gps.currFlightPlanManager.getIsDirectTo()){
-                    this.gps.currFlightPlanManager.cancelDirectTo();
-                }
-                this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
-                }
+                this.gps.cancelDirectTo(() => {
+                    this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
+                });
+            }
         });
 
     }

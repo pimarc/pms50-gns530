@@ -16,12 +16,13 @@ class GPS_CDIElement extends NavSystemElement {
         var brg = fastToFixed(SimVar.GetSimVarValue("GPS WP BEARING", "degree"),2);
         var dtkminusbrg = ((dtk - brg) + 360) %360;
         var CTD = SimVar.GetSimVarValue("GPS WP CROSS TRK", "Nautical Miles");
+        CTD = (Math.round(Math.abs(CTD)*10)/10).toFixed(1);
         var displayedCTD = (Math.round(Math.abs(CTD)*10)/10).toFixed(1);
         var limit = 2.4;
         // On the original GPS if the distance to next WP is less than 30nm, the limit to display the sursor is 1.2nm
         if(SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 30)
             limit = 1.2;
-        this.toFrom.innerHTML = "<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_tofrom.png\"" + ((dtkminusbrg > 90 && dtkminusbrg < 270) ? " style=\"transform: rotate(180deg);margin-top: 3vh;\">" : ">");
+        diffAndSetHTML (this.toFrom,"<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_tofrom.png\"" + ((dtkminusbrg > 90 && dtkminusbrg < 270) ? " style=\"transform: rotate(180deg);margin-top: 3vh;\">" : ">"));
         this.botLeft.innerHTML = (CTD < -limit) ? "<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png\">&nbsp;" + displayedCTD : "";
         this.botRight.innerHTML = (CTD > limit) ? displayedCTD + "&nbsp;<img src=\"/Pms50/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/cdi_arrow.png\">" : "";
         this.mark1.setAttribute("style", "visibility: " + ((CTD > limit || (-limit <= CTD && CTD <= limit)) ? "visible;" : "hidden;"));

@@ -247,7 +247,7 @@ class GPS_DirectTo extends NavSystemElement {
             if (this.gps.confirmWindow.element.Result == 1) {
                 // Remove any directTo before activating leg
                 if(this.gps.currFlightPlanManager.getIsDirectTo()){
-                    this.gps.currFlightPlanManager.cancelDirectTo();
+                    this.gps.cancelDirectTo();
                     this.gps.SwitchToInteractionState(0);
                     this.gps.leaveEventPage();
                 }

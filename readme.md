@@ -234,6 +234,8 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 ## V 1.0.37 (not yet released)
 - Display OBS angle in CDI if OBS active
 - bugfix: images not displayed or flicking in nearest pages
+- bugfix: the from/to arrow in CDI was flicking or not displayed
+- bugfix: direcTo an approach waypoint removes the flight plan when reaching the target
 ## V 1.0.36
 - SU5 compatibility
 - bugfix: bad LOC runway name

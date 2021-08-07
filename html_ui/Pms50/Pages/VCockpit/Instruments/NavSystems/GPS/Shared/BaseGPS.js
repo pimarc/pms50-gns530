@@ -309,26 +309,82 @@ class BaseGPS extends NavSystem {
         // Check if we are at the end of a directTo (less than 1nm to the destination WP)
         this._t++;
         // We arm 1 nm before the target approach directTo
-        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.currFlightPlanManager.isLoadedApproach() && this.waypointDirectTo != null && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
+        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.currFlightPlanManager.isLoadedApproach() && this.waypointDirectTo && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
             this._t = 0;
-            // Check if the directTO is part of the approach
-            let wayPointList = this.currFlightPlanManager.getApproachWaypoints();
+            this.cancelDirectTo();
+        }
+    }
+
+    // This is a workaround to a SU5 bug where cancel direct to removes the entire FP if
+    // there is an approach loaded and activated
+    cancelDirectTo(_callback) {
+        let reactivateApproach = false;
+        if(this.waypointDirectTo)
+            reactivateApproach = true;
+        this.waypointDirectTo = null;
+        if(!this.currFlightPlanManager.getIsDirectTo()) {
+            if(_callback)
+                _callback();
+            return;
+        }
+        if(this.currFlightPlanManager.isLoadedApproach()) {
+            // Check if the directTO is part of the approach (bug that removes the FP)
+            // and if the approach was active when doing the directTo (this.waypointDirectTo not null)
             let index = -1;
+            let target = this.currFlightPlanManager.getDirectToTarget();
+            let wayPointList = this.currFlightPlanManager.getApproachWaypoints();
             // We check until the wp before the last wp because we'll active the leg to next WP (not usefull if last WP)
             for (var i=0; i < wayPointList.length-1; i++) {
-                if(wayPointList[i].GetInfos().icao == this.waypointDirectTo.GetInfos().icao) {
+                if(target && wayPointList[i].icao == target.GetInfos().icao) {
                     index = i + 1;
                     break;
                 }
             }
-            this.waypointDirectTo = null;
-            if(index != -1) {
-                // We must reactivate the approach and set the leg to index (next waypoint)
-                this.currFlightPlanManager.cancelDirectTo();
-                this.activateApproach(() => {
-                    this.currFlightPlanManager.setActiveWaypointIndex(index);
+            let approachIndex = this.currFlightPlanManager.getApproachIndex();
+            let approachTransitionIndex = this.currFlightPlanManager.getApproachTransitionIndex();
+            Coherent.call("SET_APPROACH_INDEX", -1).then(() => {
+                Coherent.call("SET_APPROACH_TRANSITION_INDEX", 0).then(() => {
+                    Coherent.call("CANCEL_DIRECT_TO").then(() => {
+                        Coherent.call("SET_APPROACH_INDEX", approachIndex).then(() => {
+                            if(approachTransitionIndex >= 0) {
+                                Coherent.call("SET_APPROACH_TRANSITION_INDEX", approachTransitionIndex).then(() => {
+                                    this.currFlightPlanManager.updateFlightPlan(() => {
+                                        this.currFlightPlanManager.updateCurrentApproach(() => {
+                                            // We must reactivate the approach and set the leg to index (next waypoint)
+                                            if(reactivateApproach) {
+                                                this.activateApproach(() => {
+                                                    if(index >= 0)
+                                                        this.currFlightPlanManager.setActiveWaypointIndex(index);
+                                                    this.currFlightPlanManager.updateFlightPlan(() => {
+                                                        this.currFlightPlanManager.updateCurrentApproach();
+                                                        if(_callback)
+                                                            _callback();
+                                                    });
+                                                });
+                                            }
+                                            else {
+                                                if(index >= 0)
+                                                    this.currFlightPlanManager.setActiveWaypointIndex(index);
+                                                this.currFlightPlanManager.updateFlightPlan(() => {
+                                                    this.currFlightPlanManager.updateCurrentApproach();
+                                                    if(_callback)
+                                                        _callback();
+                                                });
+                                            }
+                                        });
+                                    });
+                                });
+                            }
+                        });
+                    });
                 });
-            }
+            });
+        }
+        else {
+            Coherent.call("CANCEL_DIRECT_TO").then(() => {
+                if(_callback)
+                    _callback();
+            });
         }
     }
 
@@ -347,10 +403,8 @@ class BaseGPS extends NavSystem {
     // We remove the enroute waypoints before activating approach
     // If we are after the last enroute waypoint
     activateApproach(callback = EmptyCallback.Void) {
-        if(this.currFlightPlanManager.getIsDirectTo()){
-            this.currFlightPlanManager.cancelDirectTo();
-        }
-// Removed that because if you select the approach before the last enroute wp, the distance displayed on the default nav page
+        this.cancelDirectTo(() => {
+            // Removed that because if you select the approach before the last enroute wp, the distance displayed on the default nav page
 // are not correct and the aircraft continues to follow the enroute WP. SO I prefer to remove enroute WP in any case when activating approach.       
 //         if ((this.currFlightPlanManager.getActiveWaypointIndex() != -1) && (this.currFlightPlanManager.getActiveWaypointIndex() <= this.currFlightPlanManager.getLastIndexBeforeApproach())) {
 //             Coherent.call("DEACTIVATE_APPROACH").then(() => {
@@ -362,24 +416,34 @@ class BaseGPS extends NavSystem {
 //             });
 //         }
 //         else {
-        let removeWaypointForApproachMethod = (callback_here = EmptyCallback.Void) => {
-            let i = 1;
-            let destinationIndex = this.currFlightPlanManager.getWaypoints().findIndex(w => {
-                return w.icao === this.currFlightPlanManager.getDestination().icao;
-            });
+            let removeWaypointForApproachMethod = (callback_here = EmptyCallback.Void) => {
+                let i = 1;
+                let destinationIndex = this.currFlightPlanManager.getWaypoints().findIndex(w => {
+                    return w.icao === (this.currFlightPlanManager.getDestination() ? this.currFlightPlanManager.getDestination().icao : undefined);
+                });
 
-            if (i < destinationIndex) {
-                this.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
-                    //i++;
-                    removeWaypointForApproachMethod(callback_here);
+                if (i < destinationIndex) {
+                    this.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
+                        //i++;
+                        removeWaypointForApproachMethod(callback_here);
+                    });
+                }
+                else {
+                    callback_here();
+                }
+            };
+            if(this.getConfigKey("wa_uturn_bug", true)) {
+                removeWaypointForApproachMethod(() => {
+                    Coherent.call("ACTIVATE_APPROACH").then(() => {
+                        this.currFlightPlanManager._approachActivated = true;
+                        SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
+                        this.currFlightPlanManager.updateCurrentApproach();
+                        this.setApproachFrequency();
+                        callback();
+                    });
                 });
             }
             else {
-                callback_here();
-            }
-        };
-        if(this.getConfigKey("wa_uturn_bug", true)) {
-            removeWaypointForApproachMethod(() => {
                 Coherent.call("ACTIVATE_APPROACH").then(() => {
                     this.currFlightPlanManager._approachActivated = true;
                     SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
@@ -387,17 +451,8 @@ class BaseGPS extends NavSystem {
                     this.setApproachFrequency();
                     callback();
                 });
-            });
-        }
-        else {
-            Coherent.call("ACTIVATE_APPROACH").then(() => {
-                this.currFlightPlanManager._approachActivated = true;
-                SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
-                this.currFlightPlanManager.updateCurrentApproach();
-                this.setApproachFrequency();
-                callback();
-            });
-        }
+            }
+        });
     }
 
     setApproachFrequency() {
