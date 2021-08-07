@@ -231,10 +231,10 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
-## V 1.0.37 (not yet released)
+## V 1.0.37
 - Display OBS angle in CDI if OBS active
 - bugfix: images not displayed or flicking in nearest pages
-- bugfix: the from/to arrow in CDI was flicking or not displayed
+- bugfix: the from/to arrow in CDI was flicking or was not displayed
 - bugfix: direcTo an approach waypoint removes the flight plan when reaching the target
 ## V 1.0.36
 - SU5 compatibility
