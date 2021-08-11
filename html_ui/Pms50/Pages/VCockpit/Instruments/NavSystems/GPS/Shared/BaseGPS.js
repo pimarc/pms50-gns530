@@ -62,7 +62,7 @@ class BaseGPS extends NavSystem {
         this.alertWindow.setGPS(this);
         this._t = 0;
         this.msg_t = 0;
-        this.waypointDirectTo = null;
+        this.enableCheckAfterDirectTo = false;
         this.attemptDeleteWpLeg = 0;
         this.attemptDeleteWpProc = 0;
         this.attemptAddWp = 0;
@@ -311,8 +311,8 @@ class BaseGPS extends NavSystem {
     checkAfterDirectTo() {
         // Check if we are at the end of a directTo (less than 1nm to the destination WP)
         this._t++;
-        // We arm 1 nm before the target approach directTo
-        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.waypointDirectTo && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
+        // We arm 2 nm before the target approach directTo
+        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.enableCheckAfterDirectTo && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
             this._t = 0;
             this.cancelDirectTo();
         }
@@ -321,10 +321,7 @@ class BaseGPS extends NavSystem {
     // This is a workaround to a SU5 bug where cancel direct to removes the entire FP if
     // there is an approach loaded and activated
     cancelDirectTo(_callback) {
-        let reactivateApproach = false;
-        if(this.waypointDirectTo)
-            reactivateApproach = true;
-        this.waypointDirectTo = null;
+        this.enableCheckAfterDirectTo = false;
         if(!this.currFlightPlanManager.getIsDirectTo()) {
             if(_callback)
                 _callback();
@@ -332,7 +329,7 @@ class BaseGPS extends NavSystem {
         }
         if(this.currFlightPlanManager.isLoadedApproach()) {
             // Check if the directTO is part of the approach (bug that removes the FP)
-            // and if the approach was active when doing the directTo (this.waypointDirectTo not null)
+            // and if the approach was active when doing the directTo (this.enableCheckAfterDirectTo true)
             let index = -1;
             let target = this.currFlightPlanManager.getDirectToTarget();
             let wayPointList = this.currFlightPlanManager.getApproachWaypoints();
@@ -345,7 +342,11 @@ class BaseGPS extends NavSystem {
                     break;
                 }
             }
-            let targetIcao = index >= 0 ? wayPointList[index].icao : "";
+            let targetApproachWaypointIcao = index >= 0 ? wayPointList[index].icao : "";
+            // If the target is the first one we don't reactivate the approach
+            // because we are at more than 2nm from it
+            if(index == 0)
+                targetApproachWaypointIcao = "";
             let approachIndex = this.currFlightPlanManager.getApproachIndex();
             let approachTransitionIndex = this.currFlightPlanManager.getApproachTransitionIndex();
             Coherent.call("SET_APPROACH_INDEX", -1).then(() => {
@@ -356,27 +357,19 @@ class BaseGPS extends NavSystem {
                                 Coherent.call("SET_APPROACH_TRANSITION_INDEX", approachTransitionIndex).then(() => {
                                     this.currFlightPlanManager.updateFlightPlan(() => {
                                         this.currFlightPlanManager.updateCurrentApproach(() => {
-                                            // We must reactivate the approach and set the leg to index (next waypoint)
-                                            if(reactivateApproach) {
+                                            // We must reactivate the approach and set the leg to target (next waypoint)
+                                            if(targetApproachWaypointIcao.length) {
                                                 this.activateApproach(() => {
-                                                    if(targetIcao.length) {
-                                                        this.currFlightPlanManager.updateCurrentApproach(() => {
-                                                            let targetIndex = this.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === targetIcao; });
-                                                            if(targetIndex >=0)
-                                                                this.currFlightPlanManager.setActiveWaypointIndex(targetIndex);
-                                                            if(_callback)
-                                                                _callback();
-                                                        });
-                                                    }
-                                                    else {
+                                                    this.currFlightPlanManager.updateCurrentApproach(() => {
+                                                        let targetIndex = this.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === targetApproachWaypointIcao; });
+                                                        if(targetIndex >=0)
+                                                            this.currFlightPlanManager.setActiveWaypointIndex(targetIndex);
                                                         if(_callback)
                                                             _callback();
-                                                    }
+                                                    });
                                                 });
                                             }
                                             else {
-                                                if(index >= 0)
-                                                    this.currFlightPlanManager.setActiveWaypointIndex(index);
                                                 if(_callback)
                                                     _callback();
                                             }
@@ -391,7 +384,6 @@ class BaseGPS extends NavSystem {
         }
         else {
             // Stil a bug here if the flight plan has only origin and destination or less
-            let target = this.currFlightPlanManager.getActiveWaypoint();
             let wayPointList = this.currFlightPlanManager.getWaypoints();
             let origin = this.currFlightPlanManager.getOrigin();
             let destination = this.currFlightPlanManager.getDestination();
