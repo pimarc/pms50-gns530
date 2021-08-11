@@ -216,25 +216,27 @@ class GPS_DirectTo extends NavSystemElement {
             // FS2020 removes the origin airport (first flight plan index)
             // The direct then works but its not possible any more to select an approach for the new destination airport
             // The correction consists of re-inserting the origin airport at the start of the flight plan
-            let waypoint_origin = this.gps.currFlightPlanManager.getWaypoint(0);
-            if(this.gps.currFlightPlanManager.isActiveApproach())
-            {
-                // Check if WP is part of approach
-                this.gps.waypointDirectTo = null;
-                let wayPointList = this.gps.currFlightPlanManager.getApproachWaypoints();
-                for (var i=0; i < wayPointList.length; i++) {
-                    if(wayPointList[i].GetInfos().icao == this.icaoSearchField.getWaypoint().GetInfos().icao) {
-                        this.gps.waypointDirectTo = this.icaoSearchField.getWaypoint();
-                        break;
+            this.gps.cancelDirectTo(() => {
+                let waypoint_origin = this.gps.currFlightPlanManager.getWaypoint(0);
+                this.gps.waypointDirectTo = this.icaoSearchField.getWaypoint();
+                if(this.gps.currFlightPlanManager.isActiveApproach())
+                {
+                    // Check if WP is part of approach
+                    let wayPointList = this.gps.currFlightPlanManager.getApproachWaypoints();
+                    for (var i=0; i < wayPointList.length; i++) {
+                        if(wayPointList[i].GetInfos().icao == this.icaoSearchField.getWaypoint().GetInfos().icao) {
+                            this.gps.waypointDirectTo = this.icaoSearchField.getWaypoint();
+                            break;
+                        }
                     }
                 }
-            }
-            this.gps.currFlightPlanManager.activateDirectTo(this.icaoSearchField.getWaypoint().infos.icao, () => {
-                if(waypoint_origin && this.icaoSearchField.getWaypoint().infos instanceof AirportInfo){
-                    this.gps.currFlightPlanManager.addWaypoint(waypoint_origin.icao, 0);
-                }
-                this.gps.SwitchToInteractionState(0);
-                this.gps.leaveEventPage();
+                this.gps.currFlightPlanManager.activateDirectTo(this.icaoSearchField.getWaypoint().infos.icao, () => {
+                    if(waypoint_origin && this.icaoSearchField.getWaypoint().infos instanceof AirportInfo){
+                        this.gps.currFlightPlanManager.addWaypoint(waypoint_origin.icao, 0);
+                    }
+                    this.gps.SwitchToInteractionState(0);
+                    this.gps.leaveEventPage();
+                });
             });
         }
     }

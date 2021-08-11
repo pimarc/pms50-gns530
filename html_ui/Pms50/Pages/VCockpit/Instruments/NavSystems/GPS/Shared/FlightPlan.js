@@ -1,3 +1,49 @@
+class GPS_FlightPlanManager extends FlightPlanManager {
+    constructor(_instrument) {
+        super(_instrument);
+    }
+    getActiveWaypoint(useCorrection = false) {
+        if (this.getIsDirectTo()) {
+            // We change that from the original because of a bug when we have flight plan with 2 WP or less
+            // The direct to target is then empty (empty icao)
+            let waypoint = this.getDirectToTarget();
+            if(waypoint && waypoint.icao.length)
+                return waypoint;
+        }
+        if (useCorrection && this._isGoingTowardPreviousActiveWaypoint) {
+            return this.getPreviousActiveWaypoint();
+        }
+        if (!this.isActiveApproach()) {
+            let index = this.getActiveWaypointIndex();
+            let waypoint = this.getWaypoints()[index];
+            if (waypoint) {
+                return waypoint;
+            }
+        }
+        let ident = this.getActiveWaypointIdent();
+        if (this.isActiveApproach()) {
+            let waypoint = this.getApproachWaypoints().find(w => { return (w && w.ident === ident); });
+            return waypoint;
+        }
+        let waypoint = this.getWaypoints().find(w => { return (w && w.ident === ident); });
+        if (!waypoint) {
+            if (!this.isActiveApproach()) {
+                if (this.getLastIndexBeforeApproach() >= 0)
+                    waypoint = this.getWaypoints()[this.getLastIndexBeforeApproach() + 1];
+                else
+                    waypoint = this.getWaypoints()[this.getWaypointsCount() - 1];
+            }
+            else {
+                waypoint = this.getApproachWaypoints().find(w => { return (w && w.ident === ident); });
+            }
+        }
+        if (!waypoint && this._directToTarget && ident != "" && ident === this._directToTarget.ident) {
+            waypoint = this._directToTarget;
+        }
+        return waypoint;
+    }
+}
+
 class GPS_WaypointLine extends MFD_WaypointLine {
     getString() {
         this.emptyLine = '<td class="SelectableElement Select0">_____</td><td>___<div class="Align unit">&nbsp;o<br>&nbsp;M</div></td><td>__._<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td><td>__._<div class="Align unit">&nbsp;n<br>&nbsp;m</div></td>';

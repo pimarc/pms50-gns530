@@ -16,9 +16,9 @@ class AS530 extends BaseGPS {
                 new NavSystemPage("COMSetup", "COMSetup", new GPS_COMSetup()),
             ])
         ];
-        this.doInit();
         this.messageList = new GPS_Messages();
         this.messageList.setGPS(this);
+        this.doInit();
     }
 
     onUpdate(_deltaTime) {

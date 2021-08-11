@@ -231,6 +231,12 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
+## V 1.0.38 (not yet released)
+- bugfix: the messages were not refreshed correctly
+- bugfix: the correct leg was not reactivated after a direct to an approach WP
+- bugfix: the OBS path was not displayed in directTo if there was an empty flight plan.
+- bugfix: the directTo was not working correctly.
+
 ## V 1.0.37
 - Display OBS angle in CDI if OBS active
 - bugfix: images not displayed or flicking in nearest pages

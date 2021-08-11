@@ -35,6 +35,9 @@ class BaseGPS extends NavSystem {
     }
     connectedCallback() {
         super.connectedCallback();
+        // We use our own flight plan manager
+        this.currFlightPlanManager = new GPS_FlightPlanManager(this);
+        this.currFlightPlan = new FlightPlan(this, this.currFlightPlanManager);
         this.getVersion();
         this.comActive = this.getChildById("ComActive");
         this.comStandby = this.getChildById("ComStandby");
@@ -309,7 +312,7 @@ class BaseGPS extends NavSystem {
         // Check if we are at the end of a directTo (less than 1nm to the destination WP)
         this._t++;
         // We arm 1 nm before the target approach directTo
-        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.currFlightPlanManager.isLoadedApproach() && this.waypointDirectTo && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
+        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.waypointDirectTo && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
             this._t = 0;
             this.cancelDirectTo();
         }
@@ -336,10 +339,13 @@ class BaseGPS extends NavSystem {
             // We check until the wp before the last wp because we'll active the leg to next WP (not usefull if last WP)
             for (var i=0; i < wayPointList.length-1; i++) {
                 if(target && wayPointList[i].icao == target.GetInfos().icao) {
-                    index = i + 1;
+                    index = i;
+                    if(SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2)
+                        index++;
                     break;
                 }
             }
+            let targetIcao = index >= 0 ? wayPointList[index].icao : "";
             let approachIndex = this.currFlightPlanManager.getApproachIndex();
             let approachTransitionIndex = this.currFlightPlanManager.getApproachTransitionIndex();
             Coherent.call("SET_APPROACH_INDEX", -1).then(() => {
@@ -353,23 +359,26 @@ class BaseGPS extends NavSystem {
                                             // We must reactivate the approach and set the leg to index (next waypoint)
                                             if(reactivateApproach) {
                                                 this.activateApproach(() => {
-                                                    if(index >= 0)
-                                                        this.currFlightPlanManager.setActiveWaypointIndex(index);
-                                                    this.currFlightPlanManager.updateFlightPlan(() => {
-                                                        this.currFlightPlanManager.updateCurrentApproach();
+                                                    if(targetIcao.length) {
+                                                        this.currFlightPlanManager.updateCurrentApproach(() => {
+                                                            let targetIndex = this.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === targetIcao; });
+                                                            if(targetIndex >=0)
+                                                                this.currFlightPlanManager.setActiveWaypointIndex(targetIndex);
+                                                            if(_callback)
+                                                                _callback();
+                                                        });
+                                                    }
+                                                    else {
                                                         if(_callback)
                                                             _callback();
-                                                    });
+                                                    }
                                                 });
                                             }
                                             else {
                                                 if(index >= 0)
                                                     this.currFlightPlanManager.setActiveWaypointIndex(index);
-                                                this.currFlightPlanManager.updateFlightPlan(() => {
-                                                    this.currFlightPlanManager.updateCurrentApproach();
-                                                    if(_callback)
-                                                        _callback();
-                                                });
+                                                if(_callback)
+                                                    _callback();
                                             }
                                         });
                                     });
@@ -381,9 +390,61 @@ class BaseGPS extends NavSystem {
             });
         }
         else {
+            // Stil a bug here if the flight plan has only origin and destination or less
+            let target = this.currFlightPlanManager.getActiveWaypoint();
+            let wayPointList = this.currFlightPlanManager.getWaypoints();
+            let origin = this.currFlightPlanManager.getOrigin();
+            let destination = this.currFlightPlanManager.getDestination();
+            let to_restore = false;
+            let navmode = 0;
+            if(SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "boolean"))
+                navmode = 1;
+            if(SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "boolean"))
+                navmode = 2;
+            if(wayPointList.length <= 2) {
+                if(wayPointList.length == 1)
+                    destination = null;
+                if(wayPointList.length == 0)
+                    origin = null;
+                to_restore = true;
+                if(origin && origin.ident == "USER") {
+                    origin = null;
+                    destination = null;
+                }
+                if(origin == null)
+                    destination = null;
+            }
+            let finalize = (_navmode, _callback) => {
+                if(_navmode == 1) {
+                    SimVar.SetSimVarValue("L:AP_LNAV_ACTIVE", "number", 1);
+                    SimVar.SetSimVarValue("K:AP_NAV1_HOLD_ON", "number", 1);
+                }
+                this.currFlightPlanManager.updateFlightPlan(_callback);
+                // if(_callback)
+                //     _callback();
+            };
             Coherent.call("CANCEL_DIRECT_TO").then(() => {
-                if(_callback)
-                    _callback();
+                if(to_restore) {
+                    Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN").then(() => {
+                        if(origin) {
+                            Coherent.call("SET_ORIGIN", origin.icao, false).then(() => {
+                                if(destination) {
+                                    Coherent.call("SET_DESTINATION", destination.icao, false).then(() => {
+                                        finalize(navmode, _callback)
+                                    });
+                                }
+                                else {
+                                    finalize(navmode, _callback)
+                                }
+                            });
+                        }
+                        else
+                            finalize(navmode, _callback)
+                    });
+                }
+                else {
+                    finalize(navmode, _callback)
+                }
             });
         }
     }
@@ -403,6 +464,10 @@ class BaseGPS extends NavSystem {
     // We remove the enroute waypoints before activating approach
     // If we are after the last enroute waypoint
     activateApproach(callback = EmptyCallback.Void) {
+        if(this.currFlightPlanManager.isActiveApproach()) {
+            callback();
+            return;
+        }
         this.cancelDirectTo(() => {
             // Removed that because if you select the approach before the last enroute wp, the distance displayed on the default nav page
 // are not correct and the aircraft continues to follow the enroute WP. SO I prefer to remove enroute WP in any case when activating approach.       
@@ -437,9 +502,14 @@ class BaseGPS extends NavSystem {
                     Coherent.call("ACTIVATE_APPROACH").then(() => {
                         this.currFlightPlanManager._approachActivated = true;
                         SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
-                        this.currFlightPlanManager.updateCurrentApproach();
-                        this.setApproachFrequency();
-                        callback();
+                        this.currFlightPlanManager.updateFlightPlan(() => {
+                            this.currFlightPlanManager.updateCurrentApproach(() => {
+                                setTimeout(() => {
+                                    this.setApproachFrequency();
+                                }, 2000);
+                                callback();
+                            });
+                        });
                     });
                 });
             }
@@ -447,9 +517,14 @@ class BaseGPS extends NavSystem {
                 Coherent.call("ACTIVATE_APPROACH").then(() => {
                     this.currFlightPlanManager._approachActivated = true;
                     SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
-                    this.currFlightPlanManager.updateCurrentApproach();
-                    this.setApproachFrequency();
-                    callback();
+                    this.currFlightPlanManager.updateFlightPlan(() => {
+                        this.currFlightPlanManager.updateCurrentApproach(() => {
+                            setTimeout(() => {
+                                this.setApproachFrequency();
+                            }, 2000);
+                            callback();
+                        });
+                    });
                 });
             }
         });
