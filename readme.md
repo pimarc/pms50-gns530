@@ -231,6 +231,9 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
+## V 1.0.39 (not yet released)
+- bugfix: the CDI was sometimes inverted
+
 ## V 1.0.38
 - bugfix: the messages were not refreshed correctly
 - bugfix: the correct leg was not reactivated after a direct to an approach WP
