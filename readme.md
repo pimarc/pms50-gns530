@@ -180,6 +180,7 @@ In cursor mode the MOD automatically selects the nearest Waypoint to be the dire
 
 ## OBS
 OBS angle can be set from the GNS530 Main NAV page (first NAV page) by pressing the right knob. You then enter in the "OBS angle set mode" and you can set the value with the right knob (by 10 degrees or 1 degree step ). The "OBS angle set mode" turns off automatically after 5 seconds of inactivity or if you press again the right knob.
+The initial value of the OBS is taken from the HSI or CDI (depends of the aircraft). While in "OBS angle set mode", pressing the ENT key set the OBS to your target DTK.
 
 ## Adding and deleting waypoints
 Adding a waypoint in the flight plan is currently broken in the sim when there is an approach loaded. I found a workaround to this situation so inserting a waypoint should just work now (with some exceptions).
@@ -231,8 +232,11 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
-## V 1.0.39 (not yet released)
+## V 1.0.39
 - bugfix: the CDI was sometimes inverted
+- bugfix: switch NorthUp/TrkUp was not resizing correctly the maps
+- the OBS angle initial value is now taken from the HSI/CDI (depends of the aircraft)
+- pressing the ENT button while displaying the OBS angle changes it to the current DTK
 
 ## V 1.0.38
 - bugfix: the messages were not refreshed correctly
