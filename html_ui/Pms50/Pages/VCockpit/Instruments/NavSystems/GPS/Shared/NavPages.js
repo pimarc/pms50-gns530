@@ -467,6 +467,13 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
             // Unblock declutter when leaving menu
             this.gps.currentContextualMenu = null;
         }
+        else if (_event == "ENT_Push")  {
+            if(this.gps.gpsType != "530")
+                return;
+            if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") && this.gps.currentInteractionState == 3) {
+                SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+            }
+        }
         else if (_event == "RightSmallKnob_Push")  {
             if(this.gps.gpsType != "530")
                 return;
@@ -559,6 +566,8 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
     }
     toggleMapOrientation() {
         super.toggleMapOrientation();
+        if(this.map)
+            this.map.resize();
         this.gps.dataStore.set("BaseNavTrackUp", this.trackUp);
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
@@ -1152,6 +1161,8 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
                 this.gps.getChildById("Wind2").setAttribute("style", "right: 2%;");
             }
         }
+        if(this.map)
+            this.map.resize();
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
     }
@@ -1251,6 +1262,8 @@ class GPS_MapNavPage extends GPS_BaseNavPage {
             this.gps.getChildById("MapInstrument2").setAttribute("style", "width: 100%;");
             this.gps.getChildById("Wind2").setAttribute("style", "right: 2%;");
         }
+        if(this.map)
+            this.map.resize();
         this.gps.currentContextualMenu = null;
         this.gps.SwitchToInteractionState(0);
     }

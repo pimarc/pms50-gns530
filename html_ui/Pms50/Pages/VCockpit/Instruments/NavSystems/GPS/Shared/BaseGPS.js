@@ -293,21 +293,11 @@ class BaseGPS extends NavSystem {
         this.checkAfterDirectTo();
     }
     toggleOBS() {
-        SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"));
+        // Get the initial value from the HSI/CDI
+        SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:1", "degree"));
+        // This does the switch
         SimVar.SetSimVarValue("K:GPS_OBS", "number", 0);
     }
-    // toggleOBS() {
-    //     SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"));
-    //     SimVar.SetSimVarValue("K:GPS_OBS", "number", 0);
-    //     if (!SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
-    //         //  GSD  07/03/2021
-    //         // NAV OBS:1  only needs to initilized when GPS OBS is 1st selected
-    //         // Thereafter,  it is syncronized  by  VOR1_OBI_INC & VOR1_OBI_INC
-    //         // using JS_LISTENER_KEYEVENT as setup in this js file
-    //         SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:1", "degree"));
-    //     }					  
-    // }
-
     checkAfterDirectTo() {
         // Check if we are at the end of a directTo (less than 1nm to the destination WP)
         this._t++;
