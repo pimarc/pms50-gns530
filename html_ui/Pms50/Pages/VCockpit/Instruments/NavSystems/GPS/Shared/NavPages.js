@@ -540,7 +540,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
         }
         if(this.gps.gpsType == "530") {
             if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean"))
-                diffAndSetText(this.OBSAngle, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree"), 0), 3) + "°");
+                diffAndSetText(this.OBSAngle, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree")%360, 0), 3) + "°");
             else if(this.gps.currentInteractionState == 3) {
                 if(this.timeOutId)
                     clearTimeout(this.timeOutId);
@@ -630,7 +630,7 @@ class GPS_DefaultNav extends NavSystemElement {
     onUpdate(_deltaTime) {
         diffAndSetText(this.currBranchFrom, SimVar.GetSimVarValue("GPS WP PREV ID", "string").slice(0, 7));
         if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
-            diffAndSetText(this.currBranchFrom, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree"), 0), 3) + "°");
+            diffAndSetText(this.currBranchFrom, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree")%360, 0), 3) + "°");
         }
         if (this.gps.currFlightPlanManager.getIsDirectTo()) {
             if (this.legSymbol != 1) {

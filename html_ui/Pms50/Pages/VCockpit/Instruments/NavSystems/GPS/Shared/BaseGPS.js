@@ -32,6 +32,14 @@ class BaseGPS extends NavSystem {
         this.addEventAlias("RightLargeKnob_Right", "NavigationLargeInc");
         this.addEventAlias("RightLargeKnob_Left", "NavigationLargeDec");
         this.addEventAlias("RightSmallKnob_Push", "NavigationPush");
+        this.handleKeyIntercepted = (key) => {
+            switch (key) {
+                case 'VOR1_OBI_INC':
+                case 'VOR1_OBI_DEC':
+                    this.onVorObsChanged(1);
+                    break;
+            }
+        };
     }
     connectedCallback() {
         super.connectedCallback();
@@ -72,45 +80,11 @@ class BaseGPS extends NavSystem {
         this.icaoFromMap = null;
         this.dataStore = new WTDataStore(this);
         this.vsr = 0;
-
-        //===============================================================================================
-        //    Set up    JS_LISTENER_KEYEVENT     GSD 07/03/2021
-
-        // RegisterViewListener("JS_LISTENER_KEYEVENT");
-        // this.keyListener = RegisterViewListener('JS_LISTENER_KEYEVENT', () => {
-        //     Coherent.call('INTERCEPT_KEY_EVENT', 'VOR1_OBI_INC', 0);
-        //     Coherent.call('INTERCEPT_KEY_EVENT', 'VOR1_OBI_DEC', 0);
-
-        //     this.keyListener.on('keyIntercepted', keyEventName => {
-
-        //         if (keyEventName === 'VOR1_OBI_INC') {
-        //             if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
-        //                 SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:1", "degree"));
-        //             }
-        //         }
-
-        //         if (keyEventName === 'VOR1_OBI_DEC') {
-        //             if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
-        //                 SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:1", "degree"));
-        //             }
-        //         }
-
-        //     });
-
-        // });
-
-        //PM Modif: Add debugging tool WebUI-DevKit (must be on the community folder)
-        this.loadConfig(() => {
-            this.debug = this.getConfigKey("debug", false);
-            // Set debug mode to datastore in order to retrieve it evrywhere from a static method
-            WTDataStore.globalSet("Debug", this.debug)
-            if(this.debug) {
-                Include.addScript("/JS/debug.js", function () {
-                    g_modDebugMgr.AddConsole(null);
-                });
-            }
+        this.keyListener = RegisterViewListener('JS_LISTENER_KEYEVENT', () => {
+            this.setupKeyIntercepts();
+            Coherent.on('keyIntercepted', this.handleKeyIntercepted);
         });
-        //PM Modif: End Add debugging tool WebUI-DevKit (must be on the community folder)
+
         // reset OBS
         let state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
         if(this.gpsType == "530" || !state530)
@@ -118,6 +92,13 @@ class BaseGPS extends NavSystem {
             if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean"))
                 this.toggleOBS();
         }
+    }
+    setupKeyIntercepts() {
+        Coherent.call('INTERCEPT_KEY_EVENT', 'VOR1_OBI_INC', 0);
+        Coherent.call('INTERCEPT_KEY_EVENT', 'VOR1_OBI_DEC', 0);
+    }
+    onVorObsChanged(index) {
+        SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:" + index, "degree"));
     }
     parseXMLConfig() {
         super.parseXMLConfig();
