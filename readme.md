@@ -38,7 +38,7 @@ Get the latest release from  https://pms50.com/fs2020/gns530/pms50-gns530.zip
 
 Unzip the file in your Community folder and restart the sim.
 
-If you download from GitHub, BE CAREFUL to download only the releases (button release at the right of the GitHub screen). DONT'USE THE "CODE" button. GitHub sources may be not stable.
+If you download from GitHub, BE CAREFUL to download only the releases (button release at the right of the GitHub screen). DON'T USE THE "CODE" button. GitHub sources may be not stable.
 
 Sometimes users reported that it was necessary to reboot the machine (maybe after a MSFS patch?).
 
@@ -161,7 +161,7 @@ I publish releases very often because I think it's important to be reactive.
 
 When you override a previous installation by a new release, you loose your config file and the flight plans available in dedicated folders.
 
-To overcome this situation there is second MOD used only for this data.
+To overcome this situation there is a second MOD used only for this data.
 
 It's available at : https://pms50.com/fs2020/gns530/pms50-gns530-data.zip
 
