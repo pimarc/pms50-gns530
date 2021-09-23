@@ -79,10 +79,12 @@ class GPS_AirportWaypointLocation extends NavSystemElement {
                         altitude += infos.runways[0].elevation;
                     }
                     // Average and convert from meters to feets
-                    altitude = (altitude / infos.runways.length) * 3.28084;
+                    altitude = altitude / infos.runways.length;
                 }
             }
+            // Convert from meters to feet
             if (altitude) {
+                altitude = altitude * 3.28084;
                 this.elev.textContent = fastToFixed(altitude, 0);
             }
             this.fuel.textContent = infos.fuel;

@@ -232,6 +232,9 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
+## V 1.0.40 (not yet released)
+- bugfix: airport altitude converted from meters to feet
+
 ## V 1.0.39
 - bugfix: the CDI was sometimes inverted
 - bugfix: switch NorthUp/TrkUp was not resizing correctly the maps
