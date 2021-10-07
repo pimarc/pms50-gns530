@@ -112,11 +112,11 @@ class GPS_BaseNavPage extends NavSystemPage {
         }
     }
     onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
         if(!this.mapInitialized) {
             this.initMap();
             return;
         }
-        super.onUpdate(_deltaTime);
         if(this.windDirection && this.windVelocity){
             this.windVelocity.textContent = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
             let direction = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"), 0);

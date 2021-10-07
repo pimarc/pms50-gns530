@@ -142,55 +142,40 @@ class NavSystem extends BaseInstrument {
                     break;
                 case 2:
                     if (_event == "NavigationSmallInc") {
-// PM Modif: Bug when all menu items are inactive (probably infinite loop ?)
-                        // Check if all inactivated
-                        if(!this.currentContextualMenu.isAllInactive()) {
-                            let count = 0;
-                            do {
-                                this.cursorIndex = (this.cursorIndex + 1) % this.currentContextualMenu.elements.length;
-                                if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + 5)) {
-                                    this.contextualMenuDisplayBeginIndex++;
-                                }
-                                if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
-                                    this.contextualMenuDisplayBeginIndex = 0;
-                                }
-                                count++;
-                            } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        let count = 0;
+                        do {
+                            this.cursorIndex = (this.cursorIndex + 1) % this.currentContextualMenu.elements.length;
+                            count++;
+                        } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
+                            this.contextualMenuDisplayBeginIndex = this.cursorIndex;
+                        }
+                        else if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + (this.menuMaxElems - 1))) {
+                            this.contextualMenuDisplayBeginIndex += this.cursorIndex - (this.contextualMenuDisplayBeginIndex + (this.menuMaxElems - 1));
                         }
                     }
                     if (_event == "NavigationSmallDec") {
-                        // Check if all inactivated
-                        if(!this.currentContextualMenu.isAllInactive()) {
-                            let count = 0;
-                            do {
-                                this.cursorIndex = (this.cursorIndex - 1) < 0 ? (this.currentContextualMenu.elements.length - 1) : (this.cursorIndex - 1);
-                                if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
-                                    this.contextualMenuDisplayBeginIndex--;
-                                }
-                                if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + 5)) {
-                                    this.contextualMenuDisplayBeginIndex = this.currentContextualMenu.elements.length - 5;
-                                }
-                            } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        let count = 0;
+                        do {
+                            this.cursorIndex = (this.cursorIndex - 1) < 0 ? (this.currentContextualMenu.elements.length - 1) : (this.cursorIndex - 1);
+                            count++;
+                        } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
+                            this.contextualMenuDisplayBeginIndex = this.cursorIndex;
+                        }
+                        else if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + (this.menuMaxElems - 1))) {
+                            this.contextualMenuDisplayBeginIndex += this.cursorIndex - (this.contextualMenuDisplayBeginIndex + (this.menuMaxElems - 1));
                         }
                     }
-// PM Modif: End Bug when all menu items are inactive (probably infinite loop ?)
                     if (_event == "MENU_Push") {
                         this.SwitchToInteractionState(0);
                     }
                     if (_event == "ENT_Push") {
-// PM Modif: Do not send event if element is inactive (occurs when all element are incative)
-                        if(this.currentContextualMenu.elements[this.cursorIndex].isInactive())
-                            this.SwitchToInteractionState(0);
-                        else
-                            this.currentContextualMenu.elements[this.cursorIndex].SendEvent();
-// PM Modif: End Do not send event if element is inactive (occurs when all element are incative)
+                        this.currentContextualMenu.elements[this.cursorIndex].SendEvent();
                     }
                     break;
                 case 3:
-// PM Modif: Cursor mode uses a fake interaction state 3
-                    if(this.currentSearchFieldWaypoint)
-                        this.currentSearchFieldWaypoint.onInteractionEvent([_event]);
-// PM Modif: End Cursor mode uses a fake interaction state 3
+                    this.currentSearchFieldWaypoint.onInteractionEvent([_event]);
                     break;
                 case 0:
                     if (_event == "MENU_Push") {
@@ -218,9 +203,7 @@ class NavSystem extends BaseInstrument {
                     if (_event == "NavigationLargeInc") {
                         this.lastRelevantICAO = null;
                         this.lastRelevantICAOType = null;
-// PM Modif: Don't loop navigation (thanks to dusty674)
-                        if (this.pageGroups.length > 1 && !this.currentEventLinkedPageGroup && this.currentPageGroupIndex < (this.pageGroups.length-1)) {
-// PM Modif: End Don't loop navigation (thanks to dusty674)
+                        if (this.pageGroups.length > 1 && !this.currentEventLinkedPageGroup) {
                             this.pageGroups[this.currentPageGroupIndex].onExit();
                             this.currentPageGroupIndex = (this.currentPageGroupIndex + 1) % this.pageGroups.length;
                             this.pageGroups[this.currentPageGroupIndex].onEnter();
@@ -229,10 +212,8 @@ class NavSystem extends BaseInstrument {
                     if (_event == "NavigationLargeDec") {
                         this.lastRelevantICAO = null;
                         this.lastRelevantICAOType = null;
-// PM Modif: Don't loop navigation (thanks to dusty674)
-                        if (this.pageGroups.length > 1 && !this.currentEventLinkedPageGroup && this.currentPageGroupIndex > 0) {
-// PM Modif: End Don't loop navigation (thanks to dusty674)
-                                this.pageGroups[this.currentPageGroupIndex].onExit();
+                        if (this.pageGroups.length > 1 && !this.currentEventLinkedPageGroup) {
+                            this.pageGroups[this.currentPageGroupIndex].onExit();
                             this.currentPageGroupIndex = (this.currentPageGroupIndex + this.pageGroups.length - 1) % this.pageGroups.length;
                             this.pageGroups[this.currentPageGroupIndex].onEnter();
                         }
@@ -362,16 +343,6 @@ class NavSystem extends BaseInstrument {
             this.eventLinkedPopUpElements[i].onPowerOn();
         }
     }
-    // PM Modif: Allow to block the updates if the GPS is hidden in the cockpit (GPS switching)
-    canUpdate() {
-        super.canUpdate();
-        let variableToGet = "L:" + this.instrumentIdentifier + "_HIDDEN";
-        if(SimVar.GetSimVarValue(variableToGet, "bool"))
-            return false;
-        else
-            return true;
-    }
-    // PM Modif: End Allow to block the updates if the GPS is hidden in the cockpit (GPS switching)
     Update() {
         super.Update();
         if (NavSystem._iterations < 10000) {
@@ -383,9 +354,7 @@ class NavSystem extends BaseInstrument {
             this.currFlightPlanManager.update(this.deltaTime);
             if (this.currFlightPlanManager.isLoadedApproach() && !this.currFlightPlanManager.isActiveApproach() && !this.currFlightPlanManager.getIsDirectTo() && (this.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.currFlightPlanManager.getActiveWaypointIndex() > this.currFlightPlanManager.getLastIndexBeforeApproach()))) {
                 if (Simplane.getFMCFlightPlanIsTemp() != 1) {
-// PM Modif: No autoactivation
-//                        this.currFlightPlanManager.tryAutoActivateApproach();
-// PM Modif: End No autoactivation
+                    this.currFlightPlanManager.tryAutoActivateApproach();
                 }
             }
         }
