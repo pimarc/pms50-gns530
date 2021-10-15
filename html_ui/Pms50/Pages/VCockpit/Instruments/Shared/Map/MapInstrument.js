@@ -48,6 +48,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.showCities = false;
         this.showTraffic = true;
         this.showConstraints = false;
+        this.shownWaypointIndex = -1;
         this._ranges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
         this.rangeIndex = 4;
         this._declutterLevel = 0;
@@ -101,13 +102,18 @@ class MapInstrument extends ISvgMapRootElement {
         this.bIsCursorDisplayed = false;
         this.weatherHideGPS = false;
         this.isBushTrip = false;
-        this.isVertical = false;
         this.overdrawFactor = 1;
         MapInstrument.DEBUG_INSTANCE = this;
 // PM Modif: Trackup
         this.mapScaleFactor = 1.4;  // overscan for hiding corners when we rotate
 // PM Modif: End Trackup
     }
+    isToolBarVFRMapExtern() {
+        // PM Modif: Not VFR map extern here
+                return false;
+                //return this.isToolBarVFRMap && document.body.classList.contains("extern");
+        // PM Modif: End Not VFR map extern here
+            }
     get flightPlanManager() {
         return this._flightPlanManager;
     }
@@ -204,6 +210,7 @@ class MapInstrument extends ISvgMapRootElement {
             "show-airports",
             "show-cities",
             "show-traffic",
+            "shown-waypoint-index",
         ];
     }
     attributeChangedCallback(name, oldValue, newValue) {
@@ -340,6 +347,12 @@ class MapInstrument extends ISvgMapRootElement {
                 this.showConstraints = true;
             }
         }
+        else if (lowercaseName === "shown-waypoint-index") {
+            this.shownWaypointIndex = -1;
+            if (isFinite(newValue)) {
+                this.shownWaypointIndex = parseFloat(newValue);
+            }
+        }
     }
     isInit() {
         return this.bIsInit;
@@ -360,7 +373,6 @@ class MapInstrument extends ISvgMapRootElement {
         }
         else {
         }
-        this.isVertical = (this.instrument.getAttribute("state") == "vertical") ? true : false;
         this.isToolBarVFRMap = this.instrument.instrumentIdentifier === "VFRMap";
         this._flightPlanManager = this.instrument.flightPlanManager;
         if (this._flightPlanManager) {
@@ -561,6 +573,12 @@ class MapInstrument extends ISvgMapRootElement {
             this.flightPlanManager.updateWaypointIndex();
             if (this.drawCounter === 25) {
                 this.updateFlightPlanVisibility();
+                if (this.isToolBarVFRMap) {
+                    this.flightPlanElement.flightPlanIndex = SimVar.GetSimVarValue("L:VFR_MAP_SHOWN_FLIGHTPLAN_INDEX", "number");
+                }
+                else {
+                    this.flightPlanElement.flightPlanIndex = SimVar.GetSimVarValue("L:MAP_SHOWN_FLIGHTPLAN_INDEX", "number");
+                }
 //PM Modif: special instrument                
                 if(!this.selfManagedInstrument)
                     this.flightPlanManager.updateFlightPlan();
@@ -763,7 +781,6 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showVORs && (this.getDeclutteredRange() < this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
                     for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                         let vor = this.vorLoader.waypoints[i];
-                        vor.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.vorMaxRange;
                         if (this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
                             this.navMap.mapElements.push(vor.getSvgElement(this.navMap.index));
                         }
@@ -772,7 +789,6 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showNDBs && (this.getDeclutteredRange() < this.ndbMaxRange || this.getDeclutteredRange() < this.minimizedNdbMaxRange)) {
                     for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
                         let ndb = this.ndbLoader.waypoints[i];
-                        ndb.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.ndbMaxRange;
                         if (this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
                             this.navMap.mapElements.push(ndb.getSvgElement(this.navMap.index));
                         }
@@ -781,7 +797,6 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showIntersections && (this.getDeclutteredRange() < this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
                     for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
                         let intersection = this.intersectionLoader.waypoints[i];
-                        intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
                         if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
                             this.navMap.mapElements.push(intersection.getSvgElement(this.navMap.index));
                         }
@@ -810,32 +825,49 @@ class MapInstrument extends ISvgMapRootElement {
                         this.navMap.mapElements.push(this.constraints[i]);
                     }
                 }
+                if (this.shownWaypointIndex != -1) {
+                    let fpIndex = this.flightPlanElement.flightPlanIndex;
+                    let waypoint = this.flightPlanManager.getWaypoint(this.shownWaypointIndex, fpIndex);
+                    if (waypoint && waypoint.ident !== "USER" && waypoint.ident !== "POI") {
+                        if (waypoint.infos && this.navMap.isLatLongInFrame(waypoint.infos.coordinates, 0)) {
+                            if (waypoint.getSvgElement(this.navMap.index)) {
+                                if (!this.navMap.mapElements.find(w => {
+                                    return (w instanceof SvgWaypointElement) && w.source.icao === waypoint.icao;
+                                })) {
+                                    this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
+                                }
+                            }
+                        }
+                    }
+                }
                 if (this.flightPlanManager && this.bIsFlightPlanVisible) {
-                    let l = this.flightPlanManager.getWaypointsCount();
-                    if (l > 1) {
-                        if (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) {
-                            this.navMap.mapElements.push(this.tmpFlightPlanElement);
-                            let lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
-                            if (lTmpFlightPlan > 1) {
-                                for (let i = 0; i < lTmpFlightPlan; i++) {
-                                    let waypoint = this.flightPlanManager.getWaypoint(i, 1);
-                                    if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
-                                        if (waypoint.getSvgElement(this.navMap.index)) {
-                                            if (!this.navMap.mapElements.find(w => {
+                    if (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) {
+                        this.navMap.mapElements.push(this.tmpFlightPlanElement);
+                        let lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
+                        if (lTmpFlightPlan > 1) {
+                            for (let i = 0; i < lTmpFlightPlan; i++) {
+                                let waypoint = this.flightPlanManager.getWaypoint(i, 1);
+                                if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
+                                    if (waypoint.getSvgElement(this.navMap.index)) {
+                                        if (!this.navMap.mapElements.find(w => {
 //PM Modif: Ident instead of ICAO
-                                                return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                                            return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
 //PM Modif: End Ident instead of ICAO
-                                            })) {
-                                                this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
-                                            }
+                                        })) {
+                                            this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                         }
                                     }
                                 }
                             }
                         }
+                    }
+
+                    let fpIndex = this.flightPlanElement.flightPlanIndex;
+                    let l = this.flightPlanManager.getWaypointsCount(fpIndex);
+                    if (l > 1) {
                         this.navMap.mapElements.push(this.flightPlanElement);
                         for (let i = 0; i < l; i++) {
-                            let waypoint = this.flightPlanManager.getWaypoint(i);
+                            let waypoint = this.flightPlanManager.getWaypoint(i, fpIndex);
                             if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI") {
                                 if (waypoint.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
@@ -849,6 +881,7 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                     }
+
                     let approachWaypoints = this.flightPlanManager.getApproachWaypoints();
                     let lAppr = approachWaypoints.length;
                     for (let i = 0; i < lAppr; i++) {
@@ -1124,14 +1157,20 @@ class MapInstrument extends ISvgMapRootElement {
                 this.bVfrMapFollowPlane = false;
             }
         }
-        if (this.bMouseOver) {
-            var zoomIn = GetInputStatus("PLANE", "KEY_VFRMAP_ZOOM_IN");
-            if (!zoomIn && this.isToolBarVFRMap) {
+        if (this.bMouseOver && !this.isToolBarVFRMapExtern()) {
+            var zoomIn = EInputStatus.idle;
+            if (this.isToolBarVFRMap) {
                 zoomIn = GetInputStatus("INGAME_UI", "KEY_INGAMEPANEL_ZOOM_IN");
             }
-            var zoomOut = GetInputStatus("PLANE", "KEY_VFRMAP_ZOOM_OUT");
-            if (!zoomOut && this.isToolBarVFRMap) {
+            else {
+                zoomIn = GetInputStatus("PLANE", "KEY_VFRMAP_ZOOM_IN");
+            }
+            var zoomOut = EInputStatus.idle;
+            if (this.isToolBarVFRMap) {
                 zoomOut = GetInputStatus("INGAME_UI", "KEY_INGAMEPANEL_ZOOM_OUT");
+            }
+            else {
+                zoomOut = GetInputStatus("PLANE", "KEY_VFRMAP_ZOOM_OUT");
             }
             if (zoomIn == EInputStatus.pressed) {
                 this.zoomIn();
@@ -1588,14 +1627,8 @@ class MapInstrument extends ISvgMapRootElement {
     }
     OnMouseMove(_e) {
         if (this.bMouseDown && this.eBingMode === EBingMode.VFR) {
-            if (this.isVertical) {
-                this.scrollDisp.x -= _e.y - this.refMousePos.y;
-                this.scrollDisp.y += _e.x - this.refMousePos.x;
-            }
-            else {
-                this.scrollDisp.x += _e.x - this.refMousePos.x;
-                this.scrollDisp.y += _e.y - this.refMousePos.y;
-            }
+            this.scrollDisp.x += _e.x - this.refMousePos.x;
+            this.scrollDisp.y += _e.y - this.refMousePos.y;
             this.refMousePos.x = _e.x;
             this.refMousePos.y = _e.y;
             this.svgSmooth = this.SVG_SMOOTH_VFR;

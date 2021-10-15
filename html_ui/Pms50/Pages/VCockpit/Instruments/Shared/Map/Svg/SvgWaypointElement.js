@@ -97,6 +97,9 @@ class SvgWaypointElement extends SvgMapElement {
             return this.source.imageFileName();
         }
     }
+    isMinized(map) {
+        return false;
+    }
     createDraw(map) {
         let fontSize = map.config.waypointLabelFontSize / map.overdrawFactor;
         let text = this.ident;
@@ -105,12 +108,11 @@ class SvgWaypointElement extends SvgMapElement {
         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
         this._textWidth = ctx.measureText(text).width;
         this._textHeight = fontSize * 0.675;
-        let ident;
-        let activeWaypoint = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(true);
-        if (activeWaypoint) {
-            ident = activeWaypoint.ident;
+        let isActiveWaypoint = false;
+        if (map.instrument && map.instrument.flightPlanManager) {
+            let ident = map.instrument.flightPlanManager.getActiveWaypointIdent();
+            isActiveWaypoint = this.source.ident === ident;
         }
-        let isActiveWaypoint = this.source.ident === ident;
         this._refreshLabel(map, isActiveWaypoint);
         this._image = document.createElementNS(Avionics.SVG.NS, "image");
         this._image.id = this.id(map);
@@ -118,15 +120,18 @@ class SvgWaypointElement extends SvgMapElement {
         diffAndSetAttribute(this._image, "hasTextBox", "true");
         diffAndSetAttribute(this._image, "width", "100%");
         diffAndSetAttribute(this._image, "height", "100%");
-        if (!isActiveWaypoint) {
+//PM Modif: Map waypoint image correct also for active WP
+        // if (!isActiveWaypoint) {
             this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName());
-        }
-        else {
-            this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.png");
-        }
+        // }
+        // else {
+        //     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.png");
+        // }
+//PM Modif: End Map waypoint image correct also for active WP
         this._lastIsActiveWaypoint = isActiveWaypoint;
         diffAndSetAttribute(this._image, "width", fastToFixed(map.config.waypointIconSize / map.overdrawFactor, 0));
         diffAndSetAttribute(this._image, "height", fastToFixed(map.config.waypointIconSize / map.overdrawFactor, 0));
+        this._lastMinimize = undefined;
         return this._image;
     }
     _refreshLabel(map, isActiveWaypoint) {
@@ -202,12 +207,12 @@ context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
             this.x = pos.x;
             this.y = pos.y;
         }
-//PM Modif: Not sure about the Asobo code in sim update 4
-        let wp = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(true);
+// PM Modif: No correction in get active waypoint index so the active waypoint is correctly displayed
+        let wp = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(false);
         if (this.source && this.source.instrument && this.source.instrument.flightPlanManager) {
-            wp = this.source.instrument.flightPlanManager.getActiveWaypoint(true);
+            wp = this.source.instrument.flightPlanManager.getActiveWaypoint(false);
         }
-//PM Modif: End Not sure about the Asobo code in sim update 4
+// PM Modif: End No correction in get active waypoint index so the active waypoint is correctly displayed
 
 //PM Modif: Check also ident
         let isActiveWaypoint = this.source === wp || (wp && wp.icao === this.source.icao) || (wp && wp.ident === this.source.ident);
@@ -215,16 +220,19 @@ context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
         if (isActiveWaypoint != this._lastIsActiveWaypoint) {
             this._refreshLabel(map, isActiveWaypoint);
             if (this._image) {
-                if (!isActiveWaypoint) {
+                // if (!isActiveWaypoint) {
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName());
-                }
-                else {
-                    this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.png");
-                }
+                // }
+                // else {
+                //     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.png");
+                // }
             }
             this._lastIsActiveWaypoint = isActiveWaypoint;
         }
         if (isFinite(this.x) && isFinite(this.y)) {
+//PM Modif: No Minimize for GTN750
+//            this.minimize = this.isMinized(map);
+//PM Modif: End No Minimize
             if (this._image && this._lastMinimize !== this.minimize) {
                 if (this.minimize) {
                     diffAndSetAttribute(this._image, "width", fastToFixed(map.config.waypointIconSize / map.overdrawFactor * 0.5, 0));

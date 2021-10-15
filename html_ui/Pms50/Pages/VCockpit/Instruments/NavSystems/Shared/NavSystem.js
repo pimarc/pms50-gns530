@@ -364,7 +364,8 @@ class NavSystem extends BaseInstrument {
     }
     // PM Modif: Allow to block the updates if the GPS is hidden in the cockpit (GPS switching)
     canUpdate() {
-        super.canUpdate();
+        if(!super.canUpdate())
+            return false;
         let variableToGet = "L:" + this.instrumentIdentifier + "_HIDDEN";
         if(SimVar.GetSimVarValue(variableToGet, "bool"))
             return false;

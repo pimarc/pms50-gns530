@@ -2,12 +2,65 @@ class GPS_FlightPlanManager extends FlightPlanManager {
     constructor(_instrument) {
         super(_instrument);
     }
+    // Bugfix in SU6 where the active waypoint is always changing
+    update(_deltaTime) {
+        if (!this._isRegistered) {
+            return;
+        }
+        engine.beginProfileEvent("FlightPlan::doUpdate");
+        this._planeCoordinates.lat = Simplane.getCurrentLat();
+        this._planeCoordinates.long = Simplane.getCurrentLon();
+        this._activeWaypointHasChanged = false;
+        let activeWaypointIdent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
+        if (this._gpsActiveWaypointIdent != activeWaypointIdent) {
+            this._activeWaypointHasChanged = true;
+            this._gpsActiveWaypointIdent = activeWaypointIdent;
+        }
+        let gpsActiveWaypointIndex = this.computeActiveWaypointIndex();
+        if (this._gpsActiveWaypointIndex != gpsActiveWaypointIndex) {
+            this._activeWaypointHasChanged = true;
+            this._gpsActiveWaypointIndex = gpsActiveWaypointIndex;
+        }
+        let prevWaypoint = this.getPreviousActiveWaypoint();
+        if (prevWaypoint) {
+            if (isFinite(this._planeCoordinates.lat) && isFinite(this._planeCoordinates.long)) {
+                let dist = Avionics.Utils.computeGreatCircleDistance(this._planeCoordinates, prevWaypoint.infos.coordinates);
+                if (isFinite(dist)) {
+                    if (this._activeWaypointHasChanged) {
+                        this._isGoingTowardPreviousActiveWaypoint = true;
+                        this._lastDistanceToPreviousActiveWaypoint = dist;
+                    }
+                    else if (this._isGoingTowardPreviousActiveWaypoint) {
+                        if (dist <= this._lastDistanceToPreviousActiveWaypoint) {
+                            this._lastDistanceToPreviousActiveWaypoint = dist;
+                        }
+                        // SU6 removed the +0.1
+                        else if (dist > this._lastDistanceToPreviousActiveWaypoint + 0.1) {
+                            this._isGoingTowardPreviousActiveWaypoint = false;
+                            this._lastDistanceToPreviousActiveWaypoint = dist;
+                        }
+                    }
+                    else if (!this._isGoingTowardPreviousActiveWaypoint) {
+                        if (dist >= this._lastDistanceToPreviousActiveWaypoint) {
+                            this._lastDistanceToPreviousActiveWaypoint = dist;
+                        }
+                        // SU6 removed the -0.1
+                        else if (dist < this._lastDistanceToPreviousActiveWaypoint - 0.1) {
+                            this._isGoingTowardPreviousActiveWaypoint = true;
+                            this._lastDistanceToPreviousActiveWaypoint = dist;
+                        }
+                    }
+                }
+            }
+        }
+        engine.endProfileEvent();
+    }
     getActiveWaypoint(useCorrection = false) {
         if (this.getIsDirectTo()) {
             // We change that from the original because of a bug when we have flight plan with 2 WP or less
             // The direct to target is then empty (empty icao)
             let waypoint = this.getDirectToTarget();
-            if(waypoint && waypoint.icao.length)
+            if(waypoint && waypoint.icao.length && waypoint.icao != "U FPIS DRCT")
                 return waypoint;
         }
         if (useCorrection && this._isGoingTowardPreviousActiveWaypoint) {
@@ -41,6 +94,26 @@ class GPS_FlightPlanManager extends FlightPlanManager {
             waypoint = this._directToTarget;
         }
         return waypoint;
+    }
+    // Changing approach index removes any current direct TO so we must enable it again
+    setApproachIndex(index, callback = () => { }, transition = 0) {
+        let directToTarget = this.getIsDirectTo() ? this.getDirectToTarget() : null;
+        super.setApproachIndex(index, () => {
+            // Restore direct To if necessary
+            if(directToTarget && directToTarget.icao.length) {
+                setTimeout(() => {
+                    this.activateDirectTo(directToTarget.icao, () => {callback()});
+                }, 500);
+            }
+            else
+                callback();
+        }, transition);
+    }
+    // Seams buggy in SU6 so we do it ourself
+    getLastIndexBeforeApproach() {
+        if(!this.isLoadedApproach() || this.isActiveApproach())
+            return -1;
+        return this.getWaypointsCount() > 1 ? this.getWaypointsCount()-2 : -1;
     }
 }
 

@@ -119,7 +119,7 @@ class GPS_BaseNavPage extends NavSystemPage {
         }
         if(this.windDirection && this.windVelocity){
             this.windVelocity.textContent = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
-            let direction = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"), 0);
+            let direction = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + SimVar.GetSimVarValue("MAGVAR", "degrees"), 0);
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
             if(trk != this.lasttrk || direction != this.lastwinddir) {
                 // Wind display from true north
@@ -628,7 +628,7 @@ class GPS_DefaultNav extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        diffAndSetText(this.currBranchFrom, SimVar.GetSimVarValue("GPS WP PREV ID", "string").slice(0, 7));
+        diffAndSetText(this.currBranchFrom, this.gps.currFlightPlanManager.getIsDirectTo() ? "" : SimVar.GetSimVarValue("GPS WP PREV ID", "string").slice(0, 7));
         if(SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
             diffAndSetText(this.currBranchFrom, Utils.leadingZeros(fastToFixed(SimVar.GetSimVarValue("GPS OBS VALUE", "degree")%360, 0), 3) + "°");
         }
@@ -703,7 +703,14 @@ class GPS_DefaultNav extends NavSystemElement {
                 }
             }
         }
-        this.currBranchTo.textContent = SimVar.GetSimVarValue("GPS WP NEXT ID", "string").slice(0, 7);
+        let ident =SimVar.GetSimVarValue("GPS WP NEXT ID", "string").slice(0, 7);
+        if(this.gps.currFlightPlanManager.getIsDirectTo()) {
+            let DirectToTarget = this.gps.currFlightPlanManager.getDirectToTarget();
+            let identDTO = DirectToTarget ? DirectToTarget.ident : "";
+            if(identDTO.length && identDTO != "FPDRCT")
+                ident = identDTO;
+        }
+        this.currBranchTo.textContent = ident;
         for (var i = 0; i < this.dnCustoms.length; i++) {
             this.dnCustoms[i].Update();
         }

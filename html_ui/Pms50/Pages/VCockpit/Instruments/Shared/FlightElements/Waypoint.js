@@ -48,6 +48,18 @@ class WayPoint {
     getFuelWasReached(useLbs = false) {
         return this.fuelWasReached * 2.204623;
     }
+    getLegAltitude1Text() {
+        if (this.legAltitude1 < 18000) {
+            return (this.legAltitude1 / 10).toFixed(0) + "0";
+        }
+        return "FL" + (this.legAltitude1 / 100).toFixed(0);
+    }
+    getLegAltitude2Text() {
+        if (this.legAltitude2 < 18000) {
+            return (this.legAltitude2 / 10).toFixed(0) + "0";
+        }
+        return "FL" + (this.legAltitude2 / 100).toFixed(0);
+    }
     getSvgElement(index) {
         if (this.infos) {
             return this.infos.getSvgElement(index);

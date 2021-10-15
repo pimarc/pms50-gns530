@@ -84,6 +84,11 @@ class BaseGPS extends NavSystem {
             this.setupKeyIntercepts();
             Coherent.on('keyIntercepted', this.handleKeyIntercepted);
         });
+        this.loadConfig(() => {
+            this.debug = this.getConfigKey("debug", false);
+            // Set debug mode to datastore in order to retrieve it evrywhere from a static method
+            WTDataStore.globalSet("Debug", this.debug)
+        });
 
         // reset OBS
         let state530 = SimVar.GetSimVarValue("L:AS530_State", "number");
@@ -277,16 +282,39 @@ class BaseGPS extends NavSystem {
         this.checkAfterDirectTo();
     }
     toggleOBS() {
-        // Get the initial value from the HSI/CDI
         SimVar.SetSimVarValue("K:GPS_OBS_SET", "degrees", SimVar.GetSimVarValue("NAV OBS:1", "degree"));
+        let previousState = SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean");
+        let activewaypoint = this.currFlightPlanManager.getActiveWaypoint();
+        let dist = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
         // This does the switch
         SimVar.SetSimVarValue("K:GPS_OBS", "number", 0);
+        if(previousState) {
+            // We leave the OBS so we must do a directTo to the target if target distance greater than 2nm
+            // except if user waypoint because a direct To a user waypoint is not working
+            // in the sim
+            if(activewaypoint && activewaypoint.icao.length && activewaypoint.icao[0] != "U" && dist > 2) {
+                // DirecTO bug correction when direct to an airport
+                // FS2020 removes the origin airport (first flight plan index)
+                // The direct then works but its not possible any more to select an approach for the new destination airport
+                // The correction consists of re-inserting the origin airport at the start of the flight plan
+                this.cancelDirectTo(() => {
+                    let waypoint_origin = this.currFlightPlanManager.getWaypoint(0);
+                    this.enableCheckAfterDirectTo = true;
+                    this.currFlightPlanManager.activateDirectTo(activewaypoint.GetInfos().icao, () => {
+                        if(waypoint_origin && activewaypoint.infos instanceof AirportInfo){
+                            this.currFlightPlanManager.addWaypoint(waypoint_origin.icao, 0);
+                        }
+                    });
+                });
+            }
+        }
     }
     checkAfterDirectTo() {
         // Check if we are at the end of a directTo (less than 1nm to the destination WP)
         this._t++;
         // We arm 2 nm before the target approach directTo
-        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.enableCheckAfterDirectTo && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2) {
+        let dist = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
+        if(this._t2 > 20 && this.currFlightPlanManager.getIsDirectTo() && this.enableCheckAfterDirectTo && dist > 0 && dist < 2) {
             this._t = 0;
             this.cancelDirectTo();
         }
@@ -447,7 +475,6 @@ class BaseGPS extends NavSystem {
 //             Coherent.call("DEACTIVATE_APPROACH").then(() => {
 // //                this.currFlightPlanManager.activateApproach();
 //                 Coherent.call("ACTIVATE_APPROACH").then(() => {
-//                     this.currFlightPlanManager._approachActivated = true;
 //                     this.currFlightPlanManager.updateCurrentApproach();
 //                 });
 //             });
@@ -471,13 +498,12 @@ class BaseGPS extends NavSystem {
             };
             if(this.getConfigKey("wa_uturn_bug", true)) {
                 this.currFlightPlanManager.setApproachIndex(-1, () => {
-                    this.currFlightPlanManager.removeDeparture(() => {
-                        this.currFlightPlanManager.removeArrival(() => {
+                    this.currFlightPlanManager.removeArrival(() => {
+                        this.currFlightPlanManager.removeDeparture(() => {
                             removeWaypointForApproachMethod(() => {
                                 Coherent.call("SET_APPROACH_INDEX", approachIndex).then(() => {
                                     Coherent.call("SET_APPROACH_TRANSITION_INDEX", approachTransitionIndex).then(() => {
                                         Coherent.call("ACTIVATE_APPROACH").then(() => {
-                                            this.currFlightPlanManager._approachActivated = true;
                                             SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
                                             this.currFlightPlanManager.setActiveWaypointIndex(1);
                                             this.currFlightPlanManager.updateFlightPlan(() => {
@@ -498,7 +524,6 @@ class BaseGPS extends NavSystem {
             }
             else {
                 Coherent.call("ACTIVATE_APPROACH").then(() => {
-                    this.currFlightPlanManager._approachActivated = true;
                     SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
                     this.currFlightPlanManager.updateFlightPlan(() => {
                         this.currFlightPlanManager.updateCurrentApproach(() => {

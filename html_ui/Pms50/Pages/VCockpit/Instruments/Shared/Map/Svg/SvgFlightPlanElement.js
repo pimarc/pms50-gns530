@@ -94,7 +94,9 @@ class SvgFlightPlanElement extends SvgMapElement {
 // PM Modif: Added noObs flag for the procedure maps
             if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean") && !this.noObs) {
 // PM Modif: End Added noObs flag for the procedure maps
-                activeWaypointIndex = this.source.getActiveWaypointIndex(true);
+// PM Modif: No correction in get active waypoint index so the active leg is correctly displayed + no display if directTo
+                activeWaypointIndex = this.source.getIsDirectTo() ? -1 : this.source.getActiveWaypointIndex(false);
+// PM Modif: End No correction in get active waypoint index so the active leg is correctly displayed
                 let waypoint = this.source.getActiveWaypoint();
 // PM Modif: trying to limit the distance in order to avoid the flicking bug of the OBS line
                 let distance = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
@@ -132,8 +134,12 @@ class SvgFlightPlanElement extends SvgMapElement {
                 this.points.push(next);
             }
             else {
-                let nbWaypoints = this.source.getWaypointsCount();
-                activeWaypointIndex = this.source.getActiveWaypointIndex(true);
+                let nbWaypoints = this.source.getWaypointsCount(this.flightPlanIndex);
+// PM Modif: No correction in get active waypoint index (parameter set to false) so the active leg is correctly displayed + no display if directTo
+                activeWaypointIndex = this.source.getIsDirectTo() ? -1 : this.source.getActiveWaypointIndex(false);
+                if(this.source.getIsDirectTo() && this.source.getDirectToTarget().icao == "U FPIS DRCT")
+                    activeWaypointIndex = this.source.getActiveWaypointIndex(false);
+// PM Modif: End No correction in get active waypoint index so the active leg is correctly displayed
                 let isInApproach = false;
                 let approach = this.source.getApproach();
                 if (approach) {
@@ -328,7 +334,7 @@ class SvgFlightPlanElement extends SvgMapElement {
                 }
             }
         }
-        if (this.points.length === 4) {
+        if (this.points.length === 3 || this.points.length === 4) {
             if (!this.source.getIsDirectTo()) {
                 if (this.source.getWaypoints().length <= 3) {
                     let atcTimeClimbLLA = this.source.getAtcTimeClimbLLA();
@@ -338,6 +344,15 @@ class SvgFlightPlanElement extends SvgMapElement {
                         p.refWPIndex = 1;
                         if (isFinite(p.x) && isFinite(p.y)) {
                             this.points.splice(1, 0, p);
+                        }
+                    }
+                    let atcTimeApproachLLA = this.source.getAtcTimeApproachLLA();
+                    if (atcTimeApproachLLA) {
+                        let p = map.coordinatesToXY(atcTimeApproachLLA);
+                        p.refWP = undefined;
+                        p.refWPIndex = 1;
+                        if (isFinite(p.x) && isFinite(p.y)) {
+                            this.points.splice(-2, 0, p);
                         }
                     }
                 }
@@ -351,66 +366,66 @@ class SvgFlightPlanElement extends SvgMapElement {
             });
             console.log(indexes);
         }
-        for (let bevels = 0; bevels < 2; bevels++) {
-            let bevelAmount = map.NMToPixels(3) / (bevels + 1);
-            if (this.points.length > 2) {
-                let beveledPoints = [this.points[0]];
-                for (let i = 1; i < this.points.length - 1; i++) {
-                    let pPrev = this.points[i - 1];
-                    let p = this.points[i];
-                    let pNext = this.points[i + 1];
-                    if (Math.abs(pPrev.x - p.x) < 3 && Math.abs(pPrev.y - p.y) < 3) {
-                        continue;
-                    }
-                    let xPrev = pPrev.x - p.x;
-                    let yPrev = pPrev.y - p.y;
-                    let dPrev = Math.sqrt(xPrev * xPrev + yPrev * yPrev);
-                    xPrev /= dPrev;
-                    yPrev /= dPrev;
-                    let xNext = pNext.x - p.x;
-                    let yNext = pNext.y - p.y;
-                    let dNext = Math.sqrt(xNext * xNext + yNext * yNext);
-                    xNext /= dNext;
-                    yNext /= dNext;
-                    let b = Math.min(dPrev / 3, dNext / 3, bevelAmount);
-                    let dot = Math.abs(xPrev * xNext + yPrev * yNext);
-                    if (Math.abs(dot) > 0.99) {
-                        b = Math.min(b, 10);
-                    }
-                    let refWPIndex = p.refWPIndex + (((bevels === 1) && (i % 2 === 0)) ? 1 : 0);
-                    let refWP = (((bevels === 1) && (i % 2 === 0)) ? pNext.refWP : p.refWP);
-                    let bp1 = {
-                        x: p.x + xPrev * b,
-                        y: p.y + yPrev * b,
-                        refWP: refWP,
-                        refWPIndex: refWPIndex
-                    };
-                    let bp2 = {
-                        x: p.x + xNext * b,
-                        y: p.y + yNext * b,
-                        refWP: refWP,
-                        refWPIndex: refWPIndex
-                    };
-                    let last = beveledPoints[beveledPoints.length - 1];
-                    if (Math.abs(last.x - bp1.x) > 1 || Math.abs(last.y - bp1.y) > 1) {
-                        beveledPoints.push(bp1);
-                    }
-                    last = beveledPoints[beveledPoints.length - 1];
-                    if (Math.abs(last.x - bp2.x) > 1 || Math.abs(last.y - bp2.y) > 1) {
-                        beveledPoints.push(bp2);
-                    }
-                }
-                beveledPoints.push(this.points[this.points.length - 1]);
-                this.points = beveledPoints;
-                if (logWPIndex) {
-                    let indexes = "";
-                    this.points.forEach(p => {
-                        indexes += p.refWPIndex + " ";
-                    });
-                    console.log(indexes);
-                }
-            }
-        }
+        // for (let bevels = 0; bevels < 2; bevels++) {
+        //     let bevelAmount = map.NMToPixels(3) / (bevels + 1);
+        //     if (this.points.length > 2) {
+        //         let beveledPoints = [this.points[0]];
+        //         for (let i = 1; i < this.points.length - 1; i++) {
+        //             let pPrev = this.points[i - 1];
+        //             let p = this.points[i];
+        //             let pNext = this.points[i + 1];
+        //             if (Math.abs(pPrev.x - p.x) < 3 && Math.abs(pPrev.y - p.y) < 3) {
+        //                 continue;
+        //             }
+        //             let xPrev = pPrev.x - p.x;
+        //             let yPrev = pPrev.y - p.y;
+        //             let dPrev = Math.sqrt(xPrev * xPrev + yPrev * yPrev);
+        //             xPrev /= dPrev;
+        //             yPrev /= dPrev;
+        //             let xNext = pNext.x - p.x;
+        //             let yNext = pNext.y - p.y;
+        //             let dNext = Math.sqrt(xNext * xNext + yNext * yNext);
+        //             xNext /= dNext;
+        //             yNext /= dNext;
+        //             let b = Math.min(dPrev / 3, dNext / 3, bevelAmount);
+        //             let dot = Math.abs(xPrev * xNext + yPrev * yNext);
+        //             if (Math.abs(dot) > 0.99) {
+        //                 b = Math.min(b, 10);
+        //             }
+        //             let refWPIndex = p.refWPIndex + (((bevels === 1) && (i % 2 === 0)) ? 1 : 0);
+        //             let refWP = (((bevels === 1) && (i % 2 === 0)) ? pNext.refWP : p.refWP);
+        //             let bp1 = {
+        //                 x: p.x + xPrev * b,
+        //                 y: p.y + yPrev * b,
+        //                 refWP: refWP,
+        //                 refWPIndex: refWPIndex
+        //             };
+        //             let bp2 = {
+        //                 x: p.x + xNext * b,
+        //                 y: p.y + yNext * b,
+        //                 refWP: refWP,
+        //                 refWPIndex: refWPIndex
+        //             };
+        //             let last = beveledPoints[beveledPoints.length - 1];
+        //             if (Math.abs(last.x - bp1.x) > 1 || Math.abs(last.y - bp1.y) > 1) {
+        //                 beveledPoints.push(bp1);
+        //             }
+        //             last = beveledPoints[beveledPoints.length - 1];
+        //             if (Math.abs(last.x - bp2.x) > 1 || Math.abs(last.y - bp2.y) > 1) {
+        //                 beveledPoints.push(bp2);
+        //             }
+        //         }
+        //         beveledPoints.push(this.points[this.points.length - 1]);
+        //         this.points = beveledPoints;
+        //         if (logWPIndex) {
+        //             let indexes = "";
+        //             this.points.forEach(p => {
+        //                 indexes += p.refWPIndex + " ";
+        //             });
+        //             console.log(indexes);
+        //         }
+        //     }
+        // }
         if (this.points.length > 0) {
             let prevRefWPIndex = this.points[this.points.length - 1].refWPIndex;
             let prevRefWP = this.points[this.points.length - 1].refWP;
