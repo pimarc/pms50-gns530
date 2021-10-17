@@ -292,19 +292,19 @@ class BaseGPS extends NavSystem {
             // We leave the OBS so we must do a directTo to the target if target distance greater than 2nm
             // except if user waypoint because a direct To a user waypoint is not working
             // in the sim
-            if(activewaypoint && activewaypoint.icao.length && activewaypoint.icao[0] != "U" && dist > 2) {
-                // DirecTO bug correction when direct to an airport
-                // FS2020 removes the origin airport (first flight plan index)
-                // The direct then works but its not possible any more to select an approach for the new destination airport
-                // The correction consists of re-inserting the origin airport at the start of the flight plan
+            // Check also if the target is an airport and not the destination
+            let doDirectTo = false;
+            if(activewaypoint && activewaypoint.icao.length && activewaypoint.icao[0] != "U" && dist > 2)
+                doDirectTo = true;
+            if(doDirectTo && activewaypoint.icao[0] == "A") {
+                let destination = this.currFlightPlanManager.getDestination();
+                if(destination && destination.icao != activewaypoint.icao)
+                    doDirectTo = false;
+            }
+            if(doDirectTo) {
                 this.cancelDirectTo(() => {
-                    let waypoint_origin = this.currFlightPlanManager.getWaypoint(0);
                     this.enableCheckAfterDirectTo = true;
-                    this.currFlightPlanManager.activateDirectTo(activewaypoint.GetInfos().icao, () => {
-                        if(waypoint_origin && activewaypoint.infos instanceof AirportInfo){
-                            this.currFlightPlanManager.addWaypoint(waypoint_origin.icao, 0);
-                        }
-                    });
+                    this.currFlightPlanManager.activateDirectTo(activewaypoint.GetInfos().icao);
                 });
             }
         }
