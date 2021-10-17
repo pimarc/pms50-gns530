@@ -314,7 +314,7 @@ class BaseGPS extends NavSystem {
         this._t++;
         // We arm 2 nm before the target approach directTo
         let dist = SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles");
-        if(this._t2 > 20 && this.currFlightPlanManager.getIsDirectTo() && this.enableCheckAfterDirectTo && dist > 0 && dist < 2) {
+        if(this._t > 20 && this.currFlightPlanManager.getIsDirectTo() && this.enableCheckAfterDirectTo && dist > 0 && dist < 2) {
             this._t = 0;
             this.cancelDirectTo();
         }
@@ -323,6 +323,8 @@ class BaseGPS extends NavSystem {
     // This is a workaround to a SU5 bug where cancel direct to removes the entire FP if
     // there is an approach loaded and activated
     cancelDirectTo(_callback) {
+        this.cancelDirectToNew(_callback);
+        return;
         this.enableCheckAfterDirectTo = false;
         if(!this.currFlightPlanManager.getIsDirectTo()) {
             if(_callback)
@@ -442,6 +444,113 @@ class BaseGPS extends NavSystem {
             });
         }
     }
+    // This function contains a workaround to a SU5 bug where cancel direct to removes the entire FP if
+    // there is an approach loaded and activated so we must remove it and reload it
+    cancelDirectToNew(_callback) {
+        this.enableCheckAfterDirectTo = false;
+        if(!this.currFlightPlanManager.getIsDirectTo()) {
+            if(_callback)
+                _callback();
+            return;
+        }
+        if(this.currFlightPlanManager.isLoadedApproach()) {
+            // Check if the directTO is part of the approach
+            // If yes we will activate the approach and set the active leg to the next wp
+            let index = -1;
+            let target = this.currFlightPlanManager.getDirectToTarget();
+            let wayPointList = this.currFlightPlanManager.getApproachWaypoints();
+            // We check until the wp before the last wp because we'll activate the leg to next WP (not usefull if last WP)
+            for (var i=0; i < wayPointList.length-1; i++) {
+                if(target && wayPointList[i].icao == target.GetInfos().icao) {
+                    index = i;
+                    break;
+                }
+            }
+            // If the target is the first one we don't reactivate the approach
+            // if we are at more than 2nm from it
+            if(index == 0 && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") >= 2)
+                index = -1;
+            // We activate the next leg if the distance is less than 2nm
+            if(index >= 0 && SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 2)
+                index++;
+            let targetApproachWaypointIcao = index >= 0 ? wayPointList[index].icao : "";
+            Coherent.call("CANCEL_DIRECT_TO").then(() => {
+                // We must reactivate the approach and set the leg to target (next waypoint)
+                if(index >= 0) {
+                    this.currFlightPlanManager.activateApproach(() => {
+                        let targetIndex = this.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === targetApproachWaypointIcao; });
+                        if(targetIndex == -1) {
+                            // Probably a user wp is the target leg so we use the index value
+                            targetIndex = index;
+                        }
+                        if(targetIndex >=0)
+                            this.currFlightPlanManager.setActiveWaypointIndex(targetIndex + 1);
+                        if(_callback)
+                            _callback();
+                    });
+                }
+                else {
+                    if(_callback)
+                        _callback();
+                }
+            });
+        }
+        else {
+            // Stil a bug here if the flight plan has only origin and destination or less
+            let wayPointList = this.currFlightPlanManager.getWaypoints();
+            let origin = this.currFlightPlanManager.getOrigin();
+            let destination = this.currFlightPlanManager.getDestination();
+            let to_restore = false;
+            let navmode = 0;
+            if(SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "boolean"))
+                navmode = 1;
+            if(SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "boolean"))
+                navmode = 2;
+            if(wayPointList.length <= 2) {
+                if(wayPointList.length == 1)
+                    destination = null;
+                if(wayPointList.length == 0)
+                    origin = null;
+                to_restore = true;
+                if(origin && origin.ident == "USER") {
+                    origin = null;
+                    destination = null;
+                }
+                if(origin == null)
+                    destination = null;
+            }
+            let finalize = (_navmode, _callback) => {
+                if(_navmode == 1) {
+                    SimVar.SetSimVarValue("L:AP_LNAV_ACTIVE", "number", 1);
+                    SimVar.SetSimVarValue("K:AP_NAV1_HOLD_ON", "number", 1);
+                }
+                this.currFlightPlanManager.updateFlightPlan(_callback);
+            };
+            Coherent.call("CANCEL_DIRECT_TO").then(() => {
+                if(to_restore) {
+                    Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN").then(() => {
+                        if(origin) {
+                            Coherent.call("SET_ORIGIN", origin.icao, false).then(() => {
+                                if(destination) {
+                                    Coherent.call("SET_DESTINATION", destination.icao, false).then(() => {
+                                        finalize(navmode, _callback)
+                                    });
+                                }
+                                else {
+                                    finalize(navmode, _callback)
+                                }
+                            });
+                        }
+                        else
+                            finalize(navmode, _callback)
+                    });
+                }
+                else {
+                    finalize(navmode, _callback)
+                }
+            });
+        }
+    }
 
     closeConfirmWindow() {
         if(this.confirmWindow.element.Active) {
@@ -458,6 +567,8 @@ class BaseGPS extends NavSystem {
     // We remove the enroute waypoints before activating approach
     // If we are after the last enroute waypoint
     activateApproach(callback = EmptyCallback.Void) {
+        this.activateApproachNew();
+        return;
         if(this.currFlightPlanManager.isActiveApproach()) {
             callback();
             return;
@@ -496,7 +607,7 @@ class BaseGPS extends NavSystem {
                     callback_here();
                 }
             };
-            if(this.getConfigKey("wa_uturn_bug", true)) {
+            if(this.getConfigKey("wa_uturn_bug", false)) {
                 this.currFlightPlanManager.setApproachIndex(-1, () => {
                     this.currFlightPlanManager.removeArrival(() => {
                         this.currFlightPlanManager.removeDeparture(() => {
@@ -535,6 +646,23 @@ class BaseGPS extends NavSystem {
                     });
                 });
             }
+        });
+    }
+    activateApproachNew(callback = EmptyCallback.Void) {
+        if(this.currFlightPlanManager.getApproachIndex() < 0) {
+            callback();
+            return;
+        }
+        // Activating an approach is just a direct TO
+        // The checkafterdirectto function will really activate the approach
+        this.currFlightPlanManager.deactivateApproach(() => {
+            setTimeout(() => {
+                let firstApproachIcao = this.currFlightPlanManager.getApproachWaypoints()[0].icao;
+                this.currFlightPlanManager.activateDirectTo(firstApproachIcao, () => {
+                    this.enableCheckAfterDirectTo = true;
+                    callback();
+                });
+            }, 2000);
         });
     }
 

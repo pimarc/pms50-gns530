@@ -141,7 +141,9 @@ class SvgFlightPlanElement extends SvgMapElement {
                     activeWaypointIndex = this.source.getActiveWaypointIndex(false);
 // PM Modif: End No correction in get active waypoint index so the active leg is correctly displayed
                 let isInApproach = false;
-                let approach = this.source.getApproach();
+// PM Modif: Issue after direct To an airport (the path was not always displayed)
+                let approach = this.source.getApproachWaypoints().length ? this.source.getApproach() : null;
+// PM Modif: End Issue after direct To an airport (the path was not always displayed)
                 if (approach) {
                     isInApproach = this.source.isActiveApproach();
                 }
@@ -196,7 +198,7 @@ class SvgFlightPlanElement extends SvgMapElement {
                     }
                 }
                 let pIndex = 0;
-                for (let i = first; i < (last != -1 ? last : l - (doLastLeg ? 0 : 1)); i++) {
+                for (let i = first; i < last; i++) {
                     let waypoint = this.source.getWaypoint(i, this.flightPlanIndex);
                     if (waypoint) {
                         let wpPoints = [];

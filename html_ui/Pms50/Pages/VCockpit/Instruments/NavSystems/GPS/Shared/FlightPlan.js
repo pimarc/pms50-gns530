@@ -115,6 +115,38 @@ class GPS_FlightPlanManager extends FlightPlanManager {
             return -1;
         return this.getWaypointsCount() > 1 ? this.getWaypointsCount()-2 : -1;
     }
+
+    // Check if the direct To is part of approach
+    isDirectToInApproach() {
+        if(!this.getIsDirectTo() || !this.isLoadedApproach()) {
+            return false;
+        }
+        let index = -1;
+        let target = this.getDirectToTarget();
+        let wayPointList = this.getApproachWaypoints();
+        // We check until the wp before the last wp because we'll active the leg to next WP (not usefull if last WP)
+        for (var i=0; i < wayPointList.length-1; i++) {
+            if(target && wayPointList[i].icao == target.GetInfos().icao) {
+                index = i;
+                break;
+            }
+        }
+        return index >= 0;
+    }
+    deactivateApproach(_callback = null) {
+        if(this.isActiveApproach()) {
+            Coherent.call("DEACTIVATE_APPROACH").then(() => {
+                this.updateCurrentApproach(() => {
+                    if (_callback)
+                    _callback();
+                });
+            });
+        }
+        else {
+            if (_callback)
+            _callback();
+        }
+    }
 }
 
 class GPS_WaypointLine extends MFD_WaypointLine {
@@ -642,19 +674,20 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
         this.gps.confirmWindow.element.setTexts("Confirm activate leg ?");
         this.gps.switchToPopUpPage(this.gps.confirmWindow, () => {
             if (this.gps.confirmWindow.element.Result == 1) {
-                if(!is_approach_index){
-                    // Activating a leg outside the approach deactive it
-                    if(this.gps.currFlightPlanManager.isActiveApproach()){
-                        this.gps.currFlightPlanManager.deactivateApproach();
-                    }
-                }
                 // Remove any direct to before activating leg
                 this.gps.cancelDirectTo(() => {
-                    this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
+                    if(is_approach_index) {
+                        this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
+                    }
+                    else {
+                        // Activating a leg outside the approach deactive it
+                        this.gps.currFlightPlanManager.deactivateApproach(() => {
+                            this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
+                        });
+                    }
                 });
             }
         });
-
     }
     isCurrentlySelectedNotALeg() {
         return this.lines[this.fplSelectable.getIndex()].getType() == MFD_WaypointType.empty;
@@ -776,7 +809,7 @@ class GPS_ActiveFPL extends MFD_ActiveFlightPlan_Element {
     onWaypointSelectionEnd() {
         if (this.gps.lastRelevantICAO) {
             // Workaraound to the insert waypoint broken in sim
-            if(this.gps.getConfigKey("wa_add_waypoint_bug", true)) {
+            if(this.gps.getConfigKey("wa_add_waypoint_bug", false)) {
                 this.savedFpl.save();
                 if(this.savedFpl.canAdd(this.selectedIndex, true)) {
                     this.gps.confirmWindow.element.setTexts("Add waypoint ?");
@@ -1576,7 +1609,7 @@ class GPS_FlightPlanForSave {
         this.message = "";
     }
     save() {
-        if(!this.gps.getConfigKey("wa_add_waypoint_bug", true))
+        if(!this.gps.getConfigKey("wa_add_waypoint_bug", false))
             return;
         this.origin = this.gps.currFlightPlanManager.getOrigin();
         this.destination = this.gps.currFlightPlanManager.getDestination();
@@ -1706,7 +1739,7 @@ class GPS_FlightPlanForSave {
     }
 
     canAdd(index, withMessage = false) {
-        if(!this.gps.getConfigKey("wa_add_waypoint_bug", true))
+        if(!this.gps.getConfigKey("wa_add_waypoint_bug", false))
             return true;
         this.indexInEnroute = -1;
         this.changeOrigin = false;

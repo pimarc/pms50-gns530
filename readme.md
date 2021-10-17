@@ -74,10 +74,6 @@ I can spend all the necessary time to help but I need real information to do tha
 I cannot support here external hardware, software nor liveries. Please try without them before requesting support.
 Thank you for your understanding.
 
-# Current MSFS bugs
-- Waypoint insertion is broken since November update especially if there is an approach loaded. I cannot do anything here since it's in the sim's kernel. I made a workaround but sometimes some waypoints cannot be added.
-- U-turn bug: The airplane operates a 180° turn to come back to the last enroute waypoint if you activate an approach after the last enroute waypoint. I implemented a workaround in this MOD that consists of removing all enroute waypoints before activating the approach.
-
 # Details
 ## Approach loading and activation
 The original logic for the loading and activating of an approach has been changed. Here is how it works now:
@@ -88,26 +84,19 @@ If you choose an approach and just load it, it's then added to the flight plan b
 
 Activating
 
-If you activate the approach before the last enroute waypoint, the autopilot goes directly to the first approach waypoint. This removes your enroute waypoints.
-
-If you activate the approach after the last enroute waypoint, the autopilot goes directly to the first approach waypoint (without U-turn!!!). This removes all the enroute waypoints.
+If you activate the approach the autopilot goes directly to the first approach waypoint by a direct To.
 
 Note: If you set a Direct To, this automatically de-activates the approach. It will be re-activated automatically if your target waypoint is part of your approach, 2nm before reaching the target.
-
-## U-turn bug
-This FS2020 bug probably made many of us crazy. It occurs when you select/activate an approach after the last enroute waypoint. Then the autopilot comes back to the last enroute waypoint before reaching the first approach waypoint.
-
-The workaround to this bug implemented here is to remove all enroute waypoints in this situation. This is not a real problem since you already flew these waypoints.
 
 ## Activate leg
 Activate leg now works also in approach.
 
 ## Direct to
-The Direct To now works correctly and you can direct to an approach icao waypoint. These lasts are available in the DirectTo FPL element list without having to manually type them.
+The Direct To now works correctly and you can direct to an approach icao waypoint. The flight plan waypoints are available in the DirectTo FPL element list without having to manually type them.
 
 A DirectTo automatically de-activates the approach if there is one loaded. This one will be reactivated automatically if the directTO target waypoint is part of your approach.
 
-A direct to an airport removes all the waypoints of the flight plan except origin and (new) destination. When doing that, it's now possible to select an approach for the new destination (bug correction).
+A direct to an airport removes all the waypoints of the flight plan except origin and (new) destination. When doing that, it's possible to select an approach for the new destination.
 
 ## Remove approach
 This feature was not working in the original fs2020 GNS530. Now it does.
@@ -115,7 +104,7 @@ This feature was not working in the original fs2020 GNS530. Now it does.
 ## Graphical enhancements
 The display screen is more readable. The font weight has been turned to "normal" instead of "bold".
 
-There is a menu option for day / night brightness
+There is an automatic day/night brightness
 
 The nearest airport list doesn't flick any more and a separation line has been added between airports for better reading like in the real GNS530.
 
@@ -181,15 +170,12 @@ In cursor mode the MOD automatically selects the nearest Waypoint to be the dire
 ## OBS
 OBS angle can be set from the GNS530 Main NAV page (first NAV page) by pressing the right knob. You then enter in the "OBS angle set mode" and you can set the value with the right knob (by 10 degrees or 1 degree step ). The "OBS angle set mode" turns off automatically after 5 seconds of inactivity or if you press again the right knob.
 The initial value of the OBS is taken from the HSI or CDI (depends of the aircraft). While in "OBS angle set mode", pressing the ENT key set the OBS to your target DTK.
+When leaving the OBS Mode, the GPS issues a direct To the target waypoint. 
 
 ## Adding and deleting waypoints
-Adding a waypoint in the flight plan is currently broken in the sim when there is an approach loaded. I found a workaround to this situation so inserting a waypoint should just work now (with some exceptions).
-
-However I've set some limitations in order to avoid bugs. For example, you cannot insert a waypoint in a procedure. This makes sense since a procedure is a whole. If you want to bypass some waypoints of a procedure and/or fly somewhere else you can use direct To and activate leg.
+There are set some limitations in order to avoid bugs. For example, you cannot insert a waypoint in a procedure. This makes sense since a procedure is a whole. If you want to bypass some waypoints of a procedure and/or fly somewhere else you can use direct To and activate leg.
 
 There are also some limitations on removing waypoints. You cannot remove a procedure waypoint. The current leg waypoint can be removed only if you are not in autopilot NAV mode.
-
-For this workaround, I'm completely rebuilding the flight plan while inserting a waypoint. Although not necessary, I recommend to switch to HDG mode before inserting a waypoint.
 
 ## METAR
 The METAR data is available as second AUX page.
@@ -232,7 +218,19 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
-## V 1.0.40 (to be used with SU6)
+## V 1.0.42
+- su6 compatibility (final step)
+- Added auto brightness
+- Default value for the U-turn bug workaround is now unset since the bug had been fixed in SU6.
+- Default value for the add waypoint bug workaround is now unset since the bug had been fixed in SU6.
+- Leaving OBS mode now switches to directTo (except for a user waypoint).
+- Activating the approach sets a direct To the IAF
+
+## V 1.0.41
+- su6 compatibility (second step)
+- bugfix: config file was not loaded
+
+## V 1.0.40
 - bugfix: airport altitude converted from meters to feet
 - su6 compatibility (first step)
 

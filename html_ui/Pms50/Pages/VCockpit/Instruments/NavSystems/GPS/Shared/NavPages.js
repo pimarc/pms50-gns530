@@ -430,7 +430,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
                 new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
                 new ContextualMenuElement("North up/Trk up?", this.toggleMapOrientation.bind(this)),
                 new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this)),
-                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this)),
+//                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this)),
                 new ContextualMenuElement("Restart GPS?", this.reloadGPS.bind(this))
             ]);
         }
@@ -439,7 +439,7 @@ class GPS_DefaultNavPage extends GPS_BaseNavPage {
                 new ContextualMenuElement("Crossfill?", null, true),
                 new ContextualMenuElement("Change&nbsp;Fields?", this.gps.ActiveSelection.bind(this.gps, this.baseElem.dnCustomSelectableArray), false),
                 new ContextualMenuElement("Restore&nbsp;Defaults?", this.restoreDefaults.bind(this)),
-                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this)),
+//                new ContextualMenuElement("Day/Night&nbsp;lighting", this.toggleLighting.bind(this)),
                 new ContextualMenuElement("Restart GPS?", this.reloadGPS.bind(this))
             ]);
         }
