@@ -96,11 +96,11 @@ class GPS_FlightPlanManager extends FlightPlanManager {
         return waypoint;
     }
     // Changing approach index removes any current direct TO so we must enable it again
-    setApproachIndex(index, callback = () => { }, transition = 0) {
+    setApproachIndex(index, callback = () => { }, transition = 0, reactivateDirectTo = true) {
         let directToTarget = this.getIsDirectTo() ? this.getDirectToTarget() : null;
         super.setApproachIndex(index, () => {
             // Restore direct To if necessary
-            if(directToTarget && directToTarget.icao.length) {
+            if(reactivateDirectTo && directToTarget && directToTarget.icao.length) {
                 setTimeout(() => {
                     this.activateDirectTo(directToTarget.icao, () => {callback()});
                 }, 500);

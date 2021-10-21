@@ -218,7 +218,7 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
-## V 1.0.43 (not yet released)
+## V 1.0.43
 - Bugfix: FP sometimes deleted when it has less than 3 waypoints.
 - Bugfix: The approach frequency was not set when activating the approach.
 
