@@ -543,16 +543,14 @@ class BaseGPS extends NavSystem {
             this.currFlightPlanManager.cancelDirectTo(() => {
                 // We must reactivate the approach and set the leg to target (next waypoint)
                 doRestore(() => {
-                    if(to_restore) {
-                        if(AutoPilotNav) {
-                            SimVar.SetSimVarValue("K:AP_LNAV_ACTIVE", "number", 1);
-                            SimVar.SetSimVarValue("K:AP_NAV1_HOLD_ON", "number", 1);
-                        }
-                        if(AutoPilotApproach)
-                            SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
-                        if(AutoPilotAlt) {
-                            SimVar.SetSimVarValue("K:AP_ALT_HOLD_ON", "number", 1);
-                        }
+                    if(AutoPilotNav && !SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "number")) {
+                        SimVar.SetSimVarValue("K:AP_LNAV_ACTIVE", "number", 1);
+                        SimVar.SetSimVarValue("K:AP_NAV1_HOLD_ON", "number", 1);
+                    }
+                    if(AutoPilotApproach && !SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number"))
+                        SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
+                    if(AutoPilotAlt && !SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "number")) {
+                        SimVar.SetSimVarValue("K:AP_ALT_HOLD_ON", "number", 1);
                     }
                     this.currFlightPlanManager.updateFlightPlan(() => {
                         this.currFlightPlanManager.updateCurrentApproach(() => {
@@ -582,16 +580,14 @@ class BaseGPS extends NavSystem {
         else {
             this.currFlightPlanManager.cancelDirectTo(() => {
                 doRestore(() => {
-                    if(to_restore) {
-                        if(AutoPilotNav) {
-                            SimVar.SetSimVarValue("K:AP_LNAV_ACTIVE", "number", 1);
-                            SimVar.SetSimVarValue("K:AP_NAV1_HOLD_ON", "number", 1);
-                        }
-                        if(AutoPilotApproach)
-                            SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
-                        if(AutoPilotAlt) {
-                            SimVar.SetSimVarValue("K:AP_ALT_HOLD_ON", "number", 1);
-                        }
+                    if(AutoPilotNav && !SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "number")) {
+                        SimVar.SetSimVarValue("K:AP_LNAV_ACTIVE", "number", 1);
+                        SimVar.SetSimVarValue("K:AP_NAV1_HOLD_ON", "number", 1);
+                    }
+                    if(AutoPilotApproach && !SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number"))
+                        SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
+                    if(AutoPilotAlt && !SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "number")) {
+                        SimVar.SetSimVarValue("K:AP_ALT_HOLD_ON", "number", 1);
                     }
                     this.currFlightPlanManager.updateFlightPlan(() => {
                         this.currFlightPlanManager.updateCurrentApproach(_callback);
