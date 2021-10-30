@@ -69,6 +69,7 @@ class BaseGPS extends NavSystem {
         this.alertWindow = new NavSystemElementContainer("AlertWindow", "AlertWindow", new GPS_AlertWindow());
         this.alertWindow.setGPS(this);
         this._t = 0;
+        this._tfp = 0;
         this.msg_t = 0;
         this.enableCheckAfterDirectTo = false;
         this.attemptDeleteWpLeg = 0;
@@ -185,6 +186,13 @@ class BaseGPS extends NavSystem {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        this._tfp++;
+        if (this._tfp > 30) {
+            this.currFlightPlanManager.updateFlightPlan(() => {
+                this.currFlightPlanManager.updateCurrentApproach();
+            });
+            this._tfp = 0;
+        }
         diffAndSetText(this.CDIState, SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean") == 0 ? "VLOC" : "GPS");
         this.msg_t++;
         if(this.msg_t > 5)

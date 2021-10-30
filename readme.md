@@ -218,6 +218,9 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
+## V 1.0.45 (not yet released)
+- Bugfix: Flight plan was not correctly updated from sim.
+
 ## V 1.0.44
 - Bugfix: Sometimes the sim changes the current leg while loading or removing an approach.
 - Bugfix: Sometimes the sim may change the autopilot NAV mode after canceling a direct TO.
