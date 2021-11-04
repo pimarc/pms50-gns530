@@ -47,7 +47,8 @@ If you have set a config file and/or loadable flight plans, be careful to save t
 You can also use the alternate data MOD to fix this situation (see note below).
 
 # Bug reporting
-You can report bugs here https://github.com/pimarc/pms50-gns530/issues
+The support is exclusively on the discord server: https://discord.gg/TNv9jeaWKn
+I'll not answer to any support request on GitHub.
 
 Before reporting a bug:
 - Read the readme file (maybe not a real bug but a normal behavior)
@@ -218,12 +219,12 @@ TCAS data is disabled if your own aircraft is below 500ft AGL.
 TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
-## V 1.0.45 (not yet released)
+## V 1.0.45
 - Bugfix: Flight plan was not correctly updated from sim.
 
 ## V 1.0.44
-- Bugfix: Sometimes the sim changes the current leg while loading or removing an approach.
-- Bugfix: Sometimes the sim may change the autopilot NAV mode after canceling a direct TO.
+- Bugfix: The sim may change the current leg while loading or removing an approach.
+- Bugfix: The sim may change the autopilot NAV mode after canceling a direct TO.
 
 ## V 1.0.43
 - Bugfix: FP is sometimes deleted when it has less than 3 waypoints.
