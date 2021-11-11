@@ -1125,7 +1125,7 @@ class GPS_FPLCatalog extends NavSystemElement {
     }
     async importToGame(_callback) {
         // Clear flight plan
-        await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", 0);
+        await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", 0, false);
         await Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN");
 
         // Get flight plan
@@ -1637,7 +1637,7 @@ class GPS_FlightPlanForSave {
     }
     async load(activateNav = 0) {
         this.activateNav = activateNav;
-        await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", 0);
+        await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", 0, false);
         await Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN");
         this.gps.currFlightPlanManager.updateFlightPlan(() => {
             this.gps.currFlightPlanManager.updateCurrentApproach();

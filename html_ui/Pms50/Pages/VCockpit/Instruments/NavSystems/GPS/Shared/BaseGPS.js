@@ -36,6 +36,7 @@ class BaseGPS extends NavSystem {
             switch (key) {
                 case 'VOR1_OBI_INC':
                 case 'VOR1_OBI_DEC':
+                case 'TOTOTUTU':
                     this.onVorObsChanged(1);
                     break;
             }

@@ -71,6 +71,7 @@ class PFD_Airspeed extends NavSystemElement {
     init(root) {
         this.airspeedElement = this.gps.getChildById("Airspeed");
         var cockpitSettings = SimVar.GetGameVarValue("", "GlassCockpitSettings");
+        var designSpeeds = Simplane.getDesignSpeeds();
         if (cockpitSettings && cockpitSettings.AirSpeed.Initialized) {
             diffAndSetAttribute(this.airspeedElement, "min-speed", cockpitSettings.AirSpeed.lowLimit + '');
             diffAndSetAttribute(this.airspeedElement, "green-begin", cockpitSettings.AirSpeed.greenStart + '');
@@ -85,7 +86,6 @@ class PFD_Airspeed extends NavSystemElement {
             this.maxSpeed = cockpitSettings.AirSpeed.highLimit;
         }
         else {
-            var designSpeeds = Simplane.getDesignSpeeds();
             diffAndSetAttribute(this.airspeedElement, "green-begin", designSpeeds.VS1 + '');
             diffAndSetAttribute(this.airspeedElement, "green-end", designSpeeds.VNo + '');
             diffAndSetAttribute(this.airspeedElement, "flaps-begin", designSpeeds.VS0 + '');
@@ -96,6 +96,14 @@ class PFD_Airspeed extends NavSystemElement {
             diffAndSetAttribute(this.airspeedElement, "red-end", designSpeeds.VMax + '');
             diffAndSetAttribute(this.airspeedElement, "max-speed", designSpeeds.VNe + '');
             this.maxSpeed = designSpeeds.VNe;
+        }
+        if (designSpeeds) {
+            if (isFinite(designSpeeds.Vyse)) {
+                diffAndSetAttribute(this.airspeedElement, "vyse-speed", designSpeeds.Vyse + '');
+            }
+            if (isFinite(designSpeeds.Vmc)) {
+                diffAndSetAttribute(this.airspeedElement, "vmc-speed", designSpeeds.Vmc + '');
+            }
         }
         if (this.gps.instrumentXmlConfig) {
             let autoThrottleElem = this.gps.instrumentXmlConfig.getElementsByTagName("AutoThrottle");
@@ -866,7 +874,7 @@ class PFD_Annunciations extends Annunciations {
         super(...arguments);
         this.warningToneNameZ = new Name_Z("tone_warning");
         this.cautionToneNameZ = new Name_Z("tone_caution");
-        this.warningTone = false;
+        this.firstAcknowledge = true;
     }
     init(root) {
         super.init(root);
@@ -992,6 +1000,10 @@ class PFD_Annunciations extends Annunciations {
                 if (res)
                     this.isPlayingWarningTone = true;
             }
+            if (this.gps.isPrimary) {
+                SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", (this.alertLevel == 3));
+                SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", (this.alertLevel == 2));
+            }
             if (this.alertSoftkey) {
                 if (this.alert) {
                     if (this.alertLevel == 0) {
@@ -1035,6 +1047,27 @@ class PFD_Annunciations extends Annunciations {
                 }
                 else {
                     this.gps.computeEvent("Toggle_Alerts");
+                }
+                break;
+            case "Master_Caution_Push":
+                for (let i = 0; i < this.allMessages.length; i++) {
+                    if (this.allMessages[i].Type == Annunciation_MessageType.CAUTION && this.allMessages[i].Visible) {
+                        this.allMessages[i].Acknowledged = true;
+                        this.needReload = true;
+                    }
+                }
+                break;
+            case "Master_Warning_Push":
+                for (let i = 0; i < this.allMessages.length; i++) {
+                    if (this.allMessages[i].Type == Annunciation_MessageType.WARNING && this.allMessages[i].Visible) {
+                        this.allMessages[i].Acknowledged = true;
+                        this.needReload = true;
+                    }
+                }
+                if (this.needReload && this.firstAcknowledge && this.gps.isPrimary) {
+                    let res = this.gps.playInstrumentSound("aural_warning_ok");
+                    if (res)
+                        this.firstAcknowledge = false;
                 }
                 break;
         }
@@ -1472,7 +1505,6 @@ class PFD_AutopilotDisplay extends NavSystemElement {
                 this.altimeterIndex = parseInt(altimeterIndexElems[0].textContent) + 1;
             }
         }
-        SimVar.SetSimVarValue("K:AP_ALT_VAR_SET_ENGLISH", "feet", 10000);
     }
     onEnter() {
     }

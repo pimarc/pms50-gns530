@@ -2132,12 +2132,13 @@ class Annunciations extends NavSystemElement {
                 break;
         }
         msg.baseText = _element.getElementsByTagName("Text")[0].textContent;
-        let conditions = _element.getElementsByTagName("Condition");
-        for (let i = 0; i < conditions.length; i++) {
-            let condition = new XMLCondition();
-            condition.logic = new CompositeLogicXMLElement(this.gps, conditions[i]);
-            condition.suffix = conditions[i].getAttribute("Suffix");
-            msg.conditions.push(condition);
+        for (let i = 0; i < _element.children.length; i++) {
+            if (_element.children[i].tagName == "Condition") {
+                let condition = new XMLCondition();
+                condition.logic = new CompositeLogicXMLElement(this.gps, _element.children[i]);
+                condition.suffix = _element.children[i].getAttribute("Suffix");
+                msg.conditions.push(condition);
+            }
         }
         this.allMessages.push(msg);
     }

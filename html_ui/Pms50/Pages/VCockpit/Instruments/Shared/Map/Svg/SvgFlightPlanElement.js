@@ -49,7 +49,7 @@ class SvgFlightPlanElement extends SvgMapElement {
         diffAndSetAttribute(this._colorPath, "stroke", map.config.flightPlanNonActiveLegColor);
         diffAndSetAttribute(this._colorPath, "fill", "none");
         if (this.flightPlanIndex === 1) {
-            diffAndSetAttribute(this._colorPath, "stroke", "yellow");
+            diffAndSetAttribute(this._colorPath, "stroke", map.config.flightPlanIndex1LegColor);
         }
         let colorPathWidth = fastToFixed(map.config.flightPlanNonActiveLegWidth / map.overdrawFactor, 0);
         diffAndSetAttribute(this._colorPath, "stroke-width", colorPathWidth);
@@ -59,7 +59,7 @@ class SvgFlightPlanElement extends SvgMapElement {
         diffAndSetAttribute(this._colorActive, "stroke", map.config.flightPlanActiveLegColor);
         diffAndSetAttribute(this._colorActive, "fill", "none");
         if (this.flightPlanIndex === 1) {
-            diffAndSetAttribute(this._colorActive, "stroke", "yellow");
+            diffAndSetAttribute(this._colorActive, "stroke", map.config.flightPlanIndex1LegColor);
         }
         let colorActiveWidth = fastToFixed(map.config.flightPlanActiveLegWidth / map.overdrawFactor, 0);
         diffAndSetAttribute(this._colorActive, "stroke-width", colorActiveWidth);
@@ -69,7 +69,7 @@ class SvgFlightPlanElement extends SvgMapElement {
         diffAndSetAttribute(this._transitionPath, "stroke", map.config.flightPlanNonActiveLegColor);
         diffAndSetAttribute(this._transitionPath, "fill", "none");
         if (this.flightPlanIndex === 1) {
-            diffAndSetAttribute(this._transitionPath, "stroke", "yellow");
+            diffAndSetAttribute(this._transitionPath, "stroke", map.config.flightPlanIndex1LegColor);
         }
         diffAndSetAttribute(this._transitionPath, "stroke-width", colorPathWidth);
         diffAndSetAttribute(this._transitionPath, "stroke-linecap", "square");
@@ -77,6 +77,7 @@ class SvgFlightPlanElement extends SvgMapElement {
         this.setAsDashed(this._isDashed, true);
         return container;
     }
+    get isDashed() { return this._isDashed; }
     updateDraw(map) {
         this._highlightedLegIndex = SimVar.GetSimVarValue("L:MAP_FLIGHTPLAN_HIGHLIT_WAYPOINT", "number");
         this.points = [];
@@ -568,8 +569,8 @@ class SvgFlightPlanElement extends SvgMapElement {
     }
     setAsDashed(_val, _force = false) {
         if (_force || (_val != this._isDashed)) {
-            this._isDashed = _val;
             if (this._colorActive && this._colorPath) {
+                this._isDashed = _val;
                 if (this._isDashed) {
                     let length = 14;
                     let spacing = 8;
