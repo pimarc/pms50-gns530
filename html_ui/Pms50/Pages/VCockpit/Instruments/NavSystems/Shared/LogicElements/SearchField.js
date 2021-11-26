@@ -88,7 +88,7 @@ class SearchFieldWaypointICAO {
             if(this.firstUpdate) {
                 currICAO = this.region;
                 if(currICAO.length) {
-                    var numiterations = currICAO.charCodeAt(0) - 65 + 10 + this.entryType;
+                    var numiterations = currICAO.charCodeAt(0) - 65 + 10 + this.entryType + (this.entryType == -1 ? 1 : 0);
                     for(var i=0; i<numiterations; i++)
                         this.AdvanceCharacterNext();
                     if(currICAO.length > 1) {
