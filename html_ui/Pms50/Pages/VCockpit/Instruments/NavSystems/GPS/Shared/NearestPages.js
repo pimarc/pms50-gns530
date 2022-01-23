@@ -281,7 +281,7 @@ class GPS_NearestAirpaces extends NavSystemElement {
         this.nrstAirspaceStatus3 = this.gps.getChildById("NRST_Airspace_Status_3");
         this.nrstAirspaceName4 = this.gps.getChildById("NRST_Airspace_Name_4");
         this.nrstAirspaceStatus4 = this.gps.getChildById("NRST_Airspace_Status_4");
-        this.nearestAirspacesList = new NearestAirspaceList(this.gps);
+        this.nearestAirspacesList = new GPS_NearestAirspaceList(this.gps);
     }
     onEnter() {
     }
@@ -352,3 +352,85 @@ class GPS_NearestAirpaces extends NavSystemElement {
         }
     }
 }
+
+// Old msfs code for airspace list because the code from 1.18.9.0 is not working
+// Added altitude and frequency in result (frequency available only for center type airspace)
+// changed the number of airspaces to 25
+class GPS_NearestAirspaceList {
+    constructor(_instrument) {
+        this.instrument = _instrument;
+        this.airspaces = [];
+        this.batch = new SimVar.SimVarBatch("C:fs9gps:NearestAirspaceItemsNumber", "C:fs9gps:NearestAirspaceCurrentLine");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentName", "string", "string");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentType", "number", "number");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentStatus", "number", "number");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentNearDistance", "nautical mile", "number");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentAheadTime", "seconds", "number");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentGeometry", "number", "number");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentMinAltitude", "feet", "number");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentMaxAltitude", "feet", "number");
+        this.batch.add("C:fs9gps:NearestAirspaceCurrentFrequency", "hertz", "number");
+    }
+    Update(_nbMax = 25, _milesDistance = 200) {
+        this.nbMax = _nbMax;
+        this.milesDistance = _milesDistance;
+        if (GPS_NearestAirspaceList.readManager.AddToQueue(this.instrument, this)) {
+            this.loadState = 0;
+            this.needUpdate = false;
+        }
+        else {
+            this.needUpdate = true;
+        }
+    }
+    LoadData() {
+        var instrId = this.instrument.instrumentIdentifier;
+        switch (this.loadState) {
+            case 0:
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceCurrentLatitude", "degree latitude", SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude", instrId), instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceCurrentLongitude", "degree longitude", SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude", instrId), instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceCurrentAltitude", "meter", SimVar.GetSimVarValue("GPS POSITION ALT", "meter", instrId), instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceTrueGroundTrack", "degree", SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree", instrId), instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceGroundSpeed", "meter per second", SimVar.GetSimVarValue("GPS GROUND SPEED", "meter per second", instrId), instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceNearDistance", "nautical mile", 2, instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceNearAltitude", "feet", 200, instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceAheadTime", "minute", 10, instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceMaximumItems", "number", this.nbMax, instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceMaximumDistance", "nautical miles", this.milesDistance, instrId);
+                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceQuery", "number", 0xEFC038, instrId);
+//                SimVar.SetSimVarValue("C:fs9gps:NearestAirspaceQuery", "number", 0xFFFFFE, instrId);
+                this.loadState++;
+                break;
+            case 1:
+                SimVar.GetSimVarArrayValues(this.batch, function (_Values) {
+                    this.airspaces = [];
+                    for (var i = 0; i < _Values.length && i < 100; i++) {
+                        var airspace = new NearestAirspace();
+                        airspace.name = Utils.Translate(_Values[i][0]);
+                        airspace.ident = (airspace.name + "_" + i).replace(new RegExp(" ", "g"), "");
+                        airspace.ident = airspace.ident.replace(new RegExp("/", "g"), "");
+                        airspace.type = _Values[i][1];
+                        airspace.status = _Values[i][2];
+                        airspace.nearDistance = _Values[i][3];
+                        airspace.aheadTime = _Values[i][4];
+                        airspace.geometry = _Values[i][5];
+                        airspace.minAltitude = Math.floor(_Values[i][6]);
+                        airspace.maxAltitude = Math.min(60000, Math.floor(_Values[i][7]));
+                        airspace.frequency = _Values[i][8];
+                        this.airspaces.push(airspace);
+                    }
+                    this.loadState++;
+                }.bind(this), instrId);
+                this.loadState++;
+                break;
+        }
+    }
+    IsUpToDate() {
+        return this.loadState == 3;
+    }
+    EndLoad() {
+        if (this.needUpdate) {
+            this.Update(this.nbMax, this.milesDistance);
+        }
+    }
+}
+GPS_NearestAirspaceList.readManager = new InstrumentDataReadManager();

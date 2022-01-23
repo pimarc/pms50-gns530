@@ -76,7 +76,7 @@ class BaseGPS extends NavSystem {
         this.attemptDeleteWpLeg = 0;
         this.attemptDeleteWpProc = 0;
         this.attemptAddWp = 0;
-        this.airspaceList = new NearestAirspaceList(this);
+        this.airspaceList = new GPS_NearestAirspaceList(this);
         this.configData = null;
         this.debug = false;
         this.icaoFromMap = null;
@@ -209,13 +209,16 @@ class BaseGPS extends NavSystem {
                             this.msgAlert.setAttribute("style", "visibility: visible");
                             if (this.messageList.hasNewMessages()) {
                                 this.msgAlert.setAttribute("state", this.blinkGetState(1000, 500) ? "Blink" : "None");
+                                SimVar.SetSimVarValue("L:GNS530_HAVE_MESSAGE:" + this.comIndex, "bool", true);
                             }
                             else {
                                 this.msgAlert.setAttribute("state", "None");
+                                SimVar.SetSimVarValue("L:GNS530_HAVE_MESSAGE:" + this.comIndex, "bool", false);
                             }
                         }
                         else {
                             this.msgAlert.setAttribute("style", "visibility: hidden");
+                            SimVar.SetSimVarValue("L:GNS530_HAVE_MESSAGE:" + this.comIndex, "bool", false);
                         }
                     }
                 }
