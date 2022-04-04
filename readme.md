@@ -8,6 +8,11 @@ https://pms50.com/fs2020/gns530/pms50-gns530.zip
 
 See Installation section below.
 
+# Support
+The support is only on discord: https://discord.gg/TNv9jeaWKn
+
+We'll not answer to any issue on GitHub.
+
 # Main features
 - MSFS U-turn bug workaround
 - North Up / Track up map modes
