@@ -27,10 +27,12 @@ class AS430 extends BaseGPS {
         // Normal start
         if(!this.isStarted){
             this.initScreen.setAttribute("style", "display: none");
+			SimVar.SetSimVarValue("L:GNS430BootComplete", "Boolean", 0);
         }
         if(this.isStarted && this.toInit) {
             if(this.debug) {
                 this.NbLoopInitScreen = 50;
+				SimVar.SetSimVarValue("L:GNS430BootComplete", "Boolean", 0);
             }
             this.initScreen.setAttribute("style", "display: flex");
             this.initScreenBottomInfo.innerHTML = "GPS SW Version " + this.version + "<br> Initializing...";
@@ -41,6 +43,7 @@ class AS430 extends BaseGPS {
                 this.hotStart = false;
                 this.doInit();
                 this.initScreen.setAttribute("style", "display: none");
+				SimVar.SetSimVarValue("L:GNS430BootComplete", "Boolean", 1);
             }
         }
         // Hot restart
@@ -48,15 +51,18 @@ class AS430 extends BaseGPS {
             if(!this.isStarted) {
                 this.hotStart = true;
                 this.cnt = 0;
+				SimVar.SetSimVarValue("L:GNS430BootComplete", "Boolean", 0);
             }
             if(this.hotStart && this.isStarted) {
                 if(this.cnt == 0) {
                     this.initScreen.setAttribute("style", "display: flex");
+					SimVar.SetSimVarValue("L:GNS430BootComplete", "Boolean", 0);
                 }
                 this.cnt++;
                 if(this.cnt > this.NbLoopInitScreen) {
                     this.hotStart = false;
                     this.initScreen.setAttribute("style", "display: none");
+					SimVar.SetSimVarValue("L:GNS430BootComplete", "Boolean", 1);
                 }
             }
         }

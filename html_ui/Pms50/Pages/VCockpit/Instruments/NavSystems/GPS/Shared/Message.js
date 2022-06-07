@@ -317,8 +317,12 @@ class GPS_Annunciations extends PFD_Annunciations {
             return false;
         if(SimVar.GetSimVarValue("GPS WP DISTANCE", "Nautical Miles") < 3) {
             this.Text = "Arrival at waypoint " + this.gps.currFlightPlanManager.getActiveWaypointIdent();
+            // Specific request for the 172X mod
+            SimVar.SetSimVarValue("L:172X_WPT", "Bool", 1);
             return true;
         }
+        // Specific request for the 172X mod
+        SimVar.SetSimVarValue("L:172X_WPT", "Bool", 0);
         return false;        
     }
     airspaceNear() {

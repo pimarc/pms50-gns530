@@ -225,6 +225,9 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
 
+## V 1.0.50
+- Few changes for the 172X mod requirements.
+
 ## V 1.0.49
 - SU9 Beta compatibility.
 

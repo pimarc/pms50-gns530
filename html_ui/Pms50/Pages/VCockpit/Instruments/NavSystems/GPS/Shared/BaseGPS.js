@@ -36,7 +36,6 @@ class BaseGPS extends NavSystem {
             switch (key) {
                 case 'VOR1_OBI_INC':
                 case 'VOR1_OBI_DEC':
-                case 'TOTOTUTU':
                     this.onVorObsChanged(1);
                     break;
             }
@@ -207,18 +206,20 @@ class BaseGPS extends NavSystem {
                         this.messageList.onUpdate(_deltaTime);
                         if (this.messageList.hasMessages()) {
                             this.msgAlert.setAttribute("style", "visibility: visible");
+							SimVar.SetSimVarValue("L:GNS530_HAVE_MESSAGE:" + this.comIndex, "bool", true);
                             if (this.messageList.hasNewMessages()) {
                                 this.msgAlert.setAttribute("state", this.blinkGetState(1000, 500) ? "Blink" : "None");
-                                SimVar.SetSimVarValue("L:GNS530_HAVE_MESSAGE:" + this.comIndex, "bool", true);
+                                SimVar.SetSimVarValue("L:GNS530_HAVE_NEWMESSAGE:" + this.comIndex, "bool", true);
                             }
                             else {
                                 this.msgAlert.setAttribute("state", "None");
-                                SimVar.SetSimVarValue("L:GNS530_HAVE_MESSAGE:" + this.comIndex, "bool", false);
+                                SimVar.SetSimVarValue("L:GNS530_HAVE_NEWMESSAGE:" + this.comIndex, "bool", false);
                             }
                         }
                         else {
                             this.msgAlert.setAttribute("style", "visibility: hidden");
-                            SimVar.SetSimVarValue("L:GNS530_HAVE_MESSAGE:" + this.comIndex, "bool", false);
+                            SimVar.SetSimVarValue("L:GNS530_HAVE_NEWMESSAGE:" + this.comIndex, "bool", false);
+							SimVar.SetSimVarValue("L:GNS530_HAVE_MESSAGE:" + this.comIndex, "bool", false);
                         }
                     }
                 }
