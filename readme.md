@@ -225,6 +225,10 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
 
+## V 1.0.51
+- Display VLOC1 or VLOC2 instead of VLOC in the CDI state field.
+- SU10 compatibility.
+
 ## V 1.0.50
 - Few changes for the 172X mod requirements.
 
