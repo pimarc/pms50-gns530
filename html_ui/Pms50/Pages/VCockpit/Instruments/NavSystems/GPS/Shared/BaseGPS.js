@@ -24,6 +24,8 @@ class BaseGPS extends NavSystem {
         this.currentlySelectedFreq = 0;
         this.navIndex = 1;
         this.comIndex = 1;
+        this.deviceIndex = 1;
+        this.newCDIBehavior = false;
         this.fplNumber = 0;
         this.version = "";
         this.airportWaypointsIcaoSearchField = new SearchFieldWaypointICAO(this, [], this, "A");
@@ -117,7 +119,17 @@ class BaseGPS extends NavSystem {
             if (navElem.length > 0) {
                 this.navIndex = parseInt(navElem[0].textContent);
             }
+            let newBehavior = this.instrumentXmlConfig.getElementsByTagName("NewCDIBehavior");
+            if (newBehavior.length > 0) {
+                this.newCDIBehavior = newBehavior[0].textContent == "True";
+                if (this.newCDIBehavior) {
+                    this.CDIStateSimVar = `L:${this.templateID}_CDI_Source_${this.deviceIndex}`;
+                    SimVar.SetSimVarValue(this.CDIStateSimVar, "boolean", true);
+                }
+            }
         }
+        this.CDIStateSimVar = `L:${this.templateID}_CDI_Source_${this.deviceIndex}`;
+        SimVar.SetSimVarValue(this.CDIStateSimVar, "boolean", true);
     }
     Init() {
         super.Init();
@@ -181,13 +193,21 @@ class BaseGPS extends NavSystem {
             SimVar.SetSimVarValue("K:RADIO_VOR" + this.navIndex + "_IDENT_TOGGLE", "boolean", 0);
         }
         if (_event == "CDI_Push") {
-            let cdiSource = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
-            if(cdiSource == 1 || cdiSource == 2)             
-                SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
-            else {
-                SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
-                SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", this.navIndex);
+            if(this.newCDIBehavior) {
+                const CDIState = SimVar.GetSimVarValue(this.CDIStateSimVar, "boolean");
+                SimVar.SetSimVarValue(this.CDIStateSimVar, "boolean", !CDIState);
+                diffAndSetText(this.CDIState, CDIState ? "VLOC" : "GPS");
             }
+            else {
+                let cdiSource = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+                if(cdiSource == 1 || cdiSource == 2)             
+                    SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
+                else {
+                    SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
+                    SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", this.navIndex);
+                }
+            }
+
         }
         if (_event == "OBS_Push") {
             this.toggleOBS();
@@ -203,9 +223,12 @@ class BaseGPS extends NavSystem {
             this._tfp = 0;
         }
         // Set CDI mode (GPS or VLOC)
-        let vlocSource = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
-        let cdiMode = SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean") == false ? "VLOC" + (vlocSource > 0 ? vlocSource : "") : "GPS";
-        diffAndSetText(this.CDIState, cdiMode);
+        if (!this.newCDIBehavior) {
+            // let vlocSource = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
+            // let cdiMode = SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean") == false ? "VLOC" + (vlocSource > 0 ? vlocSource : "") : "GPS";
+            let cdiMode = SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean") == false ? "VLOC" : "GPS";
+            diffAndSetText(this.CDIState, cdiMode);
+        }
         this.msg_t++;
         if(this.msg_t > 5)
         {

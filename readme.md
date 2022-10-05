@@ -225,6 +225,9 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
 
+## V 1.0.52
+- Bugfix: C172 CDI button management (use now the new Asobo CDI management when available in the aircraft).
+
 ## V 1.0.51
 - Display VLOC1 or VLOC2 instead of VLOC in the CDI state field.
 - SU10 compatibility.
