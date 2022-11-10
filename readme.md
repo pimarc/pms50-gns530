@@ -225,6 +225,10 @@ TCAS is also available in a dedicated Traffic page (4th NAV page).
 
 # Change log
 
+## V 1.0.53
+- Bugfix: flight plan path may be bad with search and rescue patterns.
+- Bugfix: wind direction not correct in case of magnetic deviation.
+
 ## V 1.0.52
 - Bugfix: C172 CDI button management (use now the new Asobo CDI management when available in the aircraft).
 

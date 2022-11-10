@@ -231,7 +231,8 @@ class SvgFlightPlanElement extends SvgMapElement {
                                 this.latLong.lat = departureRunwayCase.beginningCoordinates.lat;
                                 this.latLong.long = departureRunwayCase.beginningCoordinates.long;
                             }
-                            if (this.latLong.lat !== lastLat && this.latLong.long !== lastLong) {
+//PM Modif
+                            if (this.latLong.lat !== lastLat || this.latLong.long !== lastLong) {
                                 let deltaLong = Math.abs(lastLong - this.latLong.long);
                                 if (deltaLong > 2) {
                                     let lastX = Math.cos(lastLat / 180 * Math.PI) * Math.cos(lastLong / 180 * Math.PI);

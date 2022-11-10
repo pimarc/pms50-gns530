@@ -119,14 +119,14 @@ class GPS_BaseNavPage extends NavSystemPage {
         }
         if(this.windDirection && this.windVelocity){
             this.windVelocity.textContent = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
-            let direction = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + SimVar.GetSimVarValue("MAGVAR", "degrees"), 0);
+            let direction = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"));
             let trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 1);
             if(trk != this.lasttrk || direction != this.lastwinddir) {
                 // Wind display from true north
-                trk = fastToFixed(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree"), 1);
                 this.lastwinddir = direction;
                 direction = ((direction - 180 + 360) % 360);
                 if(this.trackUp){
+                    trk = fastToFixed(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree"), 1);
                     direction = ((trk - direction + 360) % 360);
                     this.windDirection.style.transform = this.gps.gpsType == "530" ? "rotate(-" + direction + "deg)" : "rotate(-" + direction + "deg) scale(0.7)";
                 }
